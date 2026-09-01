@@ -26,6 +26,19 @@ Open a lecture below to view the slides directly in your browser. Use the arrow 
 
 1. [Lecture 1: Introduction and probability review](https://swapnil1987.github.io/2026-topics-in-econometrics-1/lecture-01.html) — 2 September; Stock and Watson, Chapters 1–2
 
+### Lecture 1 R examples
+
+Open a script to view or download it. The examples are designed to be run line by line in VS Code using R in WSL.
+
+- [Random variables and repeated sampling](codes/lecture-1/01_random_variables.R)
+- [Bernoulli, binomial, and Poisson distributions](codes/lecture-1/02_discrete_distributions.R)
+- [Continuous probability distributions](codes/lecture-1/03_continuous_distributions.R)
+- [Mean, variance, skewness, and kurtosis](codes/lecture-1/04_moments_and_shapes.R)
+- [Conditional means and iterated expectations](codes/lecture-1/05_conditional_means.R)
+- [Covariance, correlation, and nonlinear relationships](codes/lecture-1/06_covariance_and_correlation.R)
+- [Law of large numbers](codes/lecture-1/07_law_of_large_numbers.R)
+- [Central limit theorem](codes/lecture-1/08_central_limit_theorem.R)
+
 ## Quizzes
 
 Quizzes are short, in-class assessments based only on material already taught and exercises already made available. The working format is three multiple-choice questions, seven answer choices per question, and five equivalent coded forms. Each correct answer earns one point. Incorrect and blank answers receive zero points; there is no negative marking unless announced otherwise.
