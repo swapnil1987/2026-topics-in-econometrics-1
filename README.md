@@ -26,32 +26,8 @@ Quizzes are short, in-class assessments based only on material already taught an
 
 ### Mock quiz materials
 
-The following files are a practice prototype, not a live graded quiz:
+- [Mock quiz](quiz/mock_quiz/mock_quiz_five_forms.pdf)
+- [Mock answers](quiz/mock_quiz/mock_quiz_instructor_key.pdf)
+- [Example of a filled mock quiz](quiz/mock_quiz/mock_quiz_answer_sheets.pdf)
 
-- [Five-form mock quiz](quiz/mock_quiz/mock_quiz_five_forms.pdf) — five one-page A4 versions with QR-based form identification;
-- [Completed mock answer sheets](quiz/mock_quiz/mock_quiz_answer_sheets.pdf) — the scanned practice sheets used to test recognition;
-- [Mock quiz instructor key](quiz/mock_quiz/mock_quiz_instructor_key.pdf) — the answer mapping for the practice forms; and
-- [Grade Excel](quiz/grades.xlsx) — the simple points record produced from the mock scans.
-
-The cumulative grade workbook at `quiz/grades.xlsx` will be updated after each quiz. It will retain three-digit student IDs, including leading zeroes, and record points rather than percentages.
-
-### Quiz folders and release control
-
-```text
-quiz/
-  grades.xlsx
-  mock_quiz/
-  quiz1/
-  quiz2/
-  quiz3/
-  quiz4/
-quiz_generation/
-```
-
-Each numbered quiz folder is reserved for that quiz's print files, answer materials, key, and related records. Numbered weekly quiz content must remain local and must **not** be committed or pushed to GitHub until the instructor explicitly authorizes that particular quiz. The repository's `.gitignore` enforces this rule while retaining a placeholder README in each folder.
-
-The generator code is kept separately in [`quiz_generation`](quiz_generation/README.md). The full design and scan-to-grade workflow are documented in [the quiz-system plan](docs/quiz-system-plan.md).
-
-## Working principle
-
-No numbered quiz is a live assessment until its content, version equivalence, answer keys, print layout, and scanning behavior have been checked. Once a quiz is printed, its released forms and key mapping must be frozen; any later correction must be documented rather than silently overwriting the administered version.
+**[Grade Excel](quiz/grades.xlsx)**
