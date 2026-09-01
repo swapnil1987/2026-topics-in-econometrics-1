@@ -1,68 +1,49 @@
 # Econometric Theory and Practice I (2026/27)
 
-This repository contains teaching materials for **Econometric Theory and Practice I**.
+## Syllabus and grading
+
+This course introduces econometrics: the statistical study of economic data. We will use simulations and real-world data to understand how econometric methods work, while also studying the mathematical ideas, derivations, and assumptions behind them. By the end of the course, students should be able to conduct basic regression analysis and explain the assumptions on which it depends.
+
+- **Instructors:** Dr. Swapnil Singh ([ssingh@lb.lt](mailto:ssingh@lb.lt)) and Dr. Soroosh Soofi Siavas ([soroosh.siavash@evaf.vu.lt](mailto:soroosh.siavash@evaf.vu.lt))
+- **Class:** Wednesday, 10:00–13:00, room 803
+- **Textbook:** James H. Stock and Mark W. Watson, *Introduction to Econometrics*, 3rd edition
+- **Programming language:** R
+- **Full syllabus and calendar:** [Syllabus (2026/27)](https://docs.google.com/document/d/1Hd96R5cFeWp88_j5khsMh3OnWdnjoY2MtuhkvKZpSxM)
+
+### Grading scheme
+
+| Assessment | Weight |
+|---|---:|
+| In-class quizzes | 30% |
+| Midterm exam | 20% |
+| Final exam | 50% |
+
+Problem sets are not graded, but students are expected to complete them. Quiz questions will be based on the problem sets and material already covered in class. Consult the current syllabus and Moodle announcements for confirmed assessment dates, rooms, and any schedule changes.
 
 ## Lectures
 
-- [Lecture 1: Asking Questions with Data](slides/lecture-01.qmd)
+Open a lecture below to view the slides directly in your browser. Use the arrow keys, space bar, or swipe to move through them. **No installation or compilation is required.**
 
-## Reproducible R and Quarto environment
-
-Course examples use R and lecture slides use Quarto Reveal.js. Work from WSL with the Miniconda environment declared in [`environment.yml`](environment.yml).
-
-```bash
-source "$HOME/miniconda3/etc/profile.d/conda.sh"
-conda env create --file environment.yml
-conda activate topics-econometrics
-quarto check
-```
-
-If the environment already exists, synchronize it after changes with:
-
-```bash
-conda env update --name topics-econometrics --file environment.yml --prune
-```
-
-Render the reusable example deck from the repository root:
-
-```bash
-./scripts/render-slides.sh
-```
-
-For live editing and browser refresh:
-
-```bash
-conda run --name topics-econometrics quarto preview slides/template.qmd
-```
-
-The shared 16:9 theme uses a clean white canvas with coral-red, charcoal, and warm-grey accents. Equations use bundled Latin Modern Math for a consistent Computer Modern–style appearance without a network dependency. Its Reveal.js techniques build on Emil Hvitfeldt's [Creating Stunning Presentations with Quarto](https://emilhvitfeldt.github.io/talk-jsm-stunning-presentations/#/revealjs-api). Copy `slides/template.qmd` for a new lecture and keep common styling in `slides/theme/course.scss`.
-
-## Course source
-
-The initial course context comes from the Google Doc [Syllabus (2026/27) – Swapnil Singh](https://docs.google.com/document/d/1Hd96R5cFeWp88_j5khsMh3OnWdnjoY2MtuhkvKZpSxM). The textbook, lecture materials, and problem sets will be added as they become available.
+1. [Lecture 1: Introduction and probability review](https://swapnil1987.github.io/2026-topics-in-econometrics-1/lecture-01.html) — 2 September; Stock and Watson, Chapters 1–2
 
 ## Quizzes
 
-Quizzes are short, in-class assessments based only on material already taught and exercises already made available to students. The working format is three multiple-choice questions, seven choices per question, and five coded forms. Each question is worth **one point**. Scores are reported as points, not percentages.
+Quizzes are short, in-class assessments based only on material already taught and exercises already made available. The working format is three multiple-choice questions, seven answer choices per question, and five equivalent coded forms. Each correct answer earns one point. Incorrect and blank answers receive zero points; there is no negative marking unless announced otherwise.
+
+> **Student ID is essential.** Fill in all three digits of your student ID correctly and clearly. An incorrect, incomplete, or unreadable ID cannot be corrected after submission. If the quiz cannot be assigned using the bubbled ID, the score is zero.
 
 ### Quiz rules
 
-> **Critical student-ID rule:** Fill in all three digits of your student ID correctly and carefully. An incorrect, incomplete, or unreadable ID cannot be corrected after submission under any circumstances. If the sheet cannot be assigned using the ID that was bubbled, the student receives **zero points for that quiz**.
+1. Work independently. Copying, communicating, sharing answers, exchanging papers, or giving or receiving unauthorized help results in zero for the assessment and may lead to further action under university rules.
+2. AI and automated answer tools, including ChatGPT, Copilot, and Gemini, are prohibited during quizzes and exams.
+3. Phones, smartwatches, tablets, laptops, headphones, and similar devices must be put away unless the instructor explicitly authorizes them.
+4. Mark exactly one answer per question and keep the QR code, form code, and corner alignment marks clean and unobstructed.
+5. Notes, books, calculators, software, and other aids are prohibited unless explicitly permitted for that assessment.
+6. Stop writing and communicating when time is called.
+7. Formally approved accommodations remain valid and should be arranged through the established university process.
 
-1. **Academic integrity is a zero-tolerance requirement.** Copying, attempting to copy, sharing answers, communicating with another student, exchanging papers, or giving or receiving unauthorized help is prohibited. A student caught cheating on a quiz or midterm receives **zero for that assessment**, in addition to any further action required by university rules.
-2. **AI tools are prohibited.** ChatGPT, Copilot, Gemini, and every other generative-AI or automated answer tool may not be used during a quiz or midterm.
-3. **Electronic devices must be put away.** Phones, smartwatches, tablets, laptops, headphones, and similar devices may not be used unless the instructor explicitly authorizes a device for that assessment.
-4. **Mark exactly one answer per question.** Fill the selected bubble clearly. Multiple, ambiguous, incomplete, or stray marks may be treated as an unanswered question. Answers written elsewhere are not graded unless the instructor explicitly states otherwise.
-5. **Do not damage the machine-readable areas.** Do not write on the QR code, the small form code, or the corner alignment marks. Do not detach, exchange, or replace quiz pages.
-6. **Follow the announced materials policy.** Notes, books, calculators, software, and other aids are prohibited unless the instructor explicitly permits them for that assessment.
-7. **Stop when time is called.** Continuing to write, alter bubbles, or communicate after collection begins is not permitted.
-8. **Scoring is by points.** Each correct answer earns one point; an incorrect or blank answer earns zero points. There is no negative marking unless a later quiz explicitly says otherwise.
-9. **Approved accommodations remain valid.** Students with formally approved accommodations should arrange them through the established university process before the assessment.
-
-### Mock quiz materials
+### Practice materials
 
 - [Mock quiz](quiz/mock_quiz/mock_quiz_five_forms.pdf)
-- [Mock answers](quiz/mock_quiz/mock_quiz_instructor_key.pdf)
-- [Example of a filled mock quiz](quiz/mock_quiz/mock_quiz_answer_sheets.pdf)
-
-**[Grade Excel](quiz/grades.xlsx)**
+- [Mock quiz answer key](quiz/mock_quiz/mock_quiz_instructor_key.pdf)
+- [Example completed answer sheets](quiz/mock_quiz/mock_quiz_answer_sheets.pdf)

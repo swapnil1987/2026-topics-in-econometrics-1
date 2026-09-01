@@ -208,8 +208,19 @@ $code-block-font-size: 0.62em;
 .text-muted { color: $course-ink-muted; }
 
 .reveal .small-note {
-  color: $course-ink-muted;
-  font-size: 0.68em;
+  background: rgba($course-grey, 0.28);
+  border-left: 0.18em solid $course-red;
+  box-shadow: 0 0.16em 0.45em rgba($course-black, 0.06);
+  color: $course-black;
+  font-size: 0.90em;
+  line-height: 1.35;
+  margin-top: 0.55em;
+  padding: 0.48em 0.72em;
+}
+
+.reveal .small-note p {
+  margin: 0;
+  max-width: none;
 }
 
 .reveal .comparison-value {

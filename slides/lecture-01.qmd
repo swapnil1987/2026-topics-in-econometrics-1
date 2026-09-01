@@ -15,6 +15,7 @@ knitr:
 #| include: false
 
 library(ggplot2)
+library(patchwork)
 
 set.seed(2026)
 
@@ -616,7 +617,7 @@ Clock: 00:55–01:10. Leave this slide visible during the pause.
 First describe the possible values and how probability is distributed across them.
 
 ::: {.notes}
-Clock: 01:10–01:35.
+Clock: 01:10–01:50. This expanded review follows Chapter 2 from outcomes to probability distributions.
 :::
 
 ## Why probability appears in econometrics
@@ -640,45 +641,151 @@ Probability connects the dataset we have to the samples we might have drawn.
 Timing: 2 minutes. Distinguish empirical uncertainty from vagueness. The model describes a repeatable sampling thought experiment.
 :::
 
-## Outcome → random variable
+## Random process → outcomes → sample space
+
+Suppose a wireless connection is used while writing a term paper.
+
+::: columns
+::: {.column width="31%"}
+
+### Random process
+
+Use the connection for one writing session.
+
+:::
+::: {.column width="31%"}
+
+### Outcome
+
+The connection fails 0, 1, 2, 3, or 4 times.
+
+Only one outcome occurs in a session.
+
+:::
+::: {.column width="31%"}
+
+### Sample space
+
+The set of all possible outcomes:
+
+$$
+\mathcal S=\{0,1,2,3,4\}.
+$$
+
+:::
+:::
+
+::: {.definition .fragment}
+An **event** is a collection of outcomes. “At most one failure” is the event $\{0,1\}$.
+:::
+
+::: {.notes}
+Timing: 3 minutes. Outcomes are mutually exclusive; the sample space is exhaustive. Events can contain one outcome or several outcomes.
+:::
+
+## A random variable turns outcomes into numbers
+
+::: {.definition}
+A **random variable** is a rule that assigns a numerical value to every possible outcome of a random process.
+:::
+
+| Random process | Random variable | Possible values |
+|---|---|---|
+| Meet a recent graduate | $G=1$ if employed, $0$ otherwise | $\{0,1\}$ |
+| Use a wireless network | $M=$ number of failures | $\{0,1,2,\ldots\}$ |
+| Commute to campus | $Y=$ time in minutes | positive real numbers |
+| Observe a daily stock return | $R=$ percentage return | negative or positive real numbers |
+
+::: {.key-idea .fragment}
+“Random” means the value is unknown **before** the outcome occurs—not that the variable is measured carelessly.
+:::
+
+::: {.notes}
+Timing: 3 minutes. Read one row from process to numerical variable. A realized value such as Y = 19.7 is no longer random after it is observed.
+:::
+
+## One outcome can generate several random variables
+
+Consider one randomly selected commute to campus.
 
 ::: columns
 ::: {.column width="48%"}
 
-### Random process
+### Commute time
 
-A student commutes to campus.
+$$Y=\text{minutes}$$
 
-Possible outcomes include 14.2, 19.7, or 31.4 minutes.
+Continuous: 14.2, 19.7, 31.4, $\ldots$
 
 :::
 ::: {.column width="48%"}
 
-### Numerical summary
+### Long commute
 
-Let $Y$ be commute time in minutes.
+$$L=1\{Y>20\}$$
 
-$Y$ is a **random variable** because its realized value is not known beforehand.
+Binary: either $0$ or $1$.
 
 :::
 :::
 
 ::: {.key-idea .fragment}
-**Two types:** discrete random variables have countable values; continuous random variables can take any value in an interval.
+The random process supplies the uncertainty. A random variable selects one numerical feature of its outcome.
 :::
 
 ::: {.notes}
-Timing: 2 minutes. Emphasize that the random variable is a mapping from outcomes to numbers; it is not “a variable with errors.”
+Timing: 2 minutes. The same commute yields a continuous variable $Y$ and a binary transformation $L$. Stress that $L$ is constructed from $Y$.
+:::
+
+## Discrete or continuous?
+
+::: columns
+::: {.column width="48%"}
+
+### Discrete random variable
+
+Takes a **countable** set of values.
+
+- Employment indicator: $0$ or $1$
+- Number of children: $0,1,2,\ldots$
+- Number of loan defaults: $0,1,2,\ldots$
+
+:::
+::: {.column width="48%"}
+
+### Continuous random variable
+
+Can take any value in an **interval**.
+
+- Earnings: €31,240.72
+- Commute time: 19.73 minutes
+- Inflation: $2.46\%$
+
+:::
+:::
+
+::: {.key-idea .fragment}
+The distinction determines how probabilities are represented: **bars at possible values** for discrete variables, **areas under curves** for continuous variables.
+:::
+
+::: {.notes}
+Timing: 2 minutes. Recorded continuous variables are rounded in practice; the model can still treat the underlying quantity as continuous.
 :::
 
 ## A discrete probability distribution
+
+The **probability mass function** lists every possible value and its probability:
+
+$$
+p_M(m)=\Pr(M=m),\qquad p_M(m)\ge0,\qquad \sum_m p_M(m)=1.
+$$
 
 ```{r}
 #| label: failure-distribution-plot
 #| echo: false
 #| fig-width: 9.5
-#| fig-height: 5.6
-#| out-width: "75%"
+#| fig-height: 4.4
+#| out-width: "68%"
 
 ggplot(failure_distribution, aes(failures, probability)) +
   geom_col(fill = course_red, width = 0.68) +
@@ -697,46 +804,177 @@ ggplot(failure_distribution, aes(failures, probability)) +
     title = "Possible network failures and their probabilities",
     x = "Number of failures, M",
     y = "Probability"
-  )
+)
 ```
 
 ::: {.notes}
-Timing: 2 minutes. Check that probabilities are nonnegative and sum to one. This adapts the wireless-network example in Chapter 2.
+Timing: 3 minutes. Check that probabilities are nonnegative and sum to one. To obtain an event probability, sum the bars belonging to that event. This adapts the wireless-network example in Chapter 2.
+:::
+
+## From outcomes to events and cumulative probabilities
+
+Using the network-failure distribution:
+
+::: columns
+::: {.column width="31%"}
+
+### One outcome
+
+$$
+\Pr(M=0)=0.80
+$$
+
+No failures.
+
+:::
+::: {.column width="31%"}
+
+### Several outcomes
+
+$$
+0.10+0.06=0.16
+$$
+
+One or two failures.
+
+:::
+::: {.column width="31%"}
+
+### Cumulative event
+
+$$
+0.80+0.10=0.90
+$$
+
+At most one failure.
+
+:::
+:::
+
+::: {.definition .fragment}
+The **cumulative distribution function** is $F_M(m)=\Pr(M\le m)$: probability accumulated up to $m$.
+:::
+
+::: {.notes}
+Timing: 3 minutes. Ask which bars are included before revealing each result. “At most” signals a cumulative probability.
 :::
 
 ## Bernoulli distribution · yes or no
 
-Let $D$ record whether an event occurs:
+::: columns
+::: {.column width="43%"}
+
+### Definition
+
+A Bernoulli variable records **one yes-or-no outcome**:
 
 $$
-D\in\{0,1\},\qquad
-\Pr(D=1)=p,\qquad
-\Pr(D=0)=1-p.
+D\sim\operatorname{Bernoulli}(p)
 $$
+
+$$
+\Pr(D=1)=p,\qquad \Pr(D=0)=1-p.
+$$
+
+Examples: employed or not, default or repayment, treatment or control.
+
+The support is always $\{0,1\}$; $p$ moves probability between the two bars.
+
+:::
+::: {.column width="53%"}
+
+```{r}
+#| label: bernoulli-distribution-plot
+#| echo: false
+#| fig-width: 6.2
+#| fig-height: 4.7
+#| out-width: "100%"
+
+bernoulli_data <- data.frame(
+  outcome = c(0, 1),
+  probability = c(0.70, 0.30)
+)
+
+ggplot(bernoulli_data, aes(outcome, probability)) +
+  geom_col(fill = course_red, width = 0.55) +
+  geom_text(
+    aes(label = scales::percent(probability)),
+    vjust = -0.4,
+    size = 6
+  ) +
+  scale_x_continuous(breaks = 0:1) +
+  scale_y_continuous(
+    limits = c(0, 0.80),
+    labels = scales::percent_format()
+  ) +
+  labs(
+    title = "Bernoulli(0.30)",
+    x = "Outcome, D",
+    y = "Probability"
+  )
+```
+
+:::
+:::
+
+::: {.notes}
+Timing: 3 minutes. In the plot, p = 0.30. Its mean and variance are derived after those concepts have been defined.
+:::
+
+## Two more discrete families
 
 ::: columns
 ::: {.column width="48%"}
 
-### $D=1$
+### Binomial distribution
 
-The event occurs: employed, loan denied, treatment received.
+$B\sim\operatorname{Binomial}(n,p)$ counts successes in $n$ independent Bernoulli trials.
+
+Example: defaults among 10 independent loans, each with default probability $0.30$.
 
 :::
 ::: {.column width="48%"}
 
-### $D=0$
+### Poisson distribution
 
-The event does not occur: not employed, approved, untreated.
+$C\sim\operatorname{Poisson}(\lambda)$ counts events in a fixed interval with average rate $\lambda$.
+
+Example: customer arrivals per hour when the average is three.
 
 :::
 :::
 
-::: {.key-idea .fragment}
-One number, $p$, completely describes a Bernoulli distribution.
-:::
+```{r}
+#| label: discrete-family-plot
+#| echo: false
+#| fig-width: 10.5
+#| fig-height: 3.7
+#| out-width: "76%"
+
+binomial_values <- 0:10
+poisson_values <- 0:12
+discrete_family_data <- rbind(
+  data.frame(
+    value = binomial_values,
+    probability = dbinom(binomial_values, size = 10, prob = 0.30),
+    family = "Binomial(10, 0.30)"
+  ),
+  data.frame(
+    value = poisson_values,
+    probability = dpois(poisson_values, lambda = 3),
+    family = "Poisson(3)"
+  )
+)
+
+ggplot(discrete_family_data, aes(value, probability)) +
+  geom_col(fill = course_red, width = 0.72) +
+  facet_wrap(~family, nrow = 1) +
+  scale_x_continuous(breaks = 0:12) +
+  labs(x = "Count", y = "Probability")
+```
 
 ::: {.notes}
-Timing: 2 minutes. Keep this slide about the distribution only. Its mean and variance are derived after those concepts have been defined.
+Timing: 3 minutes. This is a short extension beyond the book’s Bernoulli example. Emphasize that both are count distributions but arise from different stories.
 :::
 
 ## Continuous probability distributions
@@ -744,6 +982,8 @@ Timing: 2 minutes. Keep this slide about the distribution only. Its mean and var
 A continuous variable can take any value in an interval. Its distribution is described by a **density**, $f_Y(y)$.
 
 $$
+f_Y(y)\ge0,\qquad
+\int_{-\infty}^{\infty}f_Y(y)\,dy=1,\qquad
 \Pr(a\le Y\le b)=\int_a^b f_Y(y)\,dy.
 $$
 
@@ -752,7 +992,7 @@ $$
 
 ### Probability is area
 
-The total area under the density is one.
+The area under the curve between $a$ and $b$ is a probability.
 
 :::
 ::: {.column width="48%"}
@@ -764,18 +1004,105 @@ For a continuous variable, $\Pr(Y=y)=0$ at any exact value.
 :::
 :::
 
+::: {.key-idea .fragment}
+A density’s **height is not itself a probability**. Probability is represented by area.
+:::
+
 ::: {.notes}
-Timing: 2 minutes. Contrast a density height with a probability. The next two slides show two continuous distributions with very different shapes.
+Timing: 3 minutes. Contrast a density height with a probability. A density can exceed one as long as its total area remains one.
+:::
+
+## PDF and CDF · two views of one distribution
+
+```{r}
+#| label: pdf-cdf-commute-plot
+#| echo: false
+#| fig-width: 11.5
+#| fig-height: 4.0
+#| out-width: "84%"
+
+commute_sdlog <- (log(20) - log(15)) / (qnorm(0.78) - qnorm(0.20))
+commute_meanlog <- log(15) - commute_sdlog * qnorm(0.20)
+commute_grid <- data.frame(minutes = seq(8, 28, length.out = 600))
+commute_grid$density <- dlnorm(
+  commute_grid$minutes,
+  meanlog = commute_meanlog,
+  sdlog = commute_sdlog
+)
+commute_grid$cdf <- plnorm(
+  commute_grid$minutes,
+  meanlog = commute_meanlog,
+  sdlog = commute_sdlog
+)
+
+pdf_plot <- ggplot(commute_grid, aes(minutes, density)) +
+  geom_area(
+    data = subset(commute_grid, minutes >= 15 & minutes <= 20),
+    fill = course_red,
+    alpha = 0.55
+  ) +
+  geom_line(colour = course_charcoal, linewidth = 1.1) +
+  labs(
+    title = "Density (PDF)",
+    subtitle = "Area from 15 to 20 minutes = 58%",
+    x = "Commute time",
+    y = "Density"
+  )
+
+cdf_plot <- ggplot(commute_grid, aes(minutes, cdf)) +
+  geom_line(colour = course_red_dark, linewidth = 1.2) +
+  geom_point(
+    data = data.frame(minutes = c(15, 20), cdf = c(0.20, 0.78)),
+    size = 3,
+    colour = course_charcoal
+  ) +
+  scale_y_continuous(labels = scales::percent_format()) +
+  labs(
+    title = "Cumulative distribution (CDF)",
+    subtitle = "20% by 15 minutes; 78% by 20 minutes",
+    x = "Commute time",
+    y = "Probability accumulated"
+  )
+
+pdf_plot + cdf_plot
+```
+
+::: {.key-idea .fragment}
+The PDF shows **where probability is concentrated**; the CDF shows **how much probability has accumulated** by each value.
+:::
+
+::: {.notes}
+Timing: 4 minutes. This reproduces the logic of Figure 2.2 in the book: 78% minus 20% gives 58% between 15 and 20 minutes.
 :::
 
 ## Normal distribution · symmetric and continuous
 
+::: columns
+::: {.column width="40%"}
+
+### Definition
+
+$$
+Y\sim N(\mu,\sigma^2)
+$$
+
+- Values can range from $-\infty$ to $\infty$.
+- $\mu$ sets the center.
+- $\sigma$ controls the spread.
+- The curve is symmetric and bell-shaped.
+- About 95% lies within $1.96\sigma$ of $\mu$.
+
+Examples: measurement error, standardized test scores, and many sample averages.
+
+:::
+::: {.column width="56%"}
+
 ```{r}
 #| label: normal-distribution-plot
 #| echo: false
-#| fig-width: 10
+#| fig-width: 6.8
 #| fig-height: 5.2
-#| out-width: "74%"
+#| out-width: "100%"
 
 normal_grid <- data.frame(score = seq(35, 105, length.out = 600))
 normal_grid$density <- dnorm(normal_grid$score, mean = 70, sd = 10)
@@ -791,36 +1118,60 @@ ggplot(normal_grid, aes(score, density)) +
   geom_line(colour = course_charcoal, linewidth = 1.2) +
   geom_vline(xintercept = 70, linetype = "dashed", colour = course_red_dark) +
   labs(
-    title = "A bell shape centered at the mean",
-    subtitle = "For N(70, 10²), 95% of probability lies between 50.4 and 89.6",
+    title = "N(70, 10²)",
+    subtitle = "95% lies between 50.4 and 89.6",
     x = "Test score",
     y = "Density"
   )
 ```
 
+:::
+:::
+
 ::: {.notes}
-Timing: 3 minutes. Introduce the notation $N(\mu,\sigma^2)$. The normal distribution is symmetric, has skewness zero, and kurtosis three.
+Timing: 4 minutes. The second parameter is the variance, not the standard deviation. The normal distribution has skewness zero and kurtosis three.
 :::
 
 ## Log-normal distribution · positive and right-skewed
 
+::: columns
+::: {.column width="40%"}
+
+### Definition
+
+$$
+\log(Y)\sim N(\mu,\sigma^2)
+$$
+
+- $Y$ is always positive.
+- Most observations are moderate.
+- A long right tail allows occasional large values.
+- Taking logs makes the distribution symmetric.
+
+Examples: earnings, wealth, firm size, prices, and durations.
+
+Normality of $\log(Y)$ does **not** mean that $Y$ itself is normal.
+
+:::
+::: {.column width="56%"}
+
 ```{r}
 #| label: lognormal-distribution-plot
 #| echo: false
-#| fig-width: 10
+#| fig-width: 6.8
 #| fig-height: 5.2
-#| out-width: "74%"
+#| out-width: "100%"
 
 lognormal_grid <- data.frame(
-  minutes = seq(5, 50, length.out = 600)
+  minutes = seq(8, 36, length.out = 600)
 )
 lognormal_grid$density <- dlnorm(
   lognormal_grid$minutes,
-  meanlog = log(20),
-  sdlog = 0.35
+  meanlog = commute_meanlog,
+  sdlog = commute_sdlog
 )
 lognormal_grid$inside <- lognormal_grid$minutes >= 15 &
-  lognormal_grid$minutes <= 25
+  lognormal_grid$minutes <= 20
 
 ggplot(lognormal_grid, aes(minutes, density)) +
   geom_area(
@@ -830,34 +1181,213 @@ ggplot(lognormal_grid, aes(minutes, density)) +
   ) +
   geom_line(colour = course_charcoal, linewidth = 1.2) +
   labs(
-    title = "A long right tail represents occasional large values",
-    subtitle = "Shaded: probability that commute time is between 15 and 25 minutes",
+    title = "A positive, right-skewed shape",
+    subtitle = "Shaded: 58% between 15 and 20 minutes",
     x = "Commute time (minutes)",
     y = "Density"
   )
 ```
 
-::: {.notes}
-Timing: 3 minutes. A log-normal variable is positive because its logarithm is normal. Earnings, prices, firm size, and durations are often right-skewed, although log-normality still must be checked.
 :::
-
-## Distribution families we will meet
-
-| Distribution | Values | Shape and later role |
-|---|---|---|
-| Bernoulli | $0$ or $1$ | Binary outcomes and treatment indicators |
-| Normal | $(-\infty,\infty)$ | Symmetric benchmark; approximates many averages |
-| Log-normal | $(0,\infty)$ | Right-skewed model for positive quantities |
-| Chi-squared, $\chi_m^2$ | $[0,\infty)$ | Sums of squared standard normals |
-| Student $t_m$ | $(-\infty,\infty)$ | Bell-shaped with heavier tails than normal |
-| $F_{m,n}$ | $[0,\infty)$ | Ratios of scaled chi-squared variables |
-
-::: {.small-note}
-The degrees of freedom $m$ and $n$ control the shapes of $\chi^2$, $t$, and $F$ distributions.
 :::
 
 ::: {.notes}
-Timing: 3 minutes. The last three distributions support hypothesis tests later in the course. For now, students should recognize their support, shape, and names.
+Timing: 4 minutes. Earnings, prices, firm size, and durations are often right-skewed, although log-normality still must be checked rather than assumed.
+:::
+
+## Chi-squared distribution · sums of squares
+
+::: columns
+::: {.column width="40%"}
+
+### Definition
+
+If $Z_1,\ldots,Z_m$ are independent standard normal variables, then
+
+$$
+W=Z_1^2+\cdots+Z_m^2\sim\chi_m^2.
+$$
+
+- Values are nonnegative.
+- The shape is right-skewed.
+- $m$ is the **degrees of freedom**.
+- Larger $m$ shifts the distribution right and makes it less skewed.
+
+Later role: tests built from sums of squared standardized quantities.
+
+:::
+::: {.column width="56%"}
+
+```{r}
+#| label: chi-squared-plot
+#| echo: false
+#| fig-width: 6.8
+#| fig-height: 5.2
+#| out-width: "100%"
+
+chi_x <- seq(0.05, 25, length.out = 700)
+chi_data <- rbind(
+  data.frame(x = chi_x, density = dchisq(chi_x, 2), df = "2 df"),
+  data.frame(x = chi_x, density = dchisq(chi_x, 5), df = "5 df"),
+  data.frame(x = chi_x, density = dchisq(chi_x, 10), df = "10 df")
+)
+
+ggplot(chi_data, aes(x, density, colour = df)) +
+  geom_line(linewidth = 1.2) +
+  scale_colour_manual(
+    values = c("2 df" = course_red_dark, "5 df" = course_red, "10 df" = "#68645F")
+  ) +
+  labs(
+    title = "Chi-squared shapes",
+    x = "Nonnegative value",
+    y = "Density",
+    colour = NULL
+  ) +
+  theme(legend.position = "bottom")
+```
+
+:::
+:::
+
+::: {.notes}
+Timing: 3 minutes. Squaring removes signs, so the support cannot be negative. Do not develop hypothesis tests yet.
+:::
+
+## Student $t$ distribution · a heavier-tailed bell
+
+::: columns
+::: {.column width="40%"}
+
+### Definition
+
+If $Z\sim N(0,1)$ and $W\sim\chi_m^2$ independently, then
+
+$$
+T=\frac{Z}{\sqrt{W/m}}\sim t_m.
+$$
+
+- Values range from $-\infty$ to $\infty$.
+- It is symmetric around zero with heavier tails than the normal.
+- As $m$ grows, $t_m$ approaches $N(0,1)$.
+
+Later role: inference when uncertainty is estimated.
+
+:::
+::: {.column width="56%"}
+
+```{r}
+#| label: student-t-plot
+#| echo: false
+#| fig-width: 6.8
+#| fig-height: 4.7
+#| out-width: "100%"
+
+t_x <- seq(-5, 5, length.out = 700)
+t_data <- rbind(
+  data.frame(x = t_x, density = dnorm(t_x), family = "Normal"),
+  data.frame(x = t_x, density = dt(t_x, 3), family = "t, 3 df"),
+  data.frame(x = t_x, density = dt(t_x, 10), family = "t, 10 df")
+)
+
+ggplot(t_data, aes(x, density, colour = family)) +
+  geom_line(linewidth = 1.2) +
+  scale_colour_manual(
+    values = c("Normal" = course_charcoal, "t, 3 df" = course_red_dark, "t, 10 df" = course_red)
+  ) +
+  labs(
+    title = "Lower df → heavier tails",
+    x = "Value",
+    y = "Density",
+    colour = NULL
+  ) +
+  theme(legend.position = "bottom")
+```
+
+:::
+:::
+
+::: {.notes}
+Timing: 3 minutes. Point to the shoulders and tails, not only the center. By roughly 30 degrees of freedom, the t distribution is close to normal.
+:::
+
+## $F$ distribution · a ratio of variances
+
+::: columns
+::: {.column width="40%"}
+
+### Definition
+
+If $W\sim\chi_m^2$ and $V\sim\chi_n^2$ independently, then
+
+$$
+F=\frac{W/m}{V/n}\sim F_{m,n}.
+$$
+
+- Values are nonnegative.
+- The distribution is usually right-skewed.
+- It has numerator degrees of freedom $m$ and denominator degrees of freedom $n$.
+
+Later role: comparing explained and unexplained variation in joint tests.
+
+:::
+::: {.column width="56%"}
+
+```{r}
+#| label: f-distribution-plot
+#| echo: false
+#| fig-width: 6.8
+#| fig-height: 5.2
+#| out-width: "100%"
+
+f_x <- seq(0.01, 5, length.out = 700)
+f_data <- rbind(
+  data.frame(x = f_x, density = df(f_x, 5, 10), family = "F(5, 10)"),
+  data.frame(x = f_x, density = df(f_x, 10, 30), family = "F(10, 30)")
+)
+
+ggplot(f_data, aes(x, density, colour = family)) +
+  geom_line(linewidth = 1.2) +
+  scale_colour_manual(
+    values = c("F(5, 10)" = course_red_dark, "F(10, 30)" = course_red)
+  ) +
+  labs(
+    title = "Positive and right-skewed",
+    x = "Ratio",
+    y = "Density",
+    colour = NULL
+  ) +
+  theme(legend.position = "bottom")
+```
+
+:::
+:::
+
+::: {.notes}
+Timing: 3 minutes. Keep the definition conceptual: an F statistic compares two scaled sources of variation. The two degrees of freedom control the reference shape.
+:::
+
+## Active check · Match the variable to a family
+
+::: {.exercise}
+
+1. Whether one borrower defaults.
+2. Number of defaults among 10 independent loans with a common default probability.
+3. Number of customers arriving during one hour at a stable average rate.
+4. A positive, strongly right-skewed measure of firm size whose logarithm is bell-shaped.
+5. A symmetric test statistic with heavier tails because its standard error is estimated.
+
+:::
+
+::: {.answer .fragment}
+1. Bernoulli · 2. Binomial · 3. Poisson · 4. Log-normal · 5. Student $t$
+:::
+
+::: {.key-idea .fragment}
+Choose a distribution by asking about the **support**, the **data-generating story**, and the **shape**—not by choosing the prettiest curve.
+:::
+
+::: {.notes}
+Timing: 3 minutes. Have students answer in pairs. Ask what empirical evidence could make them reject each proposed family.
 :::
 
 ## Part IV · Moments and relationships {.section-slide background-color="#B83D2F"}
@@ -865,7 +1395,7 @@ Timing: 3 minutes. The last three distributions support hypothesis tests later i
 Now summarize a distribution’s center, spread, shape, and co-movement.
 
 ::: {.notes}
-Clock: 01:35–02:00.
+Clock: 01:50–02:10. Keep derivations brisk; Part III now carries more of the probability review.
 :::
 
 ## Mean · the center of a distribution
@@ -901,7 +1431,7 @@ The mean is the **probability-weighted average** of all possible values—the lo
 Timing: 3 minutes. This is the first moment. Stress that a mean need not be a possible realization and that both formulas express the same idea.
 :::
 
-## Mean · a worked discrete example
+## Mean
 
 For network failures $M$,
 
@@ -1243,24 +1773,31 @@ Timing: 2 minutes. This prepares the language for later OLS. Mention in delivery
 
 ## The law of iterated expectations
 
-Suppose an old network averages $0.56$ failures and a new one averages $0.14$. Each is used half the time.
+::: {.definition}
+For any random variables $Y$ and $X$,
 
 $$
-E(M)=E[E(M\mid A)]
+E(Y)=E\!\left[E(Y\mid X)\right].
 $$
 
-::: {.fragment}
-$$
-=0.56(0.50)+0.14(0.50)=0.35.
-$$
+First find the mean of $Y$ within each value of $X$; then average those conditional means over $X$.
 :::
 
-::: {.key-idea .fragment}
-The overall mean is a weighted average of group-specific means.
-:::
+### Proof for discrete $X$ and $Y$
+
+$$
+\begin{aligned}
+E\!\left[E(Y\mid X)\right]
+&= \sum_x E(Y\mid X=x)\Pr(X=x) \\
+&= \sum_x\sum_y y\Pr(Y=y\mid X=x)\Pr(X=x) \\
+&= \sum_y y\sum_x \Pr(Y=y,X=x) \\
+&= \sum_y y\Pr(Y=y) \\
+&= E(Y).
+\end{aligned}
+$$
 
 ::: {.notes}
-Timing: 2 minutes. Ask what changes if 80% of sessions use the new network. The conditional means stay fixed; the overall mean changes through the weights.
+Timing: 3 minutes. The second line expands the conditional mean. The third uses the multiplication rule, and the fourth sums out $X$. For continuous variables, the same argument replaces sums with integrals.
 :::
 
 ## Covariance · unscaled co-movement
@@ -1311,6 +1848,28 @@ $$
 Timing: 2 minutes. Perfect correlation of plus or minus one means all probability lies on a line with positive or negative slope; zero correlation need not mean independence.
 :::
 
+## Reproduce it in R
+
+```{r}
+#| label: nonlinear-data
+
+set.seed(2026)
+
+n <- 500
+x <- runif(n, -2, 2)
+y <- x^2 + rnorm(n, sd = 0.35)
+
+round(cor(x, y), 3)
+```
+
+::: {.key-idea .fragment}
+**Yes.** Pearson correlation measures **linear** co-movement. Here $Y=X^2+\text{noise}$ is U-shaped, so its negative-$X$ and positive-$X$ sides offset in the covariance.
+:::
+
+::: {.notes}
+Timing: 2 minutes. Run the code live if useful. For a symmetric $X$, $\operatorname{Cov}(X,X^2)=E(X^3)-E(X)E(X^2)=0$. Independent mean-zero noise does not change that population covariance.
+:::
+
 ## Zero correlation can hide a relationship
 
 ```{r}
@@ -1319,10 +1878,9 @@ Timing: 2 minutes. Perfect correlation of plus or minus one means all probabilit
 #| fig-width: 9.8
 #| fig-height: 5.4
 
-x_nonlinear <- runif(500, -2, 2)
 nonlinear_data <- data.frame(
-  x = x_nonlinear,
-  y = x_nonlinear^2 + rnorm(500, sd = 0.35)
+  x = x,
+  y = y
 )
 nonlinear_correlation <- cor(nonlinear_data$x, nonlinear_data$y)
 
@@ -1348,23 +1906,21 @@ A wage dataset shows
 
 $$E(\text{wage}\mid\text{degree}=1) - E(\text{wage}\mid\text{degree}=0)=€6.40/\text{hour}.$$
 
-In pairs, write:
-
 1. one sentence this number **does** justify;
 2. one causal sentence it **does not yet** justify;
 3. two variables that might make the groups unlike.
 :::
 
-::: {.notes}
-Timing: 3 minutes plus a 1-minute debrief. Candidate confounders: prior ability, family resources, field, labor-market experience, location. Avoid suggesting that adding a long control list automatically identifies the degree effect.
+::: {.answer .fragment}
+**Answers**
+
+1. **Descriptive:** In this dataset, degree holders earn €6.40 more per hour on average.
+2. **Not justified:** Obtaining a degree increases a person’s wage by €6.40 per hour.
+3. **Possible group differences:** prior ability and family resources.
 :::
 
-## Pause · 5 minutes {.section-slide background-color="#E85D4A"}
-
-Final block: why averages become reliable.
-
 ::: {.notes}
-Clock: 02:00–02:05.
+Timing: 3 minutes plus a 1-minute debrief. Other candidate confounders include field, labor-market experience, and location. Avoid suggesting that adding a long control list automatically identifies the degree effect.
 :::
 
 ## Part V · From samples to populations {.section-slide background-color="#E85D4A"}
@@ -1372,7 +1928,7 @@ Clock: 02:00–02:05.
 The estimate changes when the sample changes.
 
 ::: {.notes}
-Clock: 02:05–02:25; reserve 02:25–02:30 for the exit ticket and synthesis.
+Clock: 02:10–02:30. Emphasize the LLN definition and use the R simulation to connect the theorem to a visible sample path.
 :::
 
 ## Population, sample, estimator, estimate
@@ -1391,7 +1947,7 @@ Fixed but usually unknown.
 
 ### Sample statistic
 
-$$\bar Y=\frac{1}{n}\sum_{i=1}^{n}Y_i$$
+$$\overline{\,Y\,}=\frac{1}{n}\sum_{i=1}^{n}Y_i$$
 
 Random before sampling; a number after the data arrive.
 
@@ -1399,7 +1955,7 @@ Random before sampling; a number after the data arrive.
 :::
 
 ::: {.definition .fragment}
-An **estimator** is the rule ($\bar Y$). An **estimate** is the realized value from this sample.
+An **estimator** is the rule ($\overline{\,Y\,}$). An **estimate** is the realized value from this sample.
 :::
 
 ::: {.notes}
@@ -1434,13 +1990,13 @@ Imagine repeatedly drawing samples of $n$ students and recording average commute
 ::: {.incremental}
 
 - Each sample contains different students.
-- Each sample produces a different $\bar Y$.
+- Each sample produces a different $\overline{\,Y\,}$.
 - The distribution of those possible averages is the **sampling distribution**.
 
 :::
 
 ::: {.key-idea .fragment}
-A histogram of the observed $Y_i$ values is not the same object as the sampling distribution of $\bar Y$.
+A histogram of the observed $Y_i$ values is not the same object as the sampling distribution of $\overline{\,Y\,}$.
 :::
 
 ::: {.notes}
@@ -1452,11 +2008,11 @@ Timing: 2 minutes. The population distribution describes individuals; the sampli
 If $Y_1,\ldots,Y_n$ are i.i.d. with mean $\mu_Y$ and variance $\sigma_Y^2$, then
 
 $$
-E(\bar Y)=\mu_Y,
+E(\overline{\,Y\,})=\mu_Y,
 \qquad
-\operatorname{Var}(\bar Y)=\frac{\sigma_Y^2}{n},
+\operatorname{Var}(\overline{\,Y\,})=\frac{\sigma_Y^2}{n},
 \qquad
-\operatorname{SD}(\bar Y)=\frac{\sigma_Y}{\sqrt n}.
+\operatorname{SD}(\overline{\,Y\,})=\frac{\sigma_Y}{\sqrt n}.
 $$
 
 ::: {.key-idea .fragment}
@@ -1467,6 +2023,55 @@ Four times the sample size gives half the standard deviation—not one quarter.
 Timing: 3 minutes. The first equality is unbiasedness. The last quantity motivates the standard error once sigma is estimated.
 :::
 
+## Law of large numbers · definition
+
+Suppose $Y_1,Y_2,\ldots$ are i.i.d. with finite mean $E(Y_i)=\mu_Y$. Define
+
+$$
+\overline{\,Y\,}_n=\frac{1}{n}\sum_{i=1}^{n}Y_i.
+$$
+
+The **weak law of large numbers** states that
+
+$$
+\overline{\,Y\,}_n\xrightarrow{p}\mu_Y.
+$$
+
+::: {.definition .fragment}
+Equivalently, for every $\varepsilon>0$,
+
+$$
+\lim_{n\to\infty}\Pr\!\left(\left|\overline{\,Y\,}_n-\mu_Y\right|>\varepsilon\right)=0.
+$$
+:::
+
+::: {.notes}
+Timing: 3 minutes. Read the probability statement in words: for any fixed tolerance, the probability that the sample mean misses the population mean by more than that tolerance goes to zero.
+:::
+
+## Law of large numbers · R code
+
+```{r}
+#| label: lln-code
+
+set.seed(2026)
+number_of_draws <- 500
+lln_draws <- rexp(number_of_draws, rate = 1)
+lln_data <- data.frame(
+  n = seq_len(number_of_draws),
+  running_mean = cumsum(lln_draws) / seq_len(number_of_draws)
+)
+
+lln_plot <- ggplot(lln_data, aes(n, running_mean)) +
+  geom_hline(yintercept = 1, colour = course_red) +
+  geom_line(colour = course_charcoal) +
+  labs(x = "Sample size, n", y = "Running sample mean")
+```
+
+::: {.notes}
+Timing: 2 minutes. The exponential population has mean one. Explain that `cumsum(lln_draws) / seq_len(number_of_draws)` computes every running average from the same sequence.
+:::
+
 ## Law of large numbers · destination
 
 ```{r}
@@ -1475,26 +2080,20 @@ Timing: 3 minutes. The first equality is unbiasedness. The last quantity motivat
 #| fig-width: 10
 #| fig-height: 5.5
 
-lln_draws <- rexp(500, rate = 1)
-lln_data <- data.frame(
-  n = seq_along(lln_draws),
-  running_mean = cumsum(lln_draws) / seq_along(lln_draws)
-)
-
-ggplot(lln_data, aes(n, running_mean)) +
-  geom_hline(yintercept = 1, colour = course_red, linewidth = 1.2) +
-  geom_line(colour = course_charcoal, linewidth = 0.9) +
-  annotate("text", x = 440, y = 1.10, label = "Population mean = 1", colour = course_red_dark, size = 5.5) +
+lln_plot +
+  annotate(
+    "text", x = 440, y = 1.10,
+    label = "Population mean = 1",
+    colour = course_red_dark, size = 5.5
+  ) +
   labs(
     title = "As the sample grows, the running average settles",
-    subtitle = "One simulated sequence from a right-skewed exponential population",
-    x = "Sample size, n",
-    y = "Running sample mean"
+    subtitle = "One simulated sequence from a right-skewed exponential population"
   )
 ```
 
 ::: {.notes}
-Timing: 2 minutes. One path illustrates, but does not prove, the LLN. State the result: the probability of being far from mu becomes small as n grows under suitable conditions.
+Timing: 2 minutes. One path illustrates, but does not prove, the LLN. The theorem concerns the probability of a large error across possible samples, not monotone convergence along every realized path.
 :::
 
 ## Central limit theorem · shape
@@ -1502,7 +2101,7 @@ Timing: 2 minutes. One path illustrates, but does not prove, the LLN. State the 
 For large $n$,
 
 $$
-\frac{\bar Y-\mu_Y}{\sigma_Y/\sqrt n}
+\frac{\overline{\,Y\,}-\mu_Y}{\sigma_Y/\sqrt n}
 \overset{d}{\approx}N(0,1).
 $$
 
@@ -1579,7 +2178,7 @@ Timing: 3 minutes. At n=1 the standardized variable retains exponential skewness
 
 | Result | What it tells us | Mental image |
 |---|---|---|
-| Law of large numbers | $\bar Y$ gets close to $\mu_Y$ | the target becomes accurate |
+| Law of large numbers | $\overline{\,Y\,}$ gets close to $\mu_Y$ | the target becomes accurate |
 | Central limit theorem | the standardized error becomes approximately normal | the error gets a useful shape |
 
 ::: {.key-idea .fragment}
@@ -1590,59 +2189,6 @@ LLN supports consistency. CLT supports approximate probabilities, confidence int
 Timing: 2 minutes. This distinction is often blurred. The LLN is about concentration; the CLT is about distributional approximation.
 :::
 
-## Quick calculation · the square-root rule
-
-::: {.exercise}
-Individual monthly earnings have a standard deviation of €1,200.
-
-1. What is the standard deviation of the sample mean for $n=100$ i.i.d. workers?
-2. What sample size cuts that value in half?
-3. What assumption would be doubtful if many workers belong to the same household or firm?
-:::
-
-::: {.answer .fragment}
-1. €120. 2. $n=400$. 3. Independence; shared shocks create within-group dependence.
-:::
-
-::: {.notes}
-Timing: 3 minutes. Call the sampling SD a standard error once linked to an estimator. Leave finite-population corrections for later.
-:::
-
-## One complete econometric story
-
-::: {.incremental}
-
-**Question:** How much would a cigarette tax reduce smoking?
-
-**Estimand:** the average causal response of cigarette consumption to a tax-induced price change.
-
-**Data:** state-by-year prices, taxes, sales, and incomes—a panel.
-
-**Threat:** smoking preferences can affect both political tax choices and consumption.
-
-**Methodological need:** a design that creates credible price variation, plus uncertainty that respects the panel structure.
-
-:::
-
-::: {.notes}
-Timing: 2 minutes. This returns to Chapter 1 and previews simultaneous causality and instrumental variables without teaching them now.
-:::
-
-## Exit ticket · 3 minutes
-
-::: {.exercise}
-Choose one economic question and write four lines:
-
-1. **Goal:** description, prediction, or causation?
-2. **Target:** what population quantity would answer it?
-3. **Data:** what entities and times would you observe?
-4. **Threat:** what could make your comparison misleading?
-:::
-
-::: {.notes}
-Collect or discuss two answers. Use these to diagnose whether students distinguish a variable from an estimand and an association from a causal effect.
-:::
-
 ## Takeaways {.section-slide background-color="#E85D4A"}
 
 Econometrics makes the chain visible:
@@ -1651,23 +2197,4 @@ Econometrics makes the chain visible:
 
 ::: {.notes}
 Timing: 2 minutes. Revisit the opening student question and walk it through the chain in one minute.
-:::
-
-## What to retain for Lecture 2
-
-::: {.incremental}
-
-- Conditional means describe systematic differences across groups.
-- Sample estimates vary; standard errors describe that sampling variation.
-- Large samples help, but they do not repair a bad comparison or bad measurement.
-- A causal claim needs a design, not only a coefficient.
-
-:::
-
-::: {.small-note}
-Primary course source: Stock and Watson, *Introduction to Econometrics*, Chapters 1–2 (materials supplied in `book/chapter-1-2/`). Additional examples and simulations were created for this lecture.
-:::
-
-::: {.notes}
-Optional final minute. Preview the next lecture’s move from conditional means to estimation and uncertainty.
 :::
