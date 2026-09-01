@@ -24,20 +24,12 @@ Problem sets are not graded, but students are expected to complete them. Quiz qu
 
 Open a lecture below to view the slides directly in your browser. Use the arrow keys, space bar, or swipe to move through them. **No installation or compilation is required.**
 
-1. [Lecture 1: Introduction and probability review](https://swapnil1987.github.io/2026-topics-in-econometrics-1/lecture-01.html) — 2 September; Stock and Watson, Chapters 1–2
+### Lecture 1: Introduction and probability review
 
-### Lecture 1 R examples
+2 September · Stock and Watson, Chapters 1–2
 
-Open a script to view or download it. The examples are designed to be run line by line in VS Code using R in WSL.
-
-- [Random variables and repeated sampling](codes/lecture-1/01_random_variables.R)
-- [Bernoulli, binomial, and Poisson distributions](codes/lecture-1/02_discrete_distributions.R)
-- [Continuous probability distributions](codes/lecture-1/03_continuous_distributions.R)
-- [Mean, variance, skewness, and kurtosis](codes/lecture-1/04_moments_and_shapes.R)
-- [Conditional means and iterated expectations](codes/lecture-1/05_conditional_means.R)
-- [Covariance, correlation, and nonlinear relationships](codes/lecture-1/06_covariance_and_correlation.R)
-- [Law of large numbers](codes/lecture-1/07_law_of_large_numbers.R)
-- [Central limit theorem](codes/lecture-1/08_central_limit_theorem.R)
+- [View the slides](https://swapnil1987.github.io/2026-topics-in-econometrics-1/lecture-01.html)
+- [View the R code](codes/lecture-1/)
 
 ## Quizzes
 
