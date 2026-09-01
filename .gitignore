@@ -1,0 +1,18 @@
+# Python caches
+__pycache__/
+*.py[cod]
+
+# Local build and Codex scratch outputs
+.codex_tmp/
+tmp/
+output/
+outputs/
+
+# Weekly quiz content is private/local until the instructor explicitly approves a push.
+# Placeholder README files remain tracked so the repository structure is visible.
+quiz/quiz[0-9]*/**
+!quiz/quiz[0-9]*/README.md
+
+# Never commit raw live-student scans by default.
+quiz/**/raw_scans/
+quiz/**/scans/
