@@ -2,6 +2,41 @@
 
 This repository contains teaching materials for **Econometric Theory and Practice I**.
 
+## Lectures
+
+- [Lecture 1: Asking Questions with Data](slides/lecture-01.qmd)
+
+## Reproducible R and Quarto environment
+
+Course examples use R and lecture slides use Quarto Reveal.js. Work from WSL with the Miniconda environment declared in [`environment.yml`](environment.yml).
+
+```bash
+source "$HOME/miniconda3/etc/profile.d/conda.sh"
+conda env create --file environment.yml
+conda activate topics-econometrics
+quarto check
+```
+
+If the environment already exists, synchronize it after changes with:
+
+```bash
+conda env update --name topics-econometrics --file environment.yml --prune
+```
+
+Render the reusable example deck from the repository root:
+
+```bash
+./scripts/render-slides.sh
+```
+
+For live editing and browser refresh:
+
+```bash
+conda run --name topics-econometrics quarto preview slides/template.qmd
+```
+
+The shared 16:9 theme uses a clean white canvas with coral-red, charcoal, and warm-grey accents. Equations use bundled Latin Modern Math for a consistent Computer Modern–style appearance without a network dependency. Its Reveal.js techniques build on Emil Hvitfeldt's [Creating Stunning Presentations with Quarto](https://emilhvitfeldt.github.io/talk-jsm-stunning-presentations/#/revealjs-api). Copy `slides/template.qmd` for a new lecture and keep common styling in `slides/theme/course.scss`.
+
 ## Course source
 
 The initial course context comes from the Google Doc [Syllabus (2026/27) – Swapnil Singh](https://docs.google.com/document/d/1Hd96R5cFeWp88_j5khsMh3OnWdnjoY2MtuhkvKZpSxM). The textbook, lecture materials, and problem sets will be added as they become available.

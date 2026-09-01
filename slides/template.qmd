@@ -1,0 +1,192 @@
+---
+title: "Lecture XX: A Clear Econometric Question"
+subtitle: "Econometric Theory and Practice I"
+author: "Swapnil Singh"
+date: "2026-09-01"
+date-format: "D MMMM YYYY"
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+library(ggplot2)
+
+set.seed(2026)
+
+course_red <- "#E85D4A"
+course_charcoal <- "#242424"
+
+theme_set(
+  theme_minimal(base_size = 18) +
+    theme(
+      plot.title = element_text(
+        colour = course_charcoal,
+        face = "bold"
+      ),
+      panel.grid.minor = element_blank(),
+      plot.background = element_rect(
+        fill = "transparent",
+        colour = NA
+      )
+    )
+)
+```
+
+## Today
+
+::: {.key-idea}
+**Central question:** What do we learn from the conditional relationship between an outcome and a regressor?
+:::
+
+::: {.incremental}
+
+- Translate an economic question into an estimand.
+- Inspect the data before estimating a model.
+- Interpret a regression coefficient in context.
+- Separate statistical evidence from an economic claim.
+
+:::
+
+::: {.notes}
+Use this slide to state the destination before introducing notation. The list is incremental so each goal can be discussed separately.
+:::
+
+## From a question to an estimand
+
+::: columns
+::: {.column width="48%"}
+
+### Economic question
+
+How does fuel efficiency vary with vehicle weight, holding horsepower fixed?
+
+:::
+
+::: {.column width="48%"}
+
+### Statistical object
+
+$$
+E[\text{mpg}_i \mid \text{wt}_i, \text{hp}_i]
+= \beta_0 + \beta_1\text{wt}_i + \beta_2\text{hp}_i.
+$$
+
+:::
+:::
+
+::: {.definition .fragment}
+The coefficient $\beta_1$ is a **conditional association**. A causal interpretation requires additional assumptions and a credible design.
+:::
+
+## Build the model one line at a time
+
+```{r}
+#| label: fit-model
+#| echo: true
+#| code-line-numbers: "1|2|3"
+#| output-location: fragment
+
+model <- lm(mpg ~ wt + hp, data = mtcars)
+estimates <- coef(summary(model))
+round(estimates, 3)
+```
+
+::: {.small-note}
+The highlighted lines advance with the slide. Press <kbd>Space</kbd> or the right arrow to move through them.
+:::
+
+## Code beside its output
+
+```{r}
+#| label: plot-data
+#| echo: true
+#| output-location: column-fragment
+#| fig-width: 7
+#| fig-height: 5
+
+ggplot(mtcars, aes(wt, mpg)) +
+  geom_point(
+    colour = course_red,
+    size = 3,
+    alpha = 0.82
+  ) +
+  geom_smooth(
+    method = "lm",
+    se = FALSE,
+    colour = course_charcoal,
+    linewidth = 1.2
+  ) +
+  labs(
+    title = "Fuel efficiency falls as weight rises",
+    x = "Weight (1,000 lb)",
+    y = "Miles per gallon"
+  )
+```
+
+## A compact regression table
+
+```{r}
+#| label: coefficient-table
+#| echo: false
+#| tbl-cap: "OLS estimates using the built-in mtcars data"
+
+coefficient_table <- broom::tidy(model, conf.int = TRUE)
+coefficient_table <- subset(
+  coefficient_table,
+  term != "(Intercept)",
+  select = c(term, estimate, std.error, conf.low, conf.high)
+)
+names(coefficient_table) <- c(
+  "Term", "Estimate", "Std. error", "CI low", "CI high"
+)
+coefficient_table[-1] <- lapply(coefficient_table[-1], round, 3)
+
+knitr::kable(coefficient_table, align = c("l", "r", "r", "r", "r"))
+```
+
+::: {.notes}
+Ask students to interpret the weight estimate in the data's original units before discussing uncertainty.
+:::
+
+## Check the interpretation
+
+::: {.exercise}
+**Think–pair–share (2 minutes).** Write one sentence interpreting the coefficient on `wt`. State the comparison, units, and what is held fixed.
+:::
+
+::: {.answer .fragment}
+Among cars with the same horsepower, an additional 1,000 lb of weight is associated with the estimated change in miles per gallon shown in the table.
+:::
+
+## Useful modes while presenting
+
+::: columns
+::: {.column width="48%"}
+
+- <kbd>S</kbd>: speaker view and notes
+- <kbd>O</kbd>: slide overview
+- <kbd>F</kbd>: full screen
+- <kbd>B</kbd>: pause with a black screen
+
+:::
+
+::: {.column width="48%"}
+
+- Use fragments to reveal an argument.
+- Use line highlighting to walk through R.
+- Use the chalkboard for live annotation.
+- Use `.scrollable` only for unavoidable overflow.
+
+:::
+:::
+
+## Takeaways {.section-slide background-color="#E85D4A"}
+
+Good econometrics slides make the chain visible:
+
+**question → estimand → code → evidence → interpretation**
+
+::: {.notes}
+End by returning to the central question and asking what changed between the unconditional plot and the conditional regression.
+:::

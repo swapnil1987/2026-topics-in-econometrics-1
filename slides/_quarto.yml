@@ -1,0 +1,50 @@
+project:
+  type: default
+  output-dir: _site
+  render:
+    - template.qmd
+    - lecture-01.qmd
+  resources:
+    - theme/fonts/latinmodern-math.otf
+    - theme/fonts/GUST-FONT-LICENSE.txt
+
+format:
+  revealjs:
+    theme:
+      - default
+      - theme/course.scss
+    include-in-header:
+      - theme/math-font.html
+    html-math-method: mathml
+    width: 1600
+    height: 900
+    margin: 0.06
+    center: false
+    controls: true
+    progress: true
+    slide-number: c/t
+    transition: fade
+    background-transition: fade
+    navigation-mode: linear
+    menu: true
+    chalkboard: true
+    preview-links: auto
+    code-copy: true
+    code-line-numbers: true
+    code-overflow: wrap
+    highlight-style: github
+    auto-stretch: false
+
+execute:
+  echo: true
+  warning: false
+  message: false
+  freeze: auto
+
+knitr:
+  opts_chunk:
+    dev: svg
+    fig.align: center
+    out.width: "92%"
+
+editor: source

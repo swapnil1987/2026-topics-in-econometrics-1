@@ -1,0 +1,22 @@
+name: topics-econometrics
+
+channels:
+  - conda-forge
+  - nodefaults
+
+dependencies:
+  - r-base=4.4
+  - quarto>=1.6,<2
+  - r-rmarkdown>=2.29
+  - r-knitr>=1.49
+  - r-ggplot2>=3.5
+  - r-dplyr>=1.1
+  - r-tidyr>=1.3
+  - r-broom>=1.0
+  - r-fixest>=0.12
+  - r-modelsummary>=2.2
+  - r-patchwork>=1.3
+  - r-scales>=1.3
+  - r-here>=1.0
+  - r-svglite>=2.1
+  - r-languageserver>=0.3

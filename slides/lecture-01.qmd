@@ -1,0 +1,1673 @@
+---
+title: "Lecture 1: Asking Questions with Data"
+subtitle: "Economic questions, data, and the probability toolkit"
+author: "Swapnil Singh"
+date: "2026-09-01"
+date-format: "D MMMM YYYY"
+footer: "Topics in Econometrics I · Lecture 1"
+knitr:
+  opts_chunk:
+    out.width: "80%"
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+library(ggplot2)
+
+set.seed(2026)
+
+course_red <- "#E85D4A"
+course_red_dark <- "#B83D2F"
+course_charcoal <- "#242424"
+course_grey <- "#DEDBD6"
+course_pale <- "#FBE9E5"
+
+theme_set(
+  theme_minimal(base_size = 18) +
+    theme(
+      plot.title = element_text(
+        colour = course_charcoal,
+        face = "bold"
+      ),
+      plot.subtitle = element_text(colour = "#68645F"),
+      panel.grid.minor = element_blank(),
+      strip.text = element_text(face = "bold"),
+      plot.background = element_rect(fill = "transparent", colour = NA)
+    )
+)
+
+# Simulated school-district data: the data-generating process is known here.
+n_districts <- 240
+school_data <- data.frame(
+  district = seq_len(n_districts),
+  advantage = rnorm(n_districts)
+)
+school_data$class_size <- 23 - 2.2 * school_data$advantage +
+  rnorm(n_districts, sd = 1.8)
+school_data$test_score <- 665 - 0.7 * school_data$class_size +
+  11 * school_data$advantage + rnorm(n_districts, sd = 5.5)
+school_data$advantage_group <- cut(
+  school_data$advantage,
+  breaks = quantile(school_data$advantage, probs = c(0, 1 / 3, 2 / 3, 1)),
+  include.lowest = TRUE,
+  labels = c("Lower", "Middle", "Higher")
+)
+
+# A small illustrative panel.
+panel_data <- expand.grid(
+  year = 2019:2023,
+  city = c("Aster", "Birch", "Cedar", "Dover", "Elm", "Flint")
+)
+city_effect <- c(Aster = 6, Birch = 2, Cedar = -2, Dover = 4, Elm = -5, Flint = 0)
+panel_data$ridership <- 54 + city_effect[panel_data$city] +
+  2.2 * (panel_data$year - 2019) + rnorm(nrow(panel_data), sd = 1.8)
+
+# Objects used for probability illustrations.
+failure_distribution <- data.frame(
+  failures = 0:4,
+  probability = c(0.80, 0.10, 0.06, 0.03, 0.01)
+)
+
+commute_joint <- data.frame(
+  Weather = c("Rain", "No rain", "Total"),
+  `Long commute` = c(0.15, 0.07, 0.22),
+  `Short commute` = c(0.15, 0.63, 0.78),
+  Total = c(0.30, 0.70, 1.00),
+  check.names = FALSE
+)
+```
+
+## Before we begin
+
+::: {.key-idea}
+**Econometrics is disciplined learning from imperfect data.**
+
+We will keep asking: *What can the data tell us—and what must come from assumptions?*
+:::
+
+::: {.incremental}
+
+- Bring a question, not merely a dataset.
+- Translate words into a measurable target.
+- Treat uncertainty as part of the answer.
+
+:::
+
+::: {.notes}
+Timing: 2 minutes. Ask for one example of a quantitative economic question from the room. Keep the answer for the final slide.
+:::
+
+## By the end, you should be able to…
+
+::: {.incremental}
+
+1. distinguish **description**, **prediction**, and **causal inference**;
+2. recognize cross-sectional, time-series, and panel data;
+3. interpret a probability distribution, mean, variance, and conditional mean;
+4. explain sampling variation, the law of large numbers, and the central limit theorem;
+5. say what extra assumptions a claim needs.
+
+:::
+
+::: {.notes}
+Timing: 2 minutes. Return to these outcomes in the exit ticket.
+:::
+
+## Part I · Economic questions {.section-slide background-color="#E85D4A"}
+
+Good analysis begins before the first line of code.
+
+::: {.notes}
+Clock: 00:00–00:35, including the opening and a four-minute design activity.
+:::
+
+## Some questions
+
+::: columns
+::: {.column width="48%"}
+
+### Education
+
+How much would smaller classes improve achievement?
+
+### Lending
+
+Are otherwise similar applicants treated differently by race?
+
+:::
+::: {.column width="48%"}
+
+### Public health
+
+How much would a cigarette tax reduce smoking?
+
+### Macroeconomy
+
+How fast will GDP grow next year?
+
+:::
+:::
+
+::: {.notes}
+Timing: 2 minutes. These are the four motivating questions in Chapter 1. Ask which one is different in its inferential goal: GDP forecasting is predictive; the first three are causal.
+:::
+
+## Same data, different goals
+
+::: columns
+::: {.column width="31%"}
+
+### Describe
+
+What is the average test score among districts in our data?
+
+**Summarize what we observed.**
+
+:::
+::: {.column width="31%"}
+
+### Predict
+
+For a new district with 22 students per class, what score should we expect?
+
+**Use known characteristics to forecast an outcome.**
+
+:::
+::: {.column width="31%"}
+
+### Explain a cause
+
+If a district reduced class size, how much would its score change?
+
+**Compare what would happen with and without the change.**
+
+:::
+:::
+
+::: {.key-idea .fragment}
+A model does not choose the goal. **The question does.**
+:::
+
+::: {.notes}
+Timing: 3 minutes. Use the same class-size setting for all three goals. No notation is needed yet; potential outcomes arrive on the next causal slide.
+:::
+
+## The chain of an econometric answer
+
+::: {.incremental}
+
+**Question** → What decision or comparison matters?
+
+**Estimand** → What population quantity would answer it?
+
+**Data** → What was measured, on whom, and when?
+
+**Assumptions** → Why does the calculation target the estimand?
+
+**Estimate + uncertainty** → What did this sample teach us?
+
+:::
+
+::: {.notes}
+Timing: 2 minutes. Say “estimand” slowly: the target, not the estimate. Use the distinction between a population average and a sample average.
+:::
+
+## A tempting pattern
+
+```{r}
+#| label: raw-class-size
+#| echo: false
+#| fig-width: 10
+#| fig-height: 5.7
+#| out-width: "78%"
+
+ggplot(school_data, aes(class_size, test_score)) +
+  geom_point(colour = course_red, alpha = 0.55, size = 2.4) +
+  geom_smooth(
+    method = "lm", se = FALSE,
+    colour = course_charcoal, linewidth = 1.3
+  ) +
+  labs(
+    title = "Districts with smaller classes have higher scores",
+    subtitle = "Simulated cross-sectional data",
+    x = "Students per class",
+    y = "Average test score"
+  )
+```
+
+::: {.notes}
+Timing: 2 minutes. Ask: “Does this line tell us what would happen if a district hired teachers tomorrow?” Do not reveal the simulated data-generating process yet.
+:::
+
+## What comparison do we want?
+
+For district $i$, imagine two outcomes:
+
+$$
+Y_i(1)=\text{score with a smaller class},\qquad
+Y_i(0)=\text{score without it}.
+$$
+
+::: {.definition .fragment}
+The individual causal effect is $Y_i(1)-Y_i(0)$. The average causal effect is
+
+$$\operatorname{ATE}=E[Y_i(1)-Y_i(0)].$$
+:::
+
+::: {.key-idea .fragment}
+**The missing counterfactual:** for the same district at the same moment, we observe only one of these two outcomes—never both.
+:::
+
+::: {.notes}
+Timing: 3 minutes. Call this the missing counterfactual, not a missing-data problem that software can simply fill in.
+:::
+
+## Why random assignment is powerful
+
+::: columns
+::: {.column width="46%"}
+
+### Treatment group
+
+Randomly assigned to smaller classes
+
+::: {.comparison-value}
+**Average test score**
+:::
+
+::: {.comparison-caption}
+smaller classes
+:::
+
+:::
+::: {.column width="8%"}
+
+###
+
+**vs.**
+
+:::
+::: {.column width="46%"}
+
+### Control group
+
+Randomly assigned to usual classes
+
+::: {.comparison-value}
+**Average test score**
+:::
+
+::: {.comparison-caption}
+usual classes
+:::
+
+:::
+:::
+
+::: {.key-idea .fragment}
+With successful random assignment, the groups are comparable *before* treatment. The difference between their average scores estimates the causal effect.
+:::
+
+::: {.notes}
+Timing: 2 minutes. Stress “in expectation” and “with a sufficiently large sample.” Randomization balances both observed and unobserved pre-treatment characteristics on average.
+:::
+
+## The ideal experiment is a benchmark
+
+::: {.incremental}
+
+- **Ethics:** We cannot randomly assign people to smoke.
+- **Feasibility:** A multi-year school experiment is expensive and difficult.
+- **Compliance:** Assigned treatment may differ from received treatment.
+- **External validity:** Volunteers or study sites may not represent the target population.
+
+:::
+
+::: {.key-idea .fragment}
+When an experiment is unavailable, ask: **What would the ideal experiment have compared?**
+:::
+
+::: {.notes}
+Timing: 2 minutes. Connect to the Tennessee class-size experiment mentioned in the source chapter, without dwelling on historical details.
+:::
+
+## The third variable: district advantage
+
+```{r}
+#| label: confounding-plot
+#| echo: false
+#| fig-width: 10
+#| fig-height: 5.7
+#| out-width: "78%"
+
+ggplot(school_data, aes(class_size, test_score, colour = advantage_group)) +
+  geom_point(alpha = 0.50, size = 2.2) +
+  geom_smooth(method = "lm", se = FALSE, linewidth = 1.05) +
+  scale_colour_manual(
+    values = c("Lower" = course_red_dark, "Middle" = "#8B8580", "Higher" = course_charcoal),
+    labels = c(
+      "Lower" = "Lower advantage",
+      "Middle" = "Middle advantage",
+      "Higher" = "Higher advantage"
+    ),
+    name = "District advantage"
+  ) +
+  labs(
+    title = "District advantage affects both variables",
+    subtitle = "Higher family resources → smaller classes and higher scores (simulated)",
+    x = "Students per class",
+    y = "Average test score"
+  )
+```
+
+::: {.notes}
+Timing: 2 minutes. Because these data are simulated, we know the mechanism: district advantage affects class sizes and outcomes. In real data, the mechanism must be argued and investigated.
+:::
+
+## Association is not automatically causation
+
+::: columns
+::: {.column width="44%"}
+
+$$
+\text{District advantage}
+\longrightarrow \text{Class size}
+$$
+
+$$
+\text{District advantage}
+\longrightarrow \text{Test score}
+$$
+
+:::
+::: {.column width="52%"}
+
+::: {.definition}
+A **confounder** helps determine both the treatment and the outcome, creating a comparison between unlike units.
+:::
+
+:::
+:::
+
+::: {.key-idea .fragment}
+Regression can adjust for measured differences. It cannot guarantee that every important difference was measured correctly.
+:::
+
+::: {.notes}
+Timing: 2 minutes. This is a verbal causal diagram. Avoid claiming that “controlling for everything” solves identification.
+:::
+
+## Prediction does not require causation
+
+::: {.exercise}
+You see many umbrellas outside the library. Is “umbrella use” useful for predicting rain? Does opening an umbrella cause rain?
+:::
+
+::: {.answer .fragment}
+Umbrellas can be highly predictive without being a cause of rain. Prediction needs a stable relationship; causal inference needs a credible comparison under intervention.
+:::
+
+::: {.notes}
+Timing: 1 minute. This is the chapter’s core umbrella intuition. Elicit the answer before revealing it.
+:::
+
+## Active check · Design the comparison
+
+::: {.exercise}
+**Pairs · 4 minutes**
+
+Question: *Does one additional hour of studying improve the next econometrics test score?*
+
+1. State the treatment and outcome.
+2. Describe an ideal randomized experiment.
+3. Name one practical or ethical problem.
+4. What would a purely predictive version of the question be?
+:::
+
+::: {.notes}
+Timing: 4 minutes for pairs. Listen for treatment versions: “one hour” must be defined. Note spillovers and noncompliance if students raise them.
+:::
+
+## Design check · Debrief
+
+::: {.answer}
+
+- **Treatment:** a defined additional hour of study support before the test.
+- **Outcome:** score on a specified test.
+- **Ideal comparison:** randomly offer the support, then compare group means.
+- **Complications:** compliance, spillovers, heterogeneous study quality, fairness.
+- **Prediction:** “Given prior grades and study hours, what score should we expect?”
+
+:::
+
+::: {.key-idea .fragment}
+The causal and predictive questions may use the same variables—and still require different logic.
+:::
+
+::: {.notes}
+Timing: 1 minute for the debrief.
+:::
+
+## Part II · What kind of data? {.section-slide background-color="#B83D2F"}
+
+Rows and columns have histories.
+
+::: {.notes}
+Clock: 00:35–00:55, including a short classification check.
+:::
+
+## Where did the data come from?
+
+::: columns
+::: {.column width="48%"}
+
+### Experimental
+
+Treatment is assigned by a designed mechanism.
+
+**Strength:** comparability can come from randomization.
+
+:::
+::: {.column width="48%"}
+
+### Observational
+
+Behavior is recorded as it occurs through surveys, transactions, or administrative systems.
+
+**Challenge:** treatment choices are usually not random.
+
+:::
+:::
+
+::: {.small-note .fragment}
+“Observational” does not mean “bad”; it means the design burden is different.
+:::
+
+::: {.notes}
+Timing: 2 minutes. Name measurement error and selection as issues in either source; randomization does not fix a poorly measured outcome.
+:::
+
+## The shape of a dataset
+
+| Data structure | Entities | Times | Main variation |
+|---|---:|---:|---|
+| Cross-section | many | one | across entities |
+| Time series | one | many | across time |
+| Panel / longitudinal | many | many | both dimensions |
+
+::: {.key-idea .fragment}
+The data structure determines which comparisons are available—and which uncertainty calculations are credible.
+:::
+
+::: {.notes}
+Timing: 2 minutes. Introduce $n$ for entities and $T$ for periods. Mention repeated cross-sections as a fourth common structure, but do not develop it here.
+:::
+
+## Cross-section · many entities, one period
+
+```{r}
+#| label: cross-section-table
+#| echo: false
+
+school_snapshot <- school_data[c(7, 31, 88, 143, 219),
+  c("district", "test_score", "class_size", "advantage_group")]
+school_snapshot$test_score <- round(school_snapshot$test_score, 1)
+school_snapshot$class_size <- round(school_snapshot$class_size, 1)
+names(school_snapshot) <- c("District", "Test score", "Class size", "Advantage")
+
+knitr::kable(school_snapshot, align = c("r", "r", "r", "l"))
+```
+
+::: {.definition}
+Each row is a different district measured in the same period. Row order has no economic meaning.
+:::
+
+::: {.notes}
+Timing: 2 minutes. Relate to the California district data in Chapter 1: $n=420$ districts in 1999.
+:::
+
+## Time series · one entity, many periods
+
+```{r}
+#| label: time-series-plot
+#| echo: false
+#| fig-width: 10
+#| fig-height: 5.5
+
+air_data <- data.frame(
+  month = as.Date(paste0(time(AirPassengers), "-01"), format = "%Y.%m-%d"),
+  passengers = as.numeric(AirPassengers)
+)
+
+ggplot(air_data, aes(month, passengers)) +
+  geom_line(colour = course_charcoal, linewidth = 1) +
+  geom_point(colour = course_red, size = 1.1, alpha = 0.65) +
+  labs(
+    title = "One system observed repeatedly",
+    subtitle = "International airline passengers, 1949–1960 (built-in R series)",
+    x = NULL,
+    y = "Passengers (thousands)"
+  )
+```
+
+::: {.notes}
+Timing: 2 minutes. Point out trend, seasonality, and dependence across adjacent months. Time order matters, unlike row order in a cross-section.
+:::
+
+## Panel · many entities, many periods
+
+```{r}
+#| label: panel-plot
+#| echo: false
+#| fig-width: 10
+#| fig-height: 5.4
+
+ggplot(panel_data, aes(year, ridership, group = city, colour = city)) +
+  geom_line(linewidth = 0.9) +
+  geom_point(size = 2.2) +
+  scale_x_continuous(breaks = 2019:2023) +
+  scale_colour_manual(
+    values = c(course_red, course_charcoal, "#817C77", "#BC766B", "#4E4B48", "#D9A199")
+  ) +
+  labs(
+    title = "Compare cities—and compare each city with itself",
+    subtitle = "Illustrative public-transport ridership index",
+    x = NULL,
+    y = "Ridership index",
+    colour = "City"
+  )
+```
+
+::: {.notes}
+Timing: 2 minutes. Relate to the chapter’s state-by-year cigarette data: $n=48$, $T=11$, and 528 state-year observations.
+:::
+
+## Active check · Name the structure
+
+::: {.exercise}
+Classify each dataset.
+
+1. Wages of 2,000 workers surveyed in March 2026.
+2. Lithuania’s quarterly GDP from 2000 to 2025.
+3. Annual emissions for 27 EU countries from 1995 to 2025.
+4. A new sample of households surveyed every year from 2010 to 2025.
+:::
+
+::: {.answer .fragment}
+1. Cross-section · 2. Time series · 3. Panel · 4. Repeated cross-sections, unless the same households are followed.
+:::
+
+::: {.notes}
+Timing: 3 minutes. The fourth item checks whether students track entities, not merely repeated dates.
+:::
+
+## Pause · 15 minutes {.section-slide background-color="#E85D4A"}
+
+When we return: turning randomness into quantities.
+
+::: {.notes}
+Clock: 00:55–01:10. Leave this slide visible during the pause.
+:::
+
+## Part III · Probability distributions {.section-slide background-color="#E85D4A"}
+
+First describe the possible values and how probability is distributed across them.
+
+::: {.notes}
+Clock: 01:10–01:35.
+:::
+
+## Why probability appears in econometrics
+
+We observe one sample, but a different sample would give a different answer.
+
+::: {.incremental}
+
+- Which outcomes were possible?
+- How frequently would each occur in repeated sampling?
+- How much does an estimate vary across samples?
+- Is the observed estimate surprising under a proposed model?
+
+:::
+
+::: {.key-idea .fragment}
+Probability connects the dataset we have to the samples we might have drawn.
+:::
+
+::: {.notes}
+Timing: 2 minutes. Distinguish empirical uncertainty from vagueness. The model describes a repeatable sampling thought experiment.
+:::
+
+## Outcome → random variable
+
+::: columns
+::: {.column width="48%"}
+
+### Random process
+
+A student commutes to campus.
+
+Possible outcomes include 14.2, 19.7, or 31.4 minutes.
+
+:::
+::: {.column width="48%"}
+
+### Numerical summary
+
+Let $Y$ be commute time in minutes.
+
+$Y$ is a **random variable** because its realized value is not known beforehand.
+
+:::
+:::
+
+::: {.key-idea .fragment}
+**Two types:** discrete random variables have countable values; continuous random variables can take any value in an interval.
+:::
+
+::: {.notes}
+Timing: 2 minutes. Emphasize that the random variable is a mapping from outcomes to numbers; it is not “a variable with errors.”
+:::
+
+## A discrete probability distribution
+
+```{r}
+#| label: failure-distribution-plot
+#| echo: false
+#| fig-width: 9.5
+#| fig-height: 5.6
+#| out-width: "75%"
+
+ggplot(failure_distribution, aes(failures, probability)) +
+  geom_col(fill = course_red, width = 0.68) +
+  geom_text(
+    aes(label = scales::percent(probability, accuracy = 1)),
+    vjust = -0.35,
+    colour = course_charcoal,
+    size = 6
+  ) +
+  scale_x_continuous(breaks = 0:4) +
+  scale_y_continuous(
+    limits = c(0, 0.90),
+    labels = scales::percent_format()
+  ) +
+  labs(
+    title = "Possible network failures and their probabilities",
+    x = "Number of failures, M",
+    y = "Probability"
+  )
+```
+
+::: {.notes}
+Timing: 2 minutes. Check that probabilities are nonnegative and sum to one. This adapts the wireless-network example in Chapter 2.
+:::
+
+## Bernoulli distribution · yes or no
+
+Let $D$ record whether an event occurs:
+
+$$
+D\in\{0,1\},\qquad
+\Pr(D=1)=p,\qquad
+\Pr(D=0)=1-p.
+$$
+
+::: columns
+::: {.column width="48%"}
+
+### $D=1$
+
+The event occurs: employed, loan denied, treatment received.
+
+:::
+::: {.column width="48%"}
+
+### $D=0$
+
+The event does not occur: not employed, approved, untreated.
+
+:::
+:::
+
+::: {.key-idea .fragment}
+One number, $p$, completely describes a Bernoulli distribution.
+:::
+
+::: {.notes}
+Timing: 2 minutes. Keep this slide about the distribution only. Its mean and variance are derived after those concepts have been defined.
+:::
+
+## Continuous probability distributions
+
+A continuous variable can take any value in an interval. Its distribution is described by a **density**, $f_Y(y)$.
+
+$$
+\Pr(a\le Y\le b)=\int_a^b f_Y(y)\,dy.
+$$
+
+::: columns
+::: {.column width="48%"}
+
+### Probability is area
+
+The total area under the density is one.
+
+:::
+::: {.column width="48%"}
+
+### A point has no area
+
+For a continuous variable, $\Pr(Y=y)=0$ at any exact value.
+
+:::
+:::
+
+::: {.notes}
+Timing: 2 minutes. Contrast a density height with a probability. The next two slides show two continuous distributions with very different shapes.
+:::
+
+## Normal distribution · symmetric and continuous
+
+```{r}
+#| label: normal-distribution-plot
+#| echo: false
+#| fig-width: 10
+#| fig-height: 5.2
+#| out-width: "74%"
+
+normal_grid <- data.frame(score = seq(35, 105, length.out = 600))
+normal_grid$density <- dnorm(normal_grid$score, mean = 70, sd = 10)
+normal_grid$inside <- normal_grid$score >= 70 - 1.96 * 10 &
+  normal_grid$score <= 70 + 1.96 * 10
+
+ggplot(normal_grid, aes(score, density)) +
+  geom_area(
+    data = subset(normal_grid, inside),
+    fill = course_red,
+    alpha = 0.45
+  ) +
+  geom_line(colour = course_charcoal, linewidth = 1.2) +
+  geom_vline(xintercept = 70, linetype = "dashed", colour = course_red_dark) +
+  labs(
+    title = "A bell shape centered at the mean",
+    subtitle = "For N(70, 10²), 95% of probability lies between 50.4 and 89.6",
+    x = "Test score",
+    y = "Density"
+  )
+```
+
+::: {.notes}
+Timing: 3 minutes. Introduce the notation $N(\mu,\sigma^2)$. The normal distribution is symmetric, has skewness zero, and kurtosis three.
+:::
+
+## Log-normal distribution · positive and right-skewed
+
+```{r}
+#| label: lognormal-distribution-plot
+#| echo: false
+#| fig-width: 10
+#| fig-height: 5.2
+#| out-width: "74%"
+
+lognormal_grid <- data.frame(
+  minutes = seq(5, 50, length.out = 600)
+)
+lognormal_grid$density <- dlnorm(
+  lognormal_grid$minutes,
+  meanlog = log(20),
+  sdlog = 0.35
+)
+lognormal_grid$inside <- lognormal_grid$minutes >= 15 &
+  lognormal_grid$minutes <= 25
+
+ggplot(lognormal_grid, aes(minutes, density)) +
+  geom_area(
+    data = subset(lognormal_grid, inside),
+    fill = course_red,
+    alpha = 0.50
+  ) +
+  geom_line(colour = course_charcoal, linewidth = 1.2) +
+  labs(
+    title = "A long right tail represents occasional large values",
+    subtitle = "Shaded: probability that commute time is between 15 and 25 minutes",
+    x = "Commute time (minutes)",
+    y = "Density"
+  )
+```
+
+::: {.notes}
+Timing: 3 minutes. A log-normal variable is positive because its logarithm is normal. Earnings, prices, firm size, and durations are often right-skewed, although log-normality still must be checked.
+:::
+
+## Distribution families we will meet
+
+| Distribution | Values | Shape and later role |
+|---|---|---|
+| Bernoulli | $0$ or $1$ | Binary outcomes and treatment indicators |
+| Normal | $(-\infty,\infty)$ | Symmetric benchmark; approximates many averages |
+| Log-normal | $(0,\infty)$ | Right-skewed model for positive quantities |
+| Chi-squared, $\chi_m^2$ | $[0,\infty)$ | Sums of squared standard normals |
+| Student $t_m$ | $(-\infty,\infty)$ | Bell-shaped with heavier tails than normal |
+| $F_{m,n}$ | $[0,\infty)$ | Ratios of scaled chi-squared variables |
+
+::: {.small-note}
+The degrees of freedom $m$ and $n$ control the shapes of $\chi^2$, $t$, and $F$ distributions.
+:::
+
+::: {.notes}
+Timing: 3 minutes. The last three distributions support hypothesis tests later in the course. For now, students should recognize their support, shape, and names.
+:::
+
+## Part IV · Moments and relationships {.section-slide background-color="#B83D2F"}
+
+Now summarize a distribution’s center, spread, shape, and co-movement.
+
+::: {.notes}
+Clock: 01:35–02:00.
+:::
+
+## Mean · the center of a distribution
+
+The **mean**, **expected value**, and **expectation** are the same population quantity, denoted $\mu_Y=E(Y)$.
+
+::: columns
+::: {.column width="48%"}
+
+### Discrete $Y$
+
+$$
+E(Y)=\sum_y y\Pr(Y=y)
+$$
+
+:::
+::: {.column width="48%"}
+
+### Continuous $Y$
+
+$$
+E(Y)=\int_{-\infty}^{\infty} y f_Y(y)\,dy
+$$
+
+:::
+:::
+
+::: {.definition .fragment}
+The mean is the **probability-weighted average** of all possible values—the long-run average across repeated draws.
+:::
+
+::: {.notes}
+Timing: 3 minutes. This is the first moment. Stress that a mean need not be a possible realization and that both formulas express the same idea.
+:::
+
+## Mean · a worked discrete example
+
+For network failures $M$,
+
+$$
+E(M)=\sum_m m\Pr(M=m)
+$$
+
+$$
+=0(0.80)+1(0.10)+2(0.06)+3(0.03)+4(0.01)=\mathbf{0.35}.
+$$
+
+::: {.key-idea .fragment}
+$E(M)=0.35$ does **not** predict 0.35 failures in one session. It is the average over many sessions.
+:::
+
+::: {.notes}
+Timing: 2 minutes. Ask whether 0.35 must be a possible realization. For a Bernoulli variable, use the same formula to derive $E(D)=p$.
+:::
+
+## Variance · how far outcomes wander
+
+$$
+\operatorname{Var}(Y)=E[(Y-\mu_Y)^2],
+\qquad
+\operatorname{SD}(Y)=\sqrt{\operatorname{Var}(Y)}.
+$$
+
+::: columns
+::: {.column width="48%"}
+
+### Variance
+
+Squares deviations, so large misses matter more.
+
+Units are squared.
+
+:::
+::: {.column width="48%"}
+
+### Standard deviation
+
+Returns to the original units of $Y$.
+
+Think “typical scale of variation,” not a guaranteed distance.
+
+:::
+:::
+
+::: {.key-idea .fragment}
+For a Bernoulli variable, $E(D)=p$ and $\operatorname{Var}(D)=p(1-p)$.
+:::
+
+::: {.notes}
+Timing: 2 minutes. For the network example, variance is about 0.648 and SD about 0.80 failures.
+:::
+
+## What happens when units change?
+
+If $Z=a+bY$, then
+
+$$
+E(Z)=a+bE(Y),
+$$
+
+$$
+\operatorname{Var}(Z)=b^2\operatorname{Var}(Y),
+\qquad
+\operatorname{SD}(Z)=|b|\operatorname{SD}(Y).
+$$
+
+::: {.exercise .fragment}
+If temperature in Celsius has mean $20$ and SD $4$, what are the mean and SD in Fahrenheit, where $F=32+1.8C$?
+:::
+
+::: {.answer .fragment}
+$E(F)=68$ and $\operatorname{SD}(F)=7.2$. Adding 32 moves the center but does not change the spread.
+:::
+
+::: {.notes}
+Timing: 3 minutes. Pause for mental arithmetic before revealing. Stress the absolute value for a negative scale factor.
+:::
+
+## Skewness · asymmetry
+
+$$
+\operatorname{Skew}(Y)=
+\frac{E[(Y-\mu_Y)^3]}{\sigma_Y^3}.
+$$
+
+::: columns
+::: {.column width="31%"}
+
+### Negative
+
+Longer left tail
+
+:::
+::: {.column width="31%"}
+
+### Zero
+
+Symmetric distribution
+
+:::
+::: {.column width="31%"}
+
+### Positive
+
+Longer right tail
+
+:::
+:::
+
+::: {.key-idea .fragment}
+Cubing preserves the sign of deviations; dividing by $\sigma_Y^3$ removes the units.
+:::
+
+::: {.notes}
+Timing: 2 minutes. A symmetric distribution has skewness zero, but zero skewness alone does not guarantee full symmetry.
+:::
+
+## Kurtosis · tail weight
+
+$$
+\operatorname{Kurt}(Y)=
+\frac{E[(Y-\mu_Y)^4]}{\sigma_Y^4}.
+$$
+
+::: {.incremental}
+
+- Fourth powers give extreme deviations substantial weight.
+- Larger kurtosis means more probability in the tails and greater outlier risk.
+- The normal distribution has kurtosis $3$.
+- A distribution with kurtosis above $3$ is **heavy-tailed** relative to the normal.
+
+:::
+
+::: {.notes}
+Timing: 2 minutes. Use the book’s Wall Street example: a 21-standard-deviation event is essentially impossible under a constant-variance normal model, revealing much heavier empirical tails.
+:::
+
+## Same center and spread, different shapes
+
+```{r}
+#| label: distribution-shapes-plot
+#| echo: false
+#| fig-width: 11
+#| fig-height: 4.9
+#| out-width: "82%"
+
+standardize_draws <- function(values) {
+  as.numeric((values - mean(values)) / sd(values))
+}
+
+shape_data <- rbind(
+  data.frame(
+    value = standardize_draws(rnorm(12000)),
+    family = "Normal\nsymmetric; kurtosis 3"
+  ),
+  data.frame(
+    value = standardize_draws(rlnorm(12000, sdlog = 0.55)),
+    family = "Log-normal\nright-skewed"
+  ),
+  data.frame(
+    value = standardize_draws(rt(12000, df = 5)),
+    family = "Student t₅\nsymmetric; heavy tails"
+  )
+)
+shape_data$family <- factor(
+  shape_data$family,
+  levels = c(
+    "Normal\nsymmetric; kurtosis 3",
+    "Log-normal\nright-skewed",
+    "Student t₅\nsymmetric; heavy tails"
+  )
+)
+
+ggplot(shape_data, aes(value)) +
+  geom_density(fill = course_pale, colour = course_red_dark, linewidth = 0.9) +
+  facet_wrap(~family, nrow = 1) +
+  coord_cartesian(xlim = c(-4, 6), ylim = c(0, 0.55)) +
+  labs(
+    title = "All three are standardized to mean 0 and standard deviation 1",
+    x = "Standardized value",
+    y = "Density"
+  )
+```
+
+::: {.notes}
+Timing: 3 minutes. Equal means and variances do not imply equal distributions. Connect the right-skewed panel to earnings and the heavy-tailed panel to financial returns.
+:::
+
+## Standardization gives a common scale
+
+$$
+Z=\frac{Y-\mu_Y}{\sigma_Y}
+$$
+
+::: columns
+::: {.column width="48%"}
+
+### Center
+
+$E(Z)=0$
+
+:::
+::: {.column width="48%"}
+
+### Scale
+
+$\operatorname{Var}(Z)=1$
+
+:::
+:::
+
+::: {.definition .fragment}
+A $z$-score says how many standard deviations an observation lies above or below the mean.
+:::
+
+::: {.notes}
+Timing: 2 minutes. Standardization changes units, not rank. It will reappear in the CLT and test statistics.
+:::
+
+## Moments · a compact map
+
+| Quantity | Formula | What it describes |
+|---|---|---|
+| Mean | $E(Y)$ | Center |
+| Variance | $E[(Y-\mu_Y)^2]$ | Spread |
+| Skewness | $E[(Y-\mu_Y)^3]/\sigma_Y^3$ | Asymmetry |
+| Kurtosis | $E[(Y-\mu_Y)^4]/\sigma_Y^4$ | Tail weight |
+
+::: {.key-idea .fragment}
+Mean and variance do not fully describe a distribution; shape and tail behavior can matter economically.
+:::
+
+::: {.notes}
+Timing: 2 minutes. The raw $r$th moment is $E(Y^r)$. Variance, skewness, and kurtosis use centered or standardized moments.
+:::
+
+## From one variable to two {.section-slide background-color="#B83D2F"}
+
+Joint and conditional distributions describe economic relationships.
+
+::: {.notes}
+Continue Part IV. The mean and variance are now defined, so conditional means and covariance have a clear foundation.
+:::
+
+## Joint and marginal distributions
+
+```{r}
+#| label: commute-joint-table
+#| echo: false
+
+commute_display <- commute_joint
+for (column in 2:4) {
+  commute_display[[column]] <- sprintf("%.2f", commute_display[[column]])
+}
+knitr::kable(commute_display, align = c("l", "r", "r", "r"))
+```
+
+::: {.incremental}
+
+- Interior cells are **joint probabilities**.
+- Row and column totals are **marginal probabilities**.
+- All four joint probabilities sum to one.
+
+:::
+
+::: {.notes}
+Timing: 2 minutes. This adapts the rainy-commute table in Chapter 2. Ask students to locate Pr(rain and long commute) and Pr(long commute).
+:::
+
+## Conditioning changes the reference group
+
+What is the probability of a long commute **given rain**?
+
+$$
+\Pr(\text{long}\mid\text{rain})
+=\frac{\Pr(\text{long and rain})}{\Pr(\text{rain})}
+=\frac{0.15}{0.30}=0.50.
+$$
+
+::: {.definition .fragment}
+Conditioning restricts attention to cases where the condition is true, then renormalizes probabilities within that group.
+:::
+
+::: {.notes}
+Timing: 3 minutes. The denominator is the new reference population. Contrast Pr(long | rain) with Pr(rain | long).
+:::
+
+## Independence is a strong statement
+
+$X$ and $Y$ are independent when learning $X$ does not change the distribution of $Y$:
+
+$$
+\Pr(Y=y\mid X=x)=\Pr(Y=y)
+$$
+
+or, equivalently,
+
+$$
+\Pr(X=x,Y=y)=\Pr(X=x)\Pr(Y=y).
+$$
+
+::: {.exercise .fragment}
+Are rain and commute length independent in the table?
+:::
+
+::: {.answer .fragment}
+No. $\Pr(\text{long}\mid\text{rain})=0.50$, while $\Pr(\text{long})=0.22$.
+:::
+
+::: {.notes}
+Timing: 2 minutes. Independence concerns the full distribution, not merely a zero correlation.
+:::
+
+## Conditional mean · center within a group
+
+$$
+m(x)=E(Y\mid X=x)
+$$
+
+::: {.incremental}
+
+- It is the mean of $Y$ among cases with $X=x$.
+- It summarizes how the center of $Y$ changes with information $X$.
+- It can vary with $x$, tracing a **conditional mean function**.
+
+:::
+
+::: {.key-idea .fragment}
+Regression is, at its core, a way to model a conditional mean.
+:::
+
+::: {.notes}
+Timing: 2 minutes. This prepares the language for later OLS. Mention in delivery, but do not prove, that the conditional mean minimizes mean squared prediction error.
+:::
+
+## The law of iterated expectations
+
+Suppose an old network averages $0.56$ failures and a new one averages $0.14$. Each is used half the time.
+
+$$
+E(M)=E[E(M\mid A)]
+$$
+
+::: {.fragment}
+$$
+=0.56(0.50)+0.14(0.50)=0.35.
+$$
+:::
+
+::: {.key-idea .fragment}
+The overall mean is a weighted average of group-specific means.
+:::
+
+::: {.notes}
+Timing: 2 minutes. Ask what changes if 80% of sessions use the new network. The conditional means stay fixed; the overall mean changes through the weights.
+:::
+
+## Covariance · unscaled co-movement
+
+$$
+\operatorname{Cov}(X,Y)=E[(X-\mu_X)(Y-\mu_Y)]
+$$
+
+::: columns
+::: {.column width="48%"}
+
+**Positive:** above-average $X$ tends to accompany above-average $Y$.
+
+:::
+::: {.column width="48%"}
+
+**Negative:** above-average $X$ tends to accompany below-average $Y$.
+
+:::
+:::
+
+::: {.definition .fragment}
+Covariance is positive when $X$ and $Y$ tend to deviate from their means in the same direction. Its units are the units of $X$ multiplied by the units of $Y$.
+:::
+
+::: {.notes}
+Timing: 2 minutes. Use the signs of the centered products for intuition.
+:::
+
+## Correlation · unit-free linear co-movement
+
+$$
+\operatorname{Corr}(X,Y)=
+\frac{\operatorname{Cov}(X,Y)}{\sigma_X\sigma_Y},
+\qquad -1\le\operatorname{Corr}(X,Y)\le1.
+$$
+
+::: {.incremental}
+
+- Dividing by both standard deviations removes the units.
+- The sign gives the direction of **linear** co-movement.
+- The magnitude describes the strength of that linear pattern.
+- Correlation does not by itself identify a causal effect.
+
+:::
+
+::: {.notes}
+Timing: 2 minutes. Perfect correlation of plus or minus one means all probability lies on a line with positive or negative slope; zero correlation need not mean independence.
+:::
+
+## Zero correlation can hide a relationship
+
+```{r}
+#| label: nonlinear-correlation
+#| echo: false
+#| fig-width: 9.8
+#| fig-height: 5.4
+
+x_nonlinear <- runif(500, -2, 2)
+nonlinear_data <- data.frame(
+  x = x_nonlinear,
+  y = x_nonlinear^2 + rnorm(500, sd = 0.35)
+)
+nonlinear_correlation <- cor(nonlinear_data$x, nonlinear_data$y)
+
+ggplot(nonlinear_data, aes(x, y)) +
+  geom_point(colour = course_red, alpha = 0.45, size = 2) +
+  geom_smooth(method = "loess", se = FALSE, colour = course_charcoal, linewidth = 1.2) +
+  labs(
+    title = "A strong relationship with almost zero correlation",
+    subtitle = paste0("Simulated correlation = ", round(nonlinear_correlation, 2)),
+    x = "X",
+    y = "Y = X² + noise"
+  )
+```
+
+::: {.notes}
+Timing: 2 minutes. Correlation captures linear co-movement. Independence implies zero correlation under finite moments, but zero correlation does not imply independence.
+:::
+
+## Active check · Conditional or causal?
+
+::: {.exercise}
+A wage dataset shows
+
+$$E(\text{wage}\mid\text{degree}=1) - E(\text{wage}\mid\text{degree}=0)=€6.40/\text{hour}.$$
+
+In pairs, write:
+
+1. one sentence this number **does** justify;
+2. one causal sentence it **does not yet** justify;
+3. two variables that might make the groups unlike.
+:::
+
+::: {.notes}
+Timing: 3 minutes plus a 1-minute debrief. Candidate confounders: prior ability, family resources, field, labor-market experience, location. Avoid suggesting that adding a long control list automatically identifies the degree effect.
+:::
+
+## Pause · 5 minutes {.section-slide background-color="#E85D4A"}
+
+Final block: why averages become reliable.
+
+::: {.notes}
+Clock: 02:00–02:05.
+:::
+
+## Part V · From samples to populations {.section-slide background-color="#E85D4A"}
+
+The estimate changes when the sample changes.
+
+::: {.notes}
+Clock: 02:05–02:25; reserve 02:25–02:30 for the exit ticket and synthesis.
+:::
+
+## Population, sample, estimator, estimate
+
+::: columns
+::: {.column width="48%"}
+
+### Population target
+
+$$\mu_Y=E(Y)$$
+
+Fixed but usually unknown.
+
+:::
+::: {.column width="48%"}
+
+### Sample statistic
+
+$$\bar Y=\frac{1}{n}\sum_{i=1}^{n}Y_i$$
+
+Random before sampling; a number after the data arrive.
+
+:::
+:::
+
+::: {.definition .fragment}
+An **estimator** is the rule ($\bar Y$). An **estimate** is the realized value from this sample.
+:::
+
+::: {.notes}
+Timing: 2 minutes. This distinction is foundational for standard errors and confidence intervals.
+:::
+
+## Simple random sampling and i.i.d.
+
+We often begin with
+
+$$Y_1,\ldots,Y_n\ \text{independent and identically distributed}.$$
+
+::: {.incremental}
+
+- **Identical distribution:** each observation comes from the same population distribution.
+- **Independent:** learning one observation gives no information about another.
+
+:::
+
+::: {.small-note .fragment}
+Time series, clustered students, households, firms, and spatial data often violate simple independence. Later methods adapt the uncertainty calculation.
+:::
+
+::: {.notes}
+Timing: 2 minutes. Say explicitly that i.i.d. is a starting model, not a universal property of data.
+:::
+
+## The sample mean has a distribution
+
+Imagine repeatedly drawing samples of $n$ students and recording average commute time.
+
+::: {.incremental}
+
+- Each sample contains different students.
+- Each sample produces a different $\bar Y$.
+- The distribution of those possible averages is the **sampling distribution**.
+
+:::
+
+::: {.key-idea .fragment}
+A histogram of the observed $Y_i$ values is not the same object as the sampling distribution of $\bar Y$.
+:::
+
+::: {.notes}
+Timing: 2 minutes. The population distribution describes individuals; the sampling distribution describes an estimator across repeated samples.
+:::
+
+## What averaging buys us
+
+If $Y_1,\ldots,Y_n$ are i.i.d. with mean $\mu_Y$ and variance $\sigma_Y^2$, then
+
+$$
+E(\bar Y)=\mu_Y,
+\qquad
+\operatorname{Var}(\bar Y)=\frac{\sigma_Y^2}{n},
+\qquad
+\operatorname{SD}(\bar Y)=\frac{\sigma_Y}{\sqrt n}.
+$$
+
+::: {.key-idea .fragment}
+Four times the sample size gives half the standard deviation—not one quarter.
+:::
+
+::: {.notes}
+Timing: 3 minutes. The first equality is unbiasedness. The last quantity motivates the standard error once sigma is estimated.
+:::
+
+## Law of large numbers · destination
+
+```{r}
+#| label: lln-plot
+#| echo: false
+#| fig-width: 10
+#| fig-height: 5.5
+
+lln_draws <- rexp(500, rate = 1)
+lln_data <- data.frame(
+  n = seq_along(lln_draws),
+  running_mean = cumsum(lln_draws) / seq_along(lln_draws)
+)
+
+ggplot(lln_data, aes(n, running_mean)) +
+  geom_hline(yintercept = 1, colour = course_red, linewidth = 1.2) +
+  geom_line(colour = course_charcoal, linewidth = 0.9) +
+  annotate("text", x = 440, y = 1.10, label = "Population mean = 1", colour = course_red_dark, size = 5.5) +
+  labs(
+    title = "As the sample grows, the running average settles",
+    subtitle = "One simulated sequence from a right-skewed exponential population",
+    x = "Sample size, n",
+    y = "Running sample mean"
+  )
+```
+
+::: {.notes}
+Timing: 2 minutes. One path illustrates, but does not prove, the LLN. State the result: the probability of being far from mu becomes small as n grows under suitable conditions.
+:::
+
+## Central limit theorem · shape
+
+For large $n$,
+
+$$
+\frac{\bar Y-\mu_Y}{\sigma_Y/\sqrt n}
+\overset{d}{\approx}N(0,1).
+$$
+
+::: {.incremental}
+
+- The population itself need not be normal.
+- A skewed or discrete population can produce nearly normal averages.
+- “Large enough” depends on skewness, tails, and dependence.
+
+:::
+
+::: {.notes}
+Timing: 2 minutes. Keep convergence notation informal. The standardized average has a stable scale; the unstandardized sampling distribution collapses toward mu.
+:::
+
+## Watching the CLT work
+
+```{r}
+#| label: clt-simulation
+#| echo: false
+#| fig-width: 11
+#| fig-height: 5.6
+
+sample_sizes <- c(1, 5, 30)
+repetitions <- 5000
+
+clt_data <- do.call(rbind, lapply(sample_sizes, function(sample_size) {
+  sample_means <- replicate(
+    repetitions,
+    mean(rexp(sample_size, rate = 1))
+  )
+  data.frame(
+    z = sqrt(sample_size) * (sample_means - 1),
+    sample_size = factor(
+      paste0("n = ", sample_size),
+      levels = paste0("n = ", sample_sizes)
+    )
+  )
+}))
+
+normal_reference <- expand.grid(
+  z = seq(-4, 5, length.out = 500),
+  sample_size = factor(
+    paste0("n = ", sample_sizes),
+    levels = paste0("n = ", sample_sizes)
+  )
+)
+normal_reference$density <- dnorm(normal_reference$z)
+
+ggplot(clt_data, aes(z)) +
+  geom_density(fill = course_pale, colour = course_red_dark, linewidth = 0.9) +
+  geom_line(
+    data = normal_reference,
+    aes(z, density),
+    colour = course_charcoal,
+    linewidth = 1,
+    inherit.aes = FALSE
+  ) +
+  facet_wrap(~sample_size, nrow = 1) +
+  coord_cartesian(xlim = c(-4, 5), ylim = c(0, 0.48)) +
+  labs(
+    title = "Averages of skewed observations become approximately normal",
+    subtitle = "Red density: simulated standardized averages · Black curve: N(0,1)",
+    x = "Standardized sample average",
+    y = "Density"
+  )
+```
+
+::: {.notes}
+Timing: 3 minutes. At n=1 the standardized variable retains exponential skewness. By n=30 the approximation is useful, though not magically exact.
+:::
+
+## LLN and CLT answer different questions
+
+| Result | What it tells us | Mental image |
+|---|---|---|
+| Law of large numbers | $\bar Y$ gets close to $\mu_Y$ | the target becomes accurate |
+| Central limit theorem | the standardized error becomes approximately normal | the error gets a useful shape |
+
+::: {.key-idea .fragment}
+LLN supports consistency. CLT supports approximate probabilities, confidence intervals, and tests.
+:::
+
+::: {.notes}
+Timing: 2 minutes. This distinction is often blurred. The LLN is about concentration; the CLT is about distributional approximation.
+:::
+
+## Quick calculation · the square-root rule
+
+::: {.exercise}
+Individual monthly earnings have a standard deviation of €1,200.
+
+1. What is the standard deviation of the sample mean for $n=100$ i.i.d. workers?
+2. What sample size cuts that value in half?
+3. What assumption would be doubtful if many workers belong to the same household or firm?
+:::
+
+::: {.answer .fragment}
+1. €120. 2. $n=400$. 3. Independence; shared shocks create within-group dependence.
+:::
+
+::: {.notes}
+Timing: 3 minutes. Call the sampling SD a standard error once linked to an estimator. Leave finite-population corrections for later.
+:::
+
+## One complete econometric story
+
+::: {.incremental}
+
+**Question:** How much would a cigarette tax reduce smoking?
+
+**Estimand:** the average causal response of cigarette consumption to a tax-induced price change.
+
+**Data:** state-by-year prices, taxes, sales, and incomes—a panel.
+
+**Threat:** smoking preferences can affect both political tax choices and consumption.
+
+**Methodological need:** a design that creates credible price variation, plus uncertainty that respects the panel structure.
+
+:::
+
+::: {.notes}
+Timing: 2 minutes. This returns to Chapter 1 and previews simultaneous causality and instrumental variables without teaching them now.
+:::
+
+## Exit ticket · 3 minutes
+
+::: {.exercise}
+Choose one economic question and write four lines:
+
+1. **Goal:** description, prediction, or causation?
+2. **Target:** what population quantity would answer it?
+3. **Data:** what entities and times would you observe?
+4. **Threat:** what could make your comparison misleading?
+:::
+
+::: {.notes}
+Collect or discuss two answers. Use these to diagnose whether students distinguish a variable from an estimand and an association from a causal effect.
+:::
+
+## Takeaways {.section-slide background-color="#E85D4A"}
+
+Econometrics makes the chain visible:
+
+**question → estimand → data → assumptions → evidence → decision**
+
+::: {.notes}
+Timing: 2 minutes. Revisit the opening student question and walk it through the chain in one minute.
+:::
+
+## What to retain for Lecture 2
+
+::: {.incremental}
+
+- Conditional means describe systematic differences across groups.
+- Sample estimates vary; standard errors describe that sampling variation.
+- Large samples help, but they do not repair a bad comparison or bad measurement.
+- A causal claim needs a design, not only a coefficient.
+
+:::
+
+::: {.small-note}
+Primary course source: Stock and Watson, *Introduction to Econometrics*, Chapters 1–2 (materials supplied in `book/chapter-1-2/`). Additional examples and simulations were created for this lecture.
+:::
+
+::: {.notes}
+Optional final minute. Preview the next lecture’s move from conditional means to estimation and uncertainty.
+:::

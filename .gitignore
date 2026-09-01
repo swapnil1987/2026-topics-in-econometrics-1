@@ -1,3 +1,23 @@
+# Documentation: keep README files, ignore other Markdown notes.
+*.md
+!README.md
+
+# Generated/local content directories
+/quiz_generation/
+/book/
+
+# R and Quarto working files
+.Rhistory
+.RData
+.Ruserdata
+.Rproj.user/
+slides/.quarto/
+slides/_site/
+slides/_freeze/
+slides/**/*_cache/
+slides/**/*_files/
+*.utf8.md
+
 # Python caches
 __pycache__/
 *.py[cod]

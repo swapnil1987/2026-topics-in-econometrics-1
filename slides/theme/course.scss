@@ -1,0 +1,307 @@
+/*-- scss:defaults --*/
+
+// Minimal white/coral presentation system based on the instructor's visual
+// reference. The restrained red, charcoal, and warm-grey accents are designed
+// to remain legible on a classroom projector.
+$course-white: #ffffff;
+$course-black: #242424;
+$course-red: #e85d4a;
+$course-red-dark: #b83d2f;
+$course-red-pale: #fbe9e5;
+$course-grey: #dedbd6;
+$course-canvas: $course-white;
+$course-ink-muted: #68645f;
+
+$body-bg: $course-canvas;
+$body-color: $course-black;
+$link-color: $course-red-dark;
+$selection-bg: rgba($course-red, 0.32);
+$selection-color: $course-black;
+
+$font-family-sans-serif: "Aptos", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+$font-family-monospace: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+$presentation-heading-font: Georgia, "Times New Roman", serif;
+$presentation-heading-color: $course-black;
+$presentation-heading-font-weight: 650;
+$presentation-font-size-root: 38px;
+$presentation-line-height: 1.25;
+$presentation-h1-font-size: 2.45em;
+$presentation-h2-font-size: 1.52em;
+$presentation-h3-font-size: 1.12em;
+
+$code-block-bg: #f7f6f3;
+$code-block-border-color: $course-grey;
+$code-color: $course-black;
+$code-block-font-size: 0.62em;
+
+/*-- scss:rules --*/
+
+.reveal {
+  letter-spacing: 0.005em;
+}
+
+.reveal .slides section {
+  text-align: left;
+}
+
+.reveal h1,
+.reveal h2,
+.reveal h3 {
+  letter-spacing: -0.018em;
+  line-height: 1.08;
+  text-transform: none;
+}
+
+.reveal h2 {
+  border-bottom: 1px solid $course-grey;
+  margin-bottom: 0.55em;
+  padding-bottom: 0.18em;
+  position: relative;
+}
+
+.reveal h2::after {
+  background: $course-red;
+  bottom: -2px;
+  content: "";
+  height: 0.10em;
+  left: 0;
+  position: absolute;
+  width: 2.2em;
+}
+
+.reveal h3 {
+  color: $course-red-dark;
+}
+
+.reveal p,
+.reveal li {
+  max-width: 42em;
+}
+
+.reveal li::marker {
+  color: $course-red;
+}
+
+.reveal a {
+  font-weight: 650;
+  text-decoration-color: rgba($course-red, 0.88);
+  text-decoration-thickness: 0.12em;
+  text-underline-offset: 0.11em;
+}
+
+// Title slide ---------------------------------------------------------------
+
+#title-slide {
+  padding-top: 1.1em;
+  text-align: left;
+}
+
+#title-slide::before {
+  background: linear-gradient(
+    90deg,
+    $course-red 0 76%,
+    $course-black 76% 100%
+  );
+  border-radius: 999px;
+  content: "";
+  display: block;
+  height: 0.30em;
+  margin-bottom: 1.25em;
+  width: 5.7em;
+}
+
+#title-slide .title {
+  color: $course-black;
+  font-size: 2.65em;
+  line-height: 0.98;
+  margin-bottom: 0.30em;
+  max-width: 12em;
+}
+
+#title-slide .subtitle {
+  color: $course-red-dark;
+  font-size: 1.15em;
+  font-weight: 650;
+  margin-bottom: 1.4em;
+}
+
+#title-slide .quarto-title-author-name,
+#title-slide .date {
+  color: $course-ink-muted;
+}
+
+#title-slide .quarto-title-authors {
+  justify-content: flex-start;
+}
+
+#title-slide .quarto-title-author {
+  padding-left: 0;
+  padding-right: 1.5em;
+  text-align: left;
+}
+
+// Teaching components -------------------------------------------------------
+
+.reveal .key-idea,
+.reveal .definition,
+.reveal .exercise,
+.reveal .answer {
+  background: #f7f6f3;
+  border-left: 0.28em solid $course-red;
+  border-radius: 0.12em;
+  box-shadow: 0 0.10em 0.34em rgba($course-black, 0.07);
+  margin: 0.75em 0;
+  padding: 0.58em 0.78em;
+}
+
+.reveal .definition {
+  border-left-color: $course-black;
+}
+
+.reveal .exercise {
+  background: $course-red-pale;
+  border-left-color: $course-red;
+}
+
+.reveal .answer {
+  border-left-color: $course-black;
+}
+
+.reveal .key-idea > :first-child,
+.reveal .definition > :first-child,
+.reveal .exercise > :first-child,
+.reveal .answer > :first-child {
+  margin-top: 0;
+}
+
+.reveal .key-idea > :last-child,
+.reveal .definition > :last-child,
+.reveal .exercise > :last-child,
+.reveal .answer > :last-child {
+  margin-bottom: 0;
+}
+
+.reveal .section-slide {
+  color: $course-white;
+}
+
+.reveal .section-slide h2,
+.reveal .section-slide h3 {
+  border: 0;
+  color: $course-white;
+  font-size: 2.25em;
+  margin-top: 1.8em;
+  max-width: 11em;
+}
+
+.reveal .section-slide h2::after {
+  display: none;
+}
+
+.reveal .section-slide p {
+  color: rgba($course-white, 0.92);
+  font-size: 1.12em;
+}
+
+.text-red { color: $course-red-dark; }
+.text-charcoal { color: $course-black; }
+.text-muted { color: $course-ink-muted; }
+
+.reveal .small-note {
+  color: $course-ink-muted;
+  font-size: 0.68em;
+}
+
+.reveal .comparison-value {
+  font-size: 1.42em;
+  font-weight: 650;
+  margin: 0.20em 0 0;
+  text-align: center;
+}
+
+.reveal .comparison-value p,
+.reveal .comparison-value math {
+  margin: 0;
+  max-width: none;
+}
+
+.reveal .comparison-caption {
+  color: $course-ink-muted;
+  font-size: 0.72em;
+  margin-top: -0.20em;
+  text-align: center;
+}
+
+.reveal .comparison-caption p {
+  margin: 0;
+  max-width: none;
+}
+
+// Code, output, and tables ---------------------------------------------------
+
+.reveal div.sourceCode,
+.reveal pre.sourceCode {
+  border: 1px solid $code-block-border-color;
+  border-radius: 0.28em;
+  box-shadow: 0 0.10em 0.35em rgba($course-black, 0.07);
+}
+
+.reveal .code-with-filename .code-with-filename-file {
+  background: $course-black;
+  color: $course-white;
+  border: 0;
+  border-radius: 0.28em 0.28em 0 0;
+}
+
+.reveal .code-with-filename .code-with-filename-file pre {
+  color: inherit;
+  font-weight: 700;
+}
+
+.reveal .sourceCode.has-line-highlights .sourceCode > span:not(.highlight-line) {
+  opacity: 0.28;
+}
+
+.reveal table {
+  background: $course-white;
+  border-collapse: collapse;
+  font-size: 0.76em;
+}
+
+.reveal table thead th {
+  background: $course-black;
+  border-top: 0.18em solid $course-red;
+  color: $course-white;
+  font-weight: 700;
+}
+
+.reveal table th,
+.reveal table td {
+  border-bottom: 1px solid $course-grey;
+  padding: 0.38em 0.56em;
+}
+
+.reveal blockquote {
+  background: $course-red-pale;
+  border-left: 0.24em solid $course-red;
+  box-shadow: none;
+  color: $course-ink-muted;
+  padding: 0.45em 0.75em;
+  width: auto;
+}
+
+.reveal .slide-number {
+  background: transparent;
+  color: $course-ink-muted;
+  font-size: 0.46em;
+}
+
+.reveal .footer {
+  color: $course-ink-muted;
+}
+
+@media print {
+  .reveal .slides section {
+    background: $course-canvas !important;
+  }
+}
