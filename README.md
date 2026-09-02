@@ -20,6 +20,10 @@ This course introduces econometrics: the statistical study of economic data. We 
 
 Problem sets are not graded, but students are expected to complete them. Quiz questions will be based on the problem sets and material already covered in class. Consult the current syllabus and Moodle announcements for confirmed assessment dates, rooms, and any schedule changes.
 
+## Questions
+
+Students can ask course-related questions by creating a [GitHub issue](https://github.com/swapnil1987/2026-topics-in-econometrics-1/issues). You must be logged in to a GitHub account to create or comment on an issue.
+
 ## Lectures
 
 Open a lecture below to view the slides directly in your browser. Use the arrow keys, space bar, or swipe to move through them. **No installation or compilation is required.**
