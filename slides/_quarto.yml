@@ -4,6 +4,7 @@ project:
   render:
     - template.qmd
     - lecture-01.qmd
+    - practice-01.qmd
   resources:
     - theme/fonts/latinmodern-math.otf
     - theme/fonts/GUST-FONT-LICENSE.txt

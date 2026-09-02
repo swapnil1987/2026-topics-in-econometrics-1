@@ -1,0 +1,509 @@
+---
+title: "Practice Set 1: Questions and Solutions"
+subtitle: "Lecture 1 · Stock and Watson, Chapters 1–2"
+author: "Swapnil Singh"
+date: "2026-09-02"
+date-format: "D MMMM YYYY"
+footer: "Topics in Econometrics I · Practice Set 1"
+---
+
+## How to use this deck
+
+::: {.key-idea}
+**Attempt each question before advancing to its solution.**
+:::
+
+::: {.incremental}
+
+- Questions 1–5 build foundations.
+- Questions 6–10 combine probability tools.
+- Questions 11–15 require multi-step reasoning.
+- A calculator or R may be used for normal probabilities.
+
+:::
+
+::: {.notes}
+The deck contains 15 questions. Each question is followed by a worked solution. Questions marked “Adapted” are paraphrased from or closely inspired by the cited Stock and Watson review question or exercise.
+:::
+
+## Difficulty map
+
+| Questions | Level | Main ideas |
+|---|---|---|
+| 1–5 | Foundations | goals, designs, data, random variables |
+| 6–10 | Applications | moments, conditioning, covariance |
+| 11–15 | Challenge | dependence, sampling, LLN, CLT |
+
+
+## Foundations · Questions 1–5 {.section-slide background-color="#E85D4A"}
+
+
+::: {.notes}
+Suggested time: 20–25 minutes.
+:::
+
+## Question 1 · What is the goal? ★
+
+::: {.exercise}
+Classify each question as **descriptive**, **predictive**, or **causal**.
+
+1. What was the average commute time among surveyed students?
+2. How fast will Lithuania’s real GDP grow next year?
+3. By how much would a higher cigarette tax reduce smoking?
+4. What test score should we expect for a district with known class size and income?
+:::
+
+::: {.notes}
+Allow 2 minutes. Ask students to identify the verb that signals each inferential goal.
+:::
+
+## Solution 1 · Let the question choose the goal
+
+::: {.answer}
+1. **Descriptive:** summarize the observed students.
+2. **Predictive:** forecast an unknown future value.
+3. **Causal:** compare smoking with and without the tax change.
+4. **Predictive:** use known characteristics to forecast a score.
+:::
+
+
+## Question 2 · Design the experiment ★
+
+::: {.exercise}
+You want the causal effect of **one additional structured study hour** on the next microeconomics exam score.
+
+1. Define the treatment, outcome, and target effect.
+2. Describe an ideal randomized experiment.
+3. Give two reasons why the experiment might be imperfect in practice.
+:::
+
+::: {.small-note}
+Adapted from Stock and Watson, Chapter 1, Review Question 1.1.
+:::
+
+::: {.notes}
+Allow 4 minutes. Look for a well-defined treatment and a comparison of group averages.
+:::
+
+## Solution 2 · Randomization builds the comparison
+
+::: {.answer}
+
+- **Treatment:** access to one defined, supervised study hour.
+- **Outcome:** score on a specified exam.
+- **Target:** the average difference between each student’s score with and without the hour.
+- **Design:** randomly assign eligible students to the study hour or control, then compare mean scores.
+- **Problems:** noncompliance, spillovers, unequal study quality, fairness, or attrition.
+
+:::
+
+::: {.key-idea .fragment}
+Random assignment makes the groups comparable on average; it does not force students to comply.
+:::
+
+## Question 3 · Name the data structure:<br>cross-section, time series, or panel data? ★
+
+::: {.exercise}
+Classify each dataset.
+
+1. Wages of 1,500 workers surveyed in September 2026.
+2. Lithuania’s quarterly inflation rate from 2000 to 2025.
+3. Annual unemployment for every EU country from 2010 to 2025.
+4. A fresh sample of households surveyed every September from 2010 to 2025.
+:::
+
+## Solution 3 · Track entities and time
+
+::: {.answer}
+1. **Cross-section:** many workers, one period.
+2. **Time series:** one country, many periods.
+3. **Panel:** the same countries, many periods.
+4. **Repeated cross-sections:** many periods, but not necessarily the same households.
+:::
+
+::: {.key-idea .fragment}
+Repeated dates do not create a panel unless the same entities are followed.
+:::
+
+## Question 4 · From chance to variables ★
+
+::: {.exercise}
+Choose a student’s trip to class at random. Define:
+
+- $R=1$ if it rains and $R=0$ otherwise;
+- $B=$ number of buses missed;
+- $T=$ travel time in minutes.
+
+Which variables are discrete or continuous? Is “the trip takes more than 30 minutes” an outcome, an event, or a random variable?
+:::
+
+## Solution 4 · Values summarize outcomes
+
+::: {.answer}
+
+- $R$ is **discrete Bernoulli**: its support is $\{0,1\}$.
+- $B$ is **discrete**: its support is $\{0,1,2,\ldots\}$.
+- $T$ is **continuous** in the model: it can take any value in an interval.
+- “$T>30$” is an **event**: a set of outcomes satisfying that condition.
+
+:::
+
+## Question 5 · Two coin tosses ★★
+
+::: {.exercise}
+Let $Y$ be the number of heads in two independent tosses of a fair coin.
+
+1. Derive the probability distribution and CDF of $Y$.
+2. Compute $E(Y)$ and $\operatorname{var}(Y)$.
+:::
+
+::: {.small-note}
+Adapted from Stock and Watson, Chapter 2, Exercise 2.1.
+:::
+
+::: {.notes}
+Allow 4 minutes. Encourage students to list the four equally likely ordered outcomes first.
+:::
+
+## Solution 5 · Enumerate, then summarize
+
+::: {.answer}
+
+The outcomes are $TT,TH,HT,HH$.
+
+| $y$ | 0 | 1 | 2 |
+|---:|---:|---:|---:|
+| $\Pr(Y=y)$ | $1/4$ | $1/2$ | $1/4$ |
+| $F_Y(y)$ at $y$ | $1/4$ | $3/4$ | $1$ |
+
+$$E(Y)=0(1/4)+1(1/2)+2(1/4)=1,$$
+
+$$\operatorname{var}(Y)=E(Y^2)-[E(Y)]^2=1.5-1=0.5.$$
+
+:::
+
+## Applications · Questions 6–10 {.section-slide background-color="#B83D2F"}
+
+
+::: {.notes}
+Suggested time: 30 minutes.
+:::
+
+## Question 6 · Network failures ★★
+
+::: {.exercise}
+Let $M$ be the number of network failures during an assignment.
+
+| $m$ | 0 | 1 | 2 | 3 | 4 |
+|---:|---:|---:|---:|---:|---:|
+| $\Pr(M=m)$ | 0.80 | 0.10 | 0.06 | 0.03 | 0.01 |
+
+Compute $\Pr(M\leq1)$, $\Pr(M\geq2)$, $E(M)$, and $\operatorname{var}(M)$.
+:::
+
+::: {.small-note}
+Uses the network-failure distribution discussed in Stock and Watson, Chapter 2, and Lecture 1.
+:::
+
+## Solution 6 · Use the whole distribution
+
+::: {.answer}
+
+$$\Pr(M\leq1)=0.80+0.10=0.90,$$
+
+$$\Pr(M\geq2)=0.06+0.03+0.01=0.10.$$
+
+$$E(M)=\sum_m m\Pr(M=m)=0.35.$$
+
+Because $E(M^2)=0.77$,
+
+$$\operatorname{var}(M)=0.77-(0.35)^2=0.6475.$$
+
+:::
+
+
+## Question 7 · Change the units ★★
+
+::: {.exercise}
+September daily high temperature has mean $59^\circ$F and standard deviation $9^\circ$F. Convert temperature using
+
+$$C=\frac{5}{9}(F-32).$$
+
+Find the mean, standard deviation, and variance in degrees Celsius.
+:::
+
+::: {.small-note}
+Adapted from Stock and Watson, Chapter 2, Exercise 2.5; values are modified.
+:::
+
+## Solution 7 · Location shifts; spread scales
+
+::: {.answer}
+
+For $C=a+bF$, use $E(C)=a+bE(F)$ and $\operatorname{var}(C)=b^2\operatorname{var}(F)$.
+
+$$E(C)=\frac{5}{9}(59-32)=15^\circ\text{C},$$
+
+$$\operatorname{sd}(C)=\frac{5}{9}(9)=5^\circ\text{C},$$
+
+$$\operatorname{var}(C)=\left(\frac{5}{9}\right)^2(9^2)=25\;(^{\circ}\text{C})^2.$$
+
+:::
+
+## Question 8 · Rain and commute time ★★
+
+::: {.exercise}
+
+| Weather | Long | Short | Total |
+|---|---:|---:|---:|
+| Rain | 0.15 | 0.15 | 0.30 |
+| No rain | 0.07 | 0.63 | 0.70 |
+| Total | 0.22 | 0.78 | 1.00 |
+
+1. Find $\Pr(\text{Short}\mid\text{Rain})$.
+2. Are rain and commute length independent? Show a numerical check.
+:::
+
+
+## Solution 8 · Conditioning changes the denominator
+
+::: {.answer}
+
+$$\Pr(\text{Short}\mid\text{Rain})
+=\frac{\Pr(\text{Short and Rain})}{\Pr(\text{Rain})}
+=\frac{0.15}{0.30}=0.50.$$
+
+If the variables were independent, then
+
+$$\Pr(\text{Short and Rain})
+=\Pr(\text{Short})\Pr(\text{Rain})
+=(0.78)(0.30)=0.234.$$
+
+But the joint probability is $0.15$, so they are **not independent**.
+
+:::
+
+## Question 9 · Conditional means are descriptive ★★
+
+::: {.exercise}
+In a worker population,
+
+$$\Pr(D=1)=0.40,$$
+
+$$E(W\mid D=1)=€22,\qquad E(W\mid D=0)=€14,$$
+
+where $D$ indicates a degree and $W$ is hourly wage.
+
+1. Find $E(W)$.
+2. Interpret the €8 conditional-mean difference. Is it automatically causal?
+:::
+
+## Solution 9 · Average within groups, then across groups
+
+::: {.answer}
+
+By the law of iterated expectations,
+
+$$E(W)=0.40(22)+0.60(14)=€17.20.$$
+
+Degree holders earn €8 more per hour **on average in this population**. This is a descriptive conditional difference.
+
+It is not automatically the effect of obtaining a degree: experience, field, ability, family resources, or selection could differ across groups.
+
+:::
+
+## Question 10 · Rescale two variables ★★
+
+::: {.exercise}
+Suppose $E(X)=5$, $E(Y)=8$, $\operatorname{sd}(X)=2$, $\operatorname{sd}(Y)=5$, and $\operatorname{cov}(X,Y)=-6$.
+
+Define
+
+$$W=3+4X,\qquad V=20-2Y.$$
+
+Find $E(W)$, $E(V)$, $\operatorname{cov}(W,V)$, and $\operatorname{corr}(W,V)$.
+:::
+
+::: {.small-note}
+Inspired by Stock and Watson, Chapter 2, Exercise 2.3; values are modified.
+:::
+
+## Solution 10 · Correlation tracks direction, not units
+
+::: {.answer}
+
+$$E(W)=3+4(5)=23,\qquad E(V)=20-2(8)=4.$$
+
+$$\operatorname{cov}(W,V)=(4)(-2)\operatorname{cov}(X,Y)=48.$$
+
+First, $\operatorname{corr}(X,Y)=-6/(2\times5)=-0.60$. Multiplying $Y$ by a negative number reverses the sign, so
+
+$$\operatorname{corr}(W,V)=+0.60.$$
+
+:::
+
+## Challenge · Questions 11–15 {.section-slide background-color="#E85D4A"}
+
+
+::: {.notes}
+Suggested time: 35–40 minutes.
+:::
+
+## Question 11 · Zero correlation, strong relationship ★★★
+
+::: {.exercise}
+Let $X$ take the values $-1,0,1$, each with probability $1/3$, and define $Y=X^2$.
+
+1. Find $E(X)$, $E(Y)$, and $\operatorname{cov}(X,Y)$.
+2. Are $X$ and $Y$ independent?
+3. What does this example show about correlation?
+:::
+
+::: {.small-note}
+Uses the nonlinear-dependence idea in Stock and Watson, Chapter 2, Exercise 2.23, and Lecture 1.
+:::
+
+## Solution 11 · Correlation sees linear co-movement
+
+::: {.answer}
+
+$$E(X)=0,\qquad E(Y)=E(X^2)=\frac{2}{3}.$$
+
+Because $XY=X^3$ and $E(X^3)=0$,
+
+$$\operatorname{cov}(X,Y)=E(XY)-E(X)E(Y)=0.$$
+
+They are **not independent**: $Y$ is completely determined by $X$. For example,
+
+$$\Pr(Y=0\mid X=0)=1\neq\Pr(Y=0)=\frac13.$$
+
+Thus, zero correlation does not imply independence.
+
+:::
+
+## Question 12 · Sampling distributions ★★★
+
+::: {.exercise}
+Let $Y_1,\ldots,Y_n$ be i.i.d. $N(1,4)$ and let $\bar Y$ be their sample mean.
+
+1. Give the exact distribution of $\bar Y$ for $n=4$ and $n=100$.
+2. For each $n$, find $\Pr(0.8\leq\bar Y\leq1.2)$.
+3. Connect the result to the law of large numbers.
+:::
+
+::: {.small-note}
+Adapted from Stock and Watson, Chapter 2, Review Question 2.5 and Exercise 2.15.
+:::
+
+## Solution 12 · Averaging reduces variance
+
+::: {.answer}
+
+Since the population is normal,
+
+$$\bar Y\sim N\left(1,\frac{4}{n}\right).$$
+
+- $n=4$: $\operatorname{sd}(\bar Y)=1$, so $\Pr(|Z|\leq0.2)\approx0.1585$.
+- $n=100$: $\operatorname{sd}(\bar Y)=0.2$, so $\Pr(|Z|\leq1)\approx0.6827$.
+
+As $n$ increases, the distribution concentrates around $1$: this is the LLN’s destination.
+
+:::
+
+## Question 13 · A Bernoulli sample and the CLT ★★★
+
+::: {.exercise}
+Suppose $Y_1,\ldots,Y_{400}$ are i.i.d. Bernoulli with $p=0.40$. Let $\bar Y$ be the sample proportion of successes.
+
+Use the central limit theorem to approximate
+
+$$\Pr(0.35\leq\bar Y\leq0.45).$$
+
+State the normal approximation and standard error.
+:::
+
+::: {.small-note}
+Inspired by Stock and Watson, Chapter 2, Exercise 2.17; bounds are modified.
+:::
+
+## Solution 13 · Standardize the sample mean
+
+::: {.answer}
+
+$$E(\bar Y)=0.40,\qquad
+\operatorname{SE}(\bar Y)=\sqrt{\frac{0.4(0.6)}{400}}\approx0.0245.$$
+
+The standardized bounds are approximately $-2.041$ and $2.041$. Therefore,
+
+$$\Pr(0.35\leq\bar Y\leq0.45)
+\approx \Phi(2.041)-\Phi(-2.041)
+\approx0.9588.$$
+
+This uses the CLT without a continuity correction.
+
+:::
+
+## Question 14 · CLT with an unknown population shape ★★★
+
+::: {.exercise}
+A population has mean $120$ and variance $36$. Its distribution is not specified. For an i.i.d. sample of size $n=144$, use the CLT to approximate
+
+$$\Pr(\bar Y\leq121).$$
+
+Explain why you can proceed without knowing the population’s exact shape.
+:::
+
+::: {.small-note}
+Adapted from Stock and Watson, Chapter 2, Exercise 2.14; values are modified.
+:::
+
+## Solution 14 · The CLT supplies the shape
+
+::: {.answer}
+
+$$E(\bar Y)=120,\qquad
+\operatorname{SE}(\bar Y)=\sqrt{\frac{36}{144}}=0.5.$$
+
+Thus,
+
+$$z=\frac{121-120}{0.5}=2,$$
+
+and
+
+$$\Pr(\bar Y\leq121)\approx\Phi(2)=0.9772.$$
+
+For a sufficiently large i.i.d. sample with finite variance, the CLT makes the standardized sample mean approximately normal.
+
+:::
+
+## Question 15 · When averaging does not eliminate noise ★★★
+
+::: {.exercise}
+Suppose $Y_1,\ldots,Y_n$ share mean $\mu$, variance $9$, and pairwise correlation $\rho=0.10$ for every $i\neq j$.
+
+1. Derive $\operatorname{var}(\bar Y)$.
+2. Find its limit as $n\to\infty$.
+3. Why does the usual “averaging removes noise” result fail?
+:::
+
+::: {.small-note}
+Adapted from Stock and Watson, Chapter 2, Exercise 2.26.
+:::
+
+## Solution 15 · Correlation persists
+
+::: {.answer}
+
+There are $n$ variance terms and $n(n-1)$ ordered covariance terms, each covariance equal to $0.10(9)=0.9$:
+
+$$\operatorname{var}(\bar Y)
+=\frac{1}{n^2}\left[9n+0.9n(n-1)\right]
+=\frac9n+0.9\frac{n-1}{n}.$$
+
+Therefore,
+
+$$\lim_{n\to\infty}\operatorname{var}(\bar Y)=0.9\neq0.$$
+
+Positive common dependence leaves a shared component that averaging cannot remove. The usual i.i.d. LLN logic does not apply.
+
+:::

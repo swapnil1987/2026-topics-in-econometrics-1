@@ -33,6 +33,7 @@ Open a lecture below to view the slides directly in your browser. Use the arrow 
 2 September · Stock and Watson, Chapters 1–2
 
 - [View the slides](https://swapnil1987.github.io/2026-topics-in-econometrics-1/lecture-01.html)
+- [Practice set 1: questions and worked solutions](https://swapnil1987.github.io/2026-topics-in-econometrics-1/practice-01.html)
 - [View the R code](codes/lecture-1/)
 
 ## Quizzes
