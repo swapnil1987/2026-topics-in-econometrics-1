@@ -8,7 +8,7 @@ This course introduces econometrics: the statistical study of economic data. We 
 - **Class:** Wednesday, 10:00–13:00, room 803
 - **Textbook:** James H. Stock and Mark W. Watson, *Introduction to Econometrics*, 3rd edition
 - **Programming language:** R
-- **Full syllabus and calendar:** [Syllabus (2026/27)](https://docs.google.com/document/d/1Hd96R5cFeWp88_j5khsMh3OnWdnjoY2MtuhkvKZpSxM)
+- **Full syllabus and calendar:** [Syllabus (2026/27)](https://docs.google.com/document/d/e/2PACX-1vTls61OE6I2-90skH63PY-iX5-ka8NfcWcShoPk1v32Qh-qD_GDCB91KTIiAfvEgbCM1mFpAEWBdBYE/pub)
 
 ### Grading scheme
 
