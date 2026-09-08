@@ -1,0 +1,75 @@
+{
+  "verified_date": "2026-09-09",
+  "folder_id": "14kl89bVpSLaW7zJXhDrDociIUmVBkhsQ",
+  "folder_url": "https://drive.google.com/drive/folders/14kl89bVpSLaW7zJXhDrDociIUmVBkhsQ",
+  "sharing": "private",
+  "hosted_execution_tested": false,
+  "local_execution_tested": true,
+  "files": [
+    {
+      "file_name": "01_law_of_large_numbers.ipynb",
+      "id": "1bc-U8zp2-wSPcCQBV03lEiF6S5VsX8B9",
+      "url": "https://colab.research.google.com/drive/1bc-U8zp2-wSPcCQBV03lEiF6S5VsX8B9",
+      "mime_type": "application/vnd.google.colaboratory",
+      "size": 4338
+    },
+    {
+      "file_name": "02_central_limit_theorem.ipynb",
+      "id": "1vNQyiIP-wjZOYhVhTkP2dFj1bUzqZ-Kw",
+      "url": "https://colab.research.google.com/drive/1vNQyiIP-wjZOYhVhTkP2dFj1bUzqZ-Kw",
+      "mime_type": "application/vnd.google.colaboratory",
+      "size": 4450
+    },
+    {
+      "file_name": "03_unbiasedness.ipynb",
+      "id": "1ZRuvLvt-fgXOnEFe9pOcYrq2YV22M6zJ",
+      "url": "https://colab.research.google.com/drive/1ZRuvLvt-fgXOnEFe9pOcYrq2YV22M6zJ",
+      "mime_type": "application/vnd.google.colaboratory",
+      "size": 4528
+    },
+    {
+      "file_name": "04_consistency.ipynb",
+      "id": "1avT-lxplEVddmugvAVSJXofZAqsk-cnr",
+      "url": "https://colab.research.google.com/drive/1avT-lxplEVddmugvAVSJXofZAqsk-cnr",
+      "mime_type": "application/vnd.google.colaboratory",
+      "size": 4472
+    },
+    {
+      "file_name": "05_p_value.ipynb",
+      "id": "1enFm6U0JiTwVmNjBeBbhsW4LDVYHEA7W",
+      "url": "https://colab.research.google.com/drive/1enFm6U0JiTwVmNjBeBbhsW4LDVYHEA7W",
+      "mime_type": "application/vnd.google.colaboratory",
+      "size": 5589
+    }
+  ],
+  "archive": {
+    "folder_id": "1NoSHM-4_k7hyFICFVn9gl60gc0QE3Byz",
+    "folder_url": "https://drive.google.com/drive/folders/1NoSHM-4_k7hyFICFVn9gl60gc0QE3Byz",
+    "files": [
+      {
+        "id": "1E6Vz3UC1Z-FQ-kV6eFULsdJsvGOigWjU",
+        "file_name": "01_estimators_and_standard_errors.ipynb"
+      },
+      {
+        "id": "1bhdfz8Ce6Nlqv5ZSzn-gxUsM_QN34WDx",
+        "file_name": "02_tests_and_confidence_intervals.ipynb"
+      },
+      {
+        "id": "1mbseGLrTuGx7WEGB0Pvnm-HB8EBu4Muc",
+        "file_name": "03_group_means_and_binary_regression.ipynb"
+      },
+      {
+        "id": "1QprK51Wglll2Jyqd70Ares-dDkjTovOg",
+        "file_name": "04_ols_residuals_and_fit.ipynb"
+      },
+      {
+        "id": "1raSJjNz2Ayg2lGJl1APJ9UDaNGUbg6hX",
+        "file_name": "05_ols_sampling_distribution.ipynb"
+      },
+      {
+        "id": "1dLgyg_hYKgabsvxuFeVbGn_EWE_xcz4R",
+        "file_name": "06_mean_and_outcome_prediction.ipynb"
+      }
+    ]
+  }
+}

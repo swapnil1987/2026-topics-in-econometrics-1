@@ -36,6 +36,36 @@ Open a lecture below to view the slides directly in your browser. Use the arrow 
 - [Practice set 1: questions and worked solutions](https://swapnil1987.github.io/2026-topics-in-econometrics-1/practice-01.html)
 - [View the R code](codes/lecture-1/)
 
+### Lecture 2: From Means to Regression
+
+9 September · Stock and Watson, Chapters 3–4 (selected sections)
+
+Estimation, hypothesis testing, and simple linear regression.
+
+- [View the slides](https://swapnil1987.github.io/2026-topics-in-econometrics-1/lecture-02.html)
+- [Slide source](slides/lecture-02.qmd)
+- [Notebook instructions](colab/lecture-2/README.md)
+
+#### Classroom code
+
+Run these five examples in order. Each includes intuition, a reproducible simulation,
+a plot, and a suggested live edit. All examples use R and require no external dataset.
+
+| Topic | R script | Notebook | Google Colab |
+|---|---|---|---|
+| Law of large numbers | [R code](R/colab-lecture-02/01_law_of_large_numbers.R) | [Notebook](colab/lecture-2/01_law_of_large_numbers.ipynb) | [Open in Colab](https://colab.research.google.com/drive/1bc-U8zp2-wSPcCQBV03lEiF6S5VsX8B9) |
+| Central limit theorem | [R code](R/colab-lecture-02/02_central_limit_theorem.R) | [Notebook](colab/lecture-2/02_central_limit_theorem.ipynb) | [Open in Colab](https://colab.research.google.com/drive/1vNQyiIP-wjZOYhVhTkP2dFj1bUzqZ-Kw) |
+| Unbiasedness | [R code](R/colab-lecture-02/03_unbiasedness.R) | [Notebook](colab/lecture-2/03_unbiasedness.ipynb) | [Open in Colab](https://colab.research.google.com/drive/1ZRuvLvt-fgXOnEFe9pOcYrq2YV22M6zJ) |
+| Consistency | [R code](R/colab-lecture-02/04_consistency.R) | [Notebook](colab/lecture-2/04_consistency.ipynb) | [Open in Colab](https://colab.research.google.com/drive/1avT-lxplEVddmugvAVSJXofZAqsk-cnr) |
+| P-value | [R code](R/colab-lecture-02/05_p_value.R) | [Notebook](colab/lecture-2/05_p_value.ipynb) | [Open in Colab](https://colab.research.google.com/drive/1enFm6U0JiTwVmNjBeBbhsW4LDVYHEA7W) |
+
+The Google Colab copies are in the [private Lecture 2 Drive folder](https://drive.google.com/drive/folders/14kl89bVpSLaW7zJXhDrDociIUmVBkhsQ)
+and require permission to access. Alternatively, download a notebook from this repository
+and upload it to your own Colab session. Use **Runtime → Run all** to execute the full example.
+
+Earlier [combined examples](codes/lecture-2/) and [reusable R functions](R/lecture-02.R)
+remain available as reference material; they are not the current classroom sequence.
+
 ## Quizzes
 
 Quizzes are short, in-class assessments based only on material already taught and exercises already made available. The working format is three multiple-choice questions, seven answer choices per question, and five equivalent coded forms. Each correct answer earns one point. Incorrect and blank answers receive zero points; there is no negative marking unless announced otherwise.
