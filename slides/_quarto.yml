@@ -6,6 +6,7 @@ project:
     - lecture-01.qmd
     - lecture-02.qmd
     - practice-01.qmd
+    - practice-02.qmd
   resources:
     - theme/fonts/latinmodern-math.otf
     - theme/fonts/GUST-FONT-LICENSE.txt

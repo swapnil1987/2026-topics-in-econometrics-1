@@ -44,6 +44,7 @@ Estimation, hypothesis testing, and simple linear regression.
 
 - [View the slides](https://swapnil1987.github.io/2026-topics-in-econometrics-1/lecture-02.html)
 - [Slide source](slides/lecture-02.qmd)
+- [Practice set 2: 15 questions and worked solutions](https://swapnil1987.github.io/2026-topics-in-econometrics-1/practice-02.html) — through slide 49, plus the law of large numbers and central limit theorem; easy to hard.
 - [Notebook instructions](colab/lecture-2/README.md)
 
 #### Classroom code

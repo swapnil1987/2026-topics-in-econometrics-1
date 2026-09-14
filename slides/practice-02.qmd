@@ -1,0 +1,564 @@
+---
+title: "Practice Set 2: Questions and Solutions"
+subtitle: "Lecture 2 through slide 49 · LLN and CLT"
+author: "Swapnil Singh"
+date: "2026-09-14"
+date-format: "D MMMM YYYY"
+footer: "Topics in Econometrics I · Practice Set 2"
+execute:
+  warning: true
+  message: true
+---
+
+```{r}
+#| label: practice02-setup
+#| include: false
+
+normal_p_value <- function(statistic) 2 * pnorm(-abs(statistic))
+four_decimals <- function(value) sprintf("%.4f", value)
+
+small_sample <- c(2, 4, 4, 6)
+small_variance <- var(small_sample)
+small_se <- sd(small_sample) / sqrt(length(small_sample))
+bernoulli_se <- sqrt(0.30 * 0.70 / 300)
+chebyshev_bound <- 100 / (400 * 2^2)
+clt_tail <- 2 * pnorm(-2 / (10 / sqrt(400)))
+respondent_se <- sqrt(400 * 0.60 * 0.40 / 399) / sqrt(400)
+respondent_t <- (0.60 - 0.50) / respondent_se
+```
+
+## How to use this deck
+
+::: {.key-idea}
+**Attempt each question before advancing to its solution.**
+:::
+
+::: {.incremental}
+
+- Questions 1–5 build foundations.
+- Questions 6–10 apply estimation and testing tools.
+- Questions 11–15 require derivations and careful reasoning.
+- Use a calculator or R for normal probabilities; show your steps.
+
+:::
+
+::: {.notes}
+These 15 original exercises cover Lecture 2 through displayed slide 49,
+“Keep the observed p-value separate from the chosen cutoff,” counting the
+title as slide 1. They also revisit the law of large numbers and central
+limit theorem from Lecture 1 and the Lecture 2 classroom notebooks.
+The main textbook connection is Stock and Watson, Chapter 3, Sections
+3.1–3.2. Regression, confidence-interval construction, and formal power
+calculations are outside this set. All numerical scenarios are hypothetical;
+no external or student data are used. Normal probabilities are calculated in R.
+:::
+
+## Difficulty map
+
+| Questions | Level | Main ideas |
+|---|---|---|
+| 1–5 | Foundations | estimators, SE, LLN, CLT, p-values |
+| 6–10 | Applications | sample variance, bias, efficiency, tests |
+| 11–15 | Challenge | least squares, bounds, BLUE, inference |
+
+Unless stated otherwise, samples are **i.i.d.**, with a common mean $\mu$ and finite, positive variance $\sigma^2$.
+
+Write $N(a,b)$ with **mean $a$ and variance $b$**. $\Phi$ denotes the standard normal CDF.
+
+## Foundations · Questions 1–5 {.section-slide background-color="#E85D4A"}
+
+::: {.notes}
+Suggested time: 20–25 minutes. Begin with objects and interpretations,
+then move to a direct calculation under a known-variance model.
+:::
+
+## Question 1 · A rule and its result ★
+
+::: {.exercise}
+We want the mean hourly earnings of all workers in a hypothetical town.
+A random sample gives earnings of **8, 12, 16, and 24 euros per hour**.
+
+1. Identify the population and the population parameter.
+2. Write the sample-mean estimator and calculate its estimate.
+3. Across repeated samples, which changes: the parameter, the estimate, or both?
+:::
+
+## Solution 1 · The target stays fixed
+
+::: {.answer}
+
+- **Population:** all workers in the town.
+- **Parameter:** their mean hourly earnings, $\mu=E(Y)$.
+- **Estimator:** $\bar Y=\frac14\sum_{i=1}^4Y_i$.
+- **Estimate:** $\bar y=(8+12+16+24)/4=€15$ per hour.
+- The estimate varies across samples. The population mean is fixed under our sampling model.
+
+:::
+
+## Question 2 · Spread or uncertainty? ★
+
+::: {.exercise}
+An i.i.d. sample of **100 workers** has sample standard deviation **€12 per hour**.
+
+1. Calculate the estimated standard error of mean earnings.
+2. What does the €12 measure? What does the standard error measure?
+3. If a sample of 400 workers also has $s_Y=12$, what is its standard error? Does the larger sample make workers' earnings more similar?
+:::
+
+## Solution 2 · Averaging improves precision
+
+::: {.answer}
+
+$$SE(\bar Y)=\frac{s_Y}{\sqrt n}=\frac{12}{\sqrt{100}}=€1.20\text{ per hour}.$$
+
+- **€12:** spread of individual earnings in the sample.
+- **€1.20:** estimated sampling SD of the sample mean.
+- With $n=400$, $SE=12/20=€0.60$ per hour.
+
+Four times as many observations halves the SE. It does not reduce the population's earnings dispersion.
+
+:::
+
+## Question 3 · What does a p-value say? ★
+
+::: {.exercise}
+A two-sided test of a claim that mean daily travel time is **30 minutes** gives $p=0.08$.
+
+1. State $H_0$ and $H_1$ about the population mean.
+2. Would a test planned at 10% reject? Would one planned at 5% reject?
+3. Assess: “There is an 8% probability that the population mean is 30 minutes.”
+:::
+
+## Solution 3 · Condition on the null
+
+::: {.answer}
+
+$$H_0:\mu=30,\qquad H_1:\mu\neq30.$$
+
+- At $\alpha=0.10$: **reject**, because $0.08<0.10$.
+- At $\alpha=0.05$: **do not reject**, because $0.08>0.05$.
+- The quoted interpretation is **incorrect**.
+
+Assuming the null and sampling model, a statistic at least as extreme in either direction occurs with probability 0.08.
+
+:::
+
+::: {.notes}
+These are comparisons of two possible prespecified testing rules. Do not
+choose the threshold after seeing the p-value. Failure to reject at 5%
+does not establish that mean travel time equals 30 minutes.
+:::
+
+## Question 4 · LLN or CLT? ★
+
+::: {.exercise}
+Identify which theorem justifies statements 1–2. Correct statements 3–4.
+
+1. For any fixed $\varepsilon>0$, $\Pr(|\bar Y-\mu|>\varepsilon)\to0$.
+2. $\sqrt n(\bar Y-\mu)/\sigma$ approaches a standard normal distribution.
+3. “With enough observations, the individual $Y_i$ become normally distributed.”
+4. “Every additional observation brings the sample mean closer to $\mu$.”
+:::
+
+## Solution 4 · Concentration and shape
+
+::: {.answer}
+
+1. **Law of large numbers:** $\bar Y\xrightarrow{p}\mu$.
+2. **Central limit theorem:** $\sqrt n(\bar Y-\mu)/\sigma\xrightarrow{d}N(0,1)$.
+3. The CLT concerns the **standardized sample mean**. The individual observations retain their population distribution.
+4. The LLN gives convergence in probability. A particular sample path can move farther from $\mu$ when another observation arrives.
+
+:::
+
+## Question 5 · A first two-sided test ★
+
+::: {.exercise}
+Delivery times are i.i.d. normal with unknown mean $\mu$ and **known population SD $\sigma=6$ minutes**.
+For $n=100$, the sample mean is $31.2$ minutes.
+
+Test $H_0:\mu=30$ against $H_1:\mu\neq30$ at 5%.
+
+1. Calculate the sampling SD and observed $z$-statistic.
+2. Calculate the two-sided p-value and state the decision.
+3. Is the normal reference exact or approximate here?
+:::
+
+## Solution 5 · Measure the gap in sampling SDs
+
+::: {.answer}
+
+$$\operatorname{SD}(\bar Y)=\frac6{\sqrt{100}}=0.6,\qquad
+z_{\mathrm{obs}}=\frac{31.2-30}{0.6}=2.$$
+
+$$p=2\Phi(-2)\approx `r four_decimals(normal_p_value(2))`.$$
+
+**Reject at 5%:** $p<0.05$, equivalently $|z|>1.96$.
+
+The reference is **exact** because observations are i.i.d. normal and the population SD is known. Evidence points to a mean different from 30 minutes.
+
+:::
+
+## Applications · Questions 6–10 {.section-slide background-color="#B83D2F"}
+
+::: {.notes}
+Suggested time: 30–35 minutes. Require students to distinguish the exact
+mean and variance identities from distributional approximations.
+:::
+
+## Question 6 · Estimate the noise scale ★★
+
+::: {.exercise}
+Four i.i.d. observations are $2,4,4,6$. The population shape is unspecified.
+
+1. Compute $\bar y$, $\sum_i(y_i-\bar y)^2$, $s_Y^2$, and $s_Y$.
+2. Compute $SE(\bar Y)$ and the t-statistic for $H_0:\mu=3$.
+3. Does the name “t-statistic” justify an exact Student t reference? Is a large-sample normal approximation assured here?
+:::
+
+## Solution 6 · A statistic needs a reference model
+
+::: {.answer}
+
+$$\bar y=4,\qquad \sum_i(y_i-4)^2=4+0+0+4=8.$$
+
+$$s_Y^2=\frac8{3},\quad s_Y\approx `r four_decimals(sd(small_sample))`,\quad
+SE=\frac{s_Y}{2}\approx `r four_decimals(small_se)`.$$
+
+$$t_{\mathrm{obs}}=\frac{4-3}{SE}\approx `r four_decimals(1 / small_se)`.$$
+
+Neither reference is justified by the information given. **If** the population were normal, the statistic would have an exact $t_3$ null distribution. Four observations do not assure a normal approximation.
+
+:::
+
+## Question 7 · Unbiased and consistent? ★★
+
+::: {.exercise}
+For each estimator sequence below, find its expectation and bias, then determine whether it is consistent for $\mu$.
+
+$$A_n=Y_1,\qquad B_n=\bar Y+\frac2n,\qquad C_n=\bar Y+1.$$
+
+Explain your answers using the LLN where applicable. Give an example here of an unbiased but inconsistent estimator, and of a biased but consistent estimator.
+:::
+
+## Solution 7 · Bias and concentration are separate
+
+::: {.answer}
+
+| Estimator | Expectation | Bias | Consistent for $\mu$? |
+|---|---|---|---|
+| $A_n$ | $\mu$ | $0$ | No: its distribution never concentrates |
+| $B_n$ | $\mu+2/n$ | $2/n$ | Yes: $\bar Y\to_p\mu$ and $2/n\to0$ |
+| $C_n$ | $\mu+1$ | $1$ | No: $C_n\to_p\mu+1$ |
+
+$A_n$ is unbiased but inconsistent. $B_n$ is biased at every finite $n$ but consistent.
+
+:::
+
+::: {.notes}
+For A_n, the nondegenerate distribution of Y_1 is unchanged as n grows.
+There exists a positive tolerance with a positive, unchanged probability
+of exceeding it. Do not assert that nonvanishing variance alone proves
+inconsistency for arbitrary estimator sequences.
+:::
+
+## Question 8 · Is unequal weighting costly? ★★
+
+::: {.exercise}
+Three i.i.d. observations have common mean $\mu$ and variance $\sigma^2$. Compare
+
+$$A=\frac{Y_1+Y_2+Y_3}{3},\qquad
+B=\frac12Y_1+\frac14Y_2+\frac14Y_3.$$
+
+1. Show that both estimators are unbiased.
+2. Find their variances. Which is more efficient?
+3. By what percentage is $B$'s variance larger? Is its SD larger by the same percentage?
+:::
+
+## Solution 8 · Square the weights for variance
+
+::: {.answer}
+
+The fixed weights sum to one, so $E(A)=E(B)=\mu$.
+
+$$\operatorname{Var}(A)=\frac{\sigma^2}{3},\qquad
+\operatorname{Var}(B)=\sigma^2\left(\frac14+\frac1{16}+\frac1{16}\right)=\frac{3\sigma^2}{8}.$$
+
+$$\frac{\operatorname{Var}(B)}{\operatorname{Var}(A)}=\frac98=1.125.$$
+
+$A$ is more efficient. $B$ has **12.5% more variance**, but only **about 6.1% more SD**: $\sqrt{9/8}\approx1.061$.
+
+:::
+
+## Question 9 · CLT for a sample proportion ★★
+
+::: {.exercise}
+In a hypothetical population, 30% of commuters cycle to work. Let $Y_i=1$ for a cyclist and $0$ otherwise. Take an i.i.d. sample of $n=300$.
+
+1. Find $E(\bar Y)$ and $\operatorname{SD}(\bar Y)$.
+2. Use the CLT to approximate $\Pr(0.25\leq\bar Y\leq0.35)$ without a continuity correction.
+3. Explain why the LLN alone does not supply this numerical approximation.
+:::
+
+## Solution 9 · Standardize both bounds
+
+::: {.answer}
+
+$$E(\bar Y)=0.30,\qquad \operatorname{SD}(\bar Y)=\sqrt{\frac{0.30(0.70)}{300}}
+\approx `r four_decimals(bernoulli_se)`.$$
+
+$$\bar Y\overset{a}{\sim}N(0.30,0.0007),\qquad
+z_{\mathrm{bounds}}=\pm\frac{0.05}{\sqrt{0.0007}}\approx\pm `r four_decimals(0.05 / bernoulli_se)`.$$
+
+The approximate probability can be computed in R:
+
+```{r}
+#| label: practice02-clt-probability
+
+sampling_sd <- sqrt(0.30 * 0.70 / 300)
+pnorm(0.05 / sampling_sd) - pnorm(-0.05 / sampling_sd)
+```
+
+The LLN gives convergence; the CLT supplies a distributional approximation at this sample size.
+
+:::
+
+::: {.notes}
+The exact count is binomial with n = 300 and p = 0.30; the inclusive bounds
+correspond to 75 through 105 cyclists. A continuity correction or exact
+binomial calculation gives a different finite-sample probability. The
+question explicitly requests the uncorrected CLT approximation.
+:::
+
+## Question 10 · A test with estimated variance ★★
+
+::: {.exercise}
+An i.i.d. sample of $225$ households has mean weekly public-transport spending **€42** and sample SD **€15**. The population need not be normal.
+
+1. Test $H_0:\mu=40$ against $H_1:\mu\neq40$ using a large-sample normal approximation.
+2. Report the SE, t-statistic, p-value, and decisions at 5% and 1%.
+3. If all amounts, including the null value, are converted to cents, what changes?
+:::
+
+## Solution 10 · Keep the units consistent
+
+::: {.answer}
+
+$$SE=\frac{15}{\sqrt{225}}=€1,\qquad t_{\mathrm{obs}}=\frac{42-40}{1}=2.$$
+
+$$p\approx2\Phi(-2)\approx `r four_decimals(normal_p_value(2))`.$$
+
+- **Reject at 5%; do not reject at 1%.** This is approximate inference.
+- In cents: $\bar y=4200$, $\mu_0=4000$, $s_Y=1500$, and $SE=100$.
+- The t-statistic, p-value, and decisions are **unchanged**: $(4200-4000)/100=2$.
+
+:::
+
+::: {.notes}
+The use of n = 225 is not a universal guarantee that the normal approximation
+is accurate. Extreme skewness or rare large outcomes can slow convergence.
+Do not infer that individual households spend close to 42 euros from a
+standard error of one euro for the mean.
+:::
+
+## Challenge · Questions 11–15 {.section-slide background-color="#E85D4A"}
+
+::: {.notes}
+Suggested time: 45–55 minutes. The final questions combine earlier results.
+Question 14 has two solution slides so that its probability limits remain
+readable. Question 15 separates inference about a sampled population from
+inference about the intended target population.
+:::
+
+## Question 11 · Why least squares gives the mean ★★★
+
+::: {.exercise}
+For observed values $y_1,\ldots,y_n$, define $Q(m)=\sum_i(y_i-m)^2$.
+
+1. Differentiate $Q(m)$ and show that its unique minimum is at $m=\bar y$.
+2. Prove the identity $Q(m)=Q(\bar y)+n(m-\bar y)^2$ by expanding the squares.
+3. For observations $4,8,12$, calculate $Q(\bar y)$ and $Q(10)$. Explain their difference using the identity.
+:::
+
+## Solution 11 · Any move from the mean adds loss
+
+::: {.answer}
+
+$$Q'(m)=2n(m-\bar y)=0\Rightarrow m=\bar y,\qquad Q''(m)=2n>0.$$
+
+Write $y_i-m=(y_i-\bar y)+(\bar y-m)$. The cross term vanishes because $\sum_i(y_i-\bar y)=0$, leaving
+
+$$Q(m)=Q(\bar y)+n(m-\bar y)^2.$$
+
+For $(4,8,12)$, $\bar y=8$ and $Q(8)=16+0+16=32$.
+
+$$Q(10)=36+4+4=44=32+3(10-8)^2.$$
+
+:::
+
+## Question 12 · A bound versus an approximation ★★★
+
+::: {.exercise}
+An i.i.d. sample comes from a population with mean $\mu$, variance $100$, and unspecified shape. Let $n=400$.
+
+1. Use Chebyshev's inequality to bound $\Pr(|\bar Y-\mu|\geq2)$.
+2. Use the CLT to approximate the same probability.
+3. What is the smallest $n$ for which Chebyshev ensures this probability is at most 0.05?
+4. Which calculation supplies a finite-sample guarantee under these assumptions?
+:::
+
+## Solution 12 · A valid bound can be conservative
+
+::: {.answer}
+
+$$\Pr(|\bar Y-\mu|\geq2)\leq\frac{\sigma^2}{n(2^2)}
+=\frac{100}{400(4)}=`r four_decimals(chebyshev_bound)`.$$
+
+The CLT uses $\operatorname{SD}(\bar Y)=10/\sqrt{400}=0.5$:
+
+$$\Pr(|\bar Y-\mu|\geq2)\approx2\Phi(-4)\approx `r sprintf("%.7f", clt_tail)`.$$
+
+For the Chebyshev bound to be at most 0.05, $25/n\leq0.05$, so **$n\geq500$**.
+
+Chebyshev gives a finite-sample upper bound. The much smaller CLT value is an approximation whose accuracy depends on the population shape.
+
+:::
+
+::: {.notes}
+Chebyshev uses the finite-variance assumptions and no normality assumption.
+At four standard deviations, a normal tail approximation can have poor
+relative accuracy, particularly with heavy tails. The CLT supplies no
+finite-sample error guarantee here. The smallest n is the smallest value
+certified by this inequality, not necessarily the smallest n needed in the
+actual population. As n grows, the same bound proves the LLN.
+:::
+
+## Question 13 · Prove the sample mean is BLUE ★★★
+
+::: {.exercise}
+Consider $T=\sum_{i=1}^n w_iY_i$, where weights are fixed before sampling.
+
+1. What restriction on the weights makes $T$ unbiased for every possible $\mu$?
+2. Show that, under this restriction,
+$$\sum_i\left(w_i-\frac1n\right)^2=\sum_iw_i^2-\frac1n.$$
+3. Deduce the minimum possible variance of $T$ and the weights that attain it.
+4. State precisely which estimators this result compares.
+:::
+
+## Solution 13 · Unequal weights add variance
+
+::: {.answer}
+
+$E(T)=\mu\sum_iw_i$, so unbiasedness for every $\mu$ requires $\sum_iw_i=1$.
+
+$$\sum_i\left(w_i-\frac1n\right)^2
+=\sum_iw_i^2-\frac2n\underbrace{\sum_iw_i}_{1}+\frac1n
+=\sum_iw_i^2-\frac1n.$$
+
+$$\operatorname{Var}(T)=\frac{\sigma^2}{n}
++\sigma^2\sum_i\left(w_i-\frac1n\right)^2\geq\frac{\sigma^2}{n}.$$
+
+Equality holds only at $w_i=1/n$. The sample mean is **best among fixed-weight linear unbiased estimators** under the common-variance, independent-sampling assumptions.
+
+:::
+
+## Question 14 · From LLN and CLT to a test ★★★
+
+::: {.exercise}
+Under $H_0:\mu=\mu_0$, define $t_n=\sqrt n(\bar Y-\mu_0)/s_Y$.
+
+1. Use the LLN (finite absolute means suffice) and this identity to show $s_Y^2\xrightarrow{p}\sigma^2$:
+$$s_Y^2=\frac{n}{n-1}\left(\frac1n\sum_iY_i^2-\bar Y^2\right).$$
+2. Factor $t_n$ into a CLT term and a term converging to one. Deduce its limiting distribution using Slutsky's theorem.
+3. Derive the approximate two-sided 5% rejection rule. Does it make the finite-sample distribution exactly normal?
+:::
+
+::: {.notes}
+For the LLN applied to Y_i squared, students may use the i.i.d. LLN for an
+integrable random variable: finite E(Y_i squared) is enough. A fourth moment
+is not required for this argument. Slutsky's theorem permits multiplying
+a term converging in distribution by a term converging in probability to
+a constant; independence of the two terms is not required.
+:::
+
+## Solution 14 · First estimate the variance
+
+::: {.answer}
+
+Finite variance gives $E(Y_i^2)=\sigma^2+\mu_0^2<\infty$ under $H_0$.
+Apply the LLN to $Y_i$ and $Y_i^2$:
+
+$$\bar Y\xrightarrow{p}\mu_0,\qquad
+\frac1n\sum_iY_i^2\xrightarrow{p}\sigma^2+\mu_0^2.$$
+
+Therefore,
+
+$$s_Y^2\xrightarrow{p}1\left[(\sigma^2+\mu_0^2)-\mu_0^2\right]=\sigma^2.$$
+
+Since $\sigma>0$, $s_Y\xrightarrow{p}\sigma$ and $\sigma/s_Y\xrightarrow{p}1$.
+
+:::
+
+## Solution 14 · Then standardize the mean
+
+::: {.answer}
+
+$$t_n=
+\underbrace{\frac{\sqrt n(\bar Y-\mu_0)}{\sigma}}_{\xrightarrow{d}N(0,1)\text{ by CLT}}
+\quad\times\quad
+\underbrace{\frac{\sigma}{s_Y}}_{\xrightarrow{p}1\text{ by LLN}}
+\xrightarrow{d}N(0,1).$$
+
+For a two-sided 5% test, choose $c$ so $2[1-\Phi(c)]=0.05$:
+
+$$c=\Phi^{-1}(0.975)\approx1.96,\qquad\text{reject when }|t_{\mathrm{obs}}|>1.96.$$
+
+This is **asymptotic**, not exact finite-sample normality. With normal observations and estimated variance, the exact null reference is $t_{n-1}$.
+
+:::
+
+## Question 15 · A precise but misleading survey ★★★
+
+::: {.exercise}
+Exactly 50% of a town's commuters cycle. An opt-in app attracts more cyclists: model its respondents as i.i.d. Bernoulli$(0.60)$.
+Among $400$ respondents, $240$ cycle.
+
+1. An analyst treats respondents as a random sample of all commuters. Compute their t-statistic for $H_0:\mu=0.50$ using $SE=s_Y/\sqrt{400}$, where $s_Y^2=\frac{400}{399}\bar Y(1-\bar Y)$.
+2. What do the LLN and CLT say about this respondent mean as $n$ grows?
+3. Will collecting more respondents fix the inference about the town? Explain what happens to the statistic and p-value.
+:::
+
+::: {.notes}
+The town share is known only because this is a hypothetical thought
+experiment. It lets us assess whether the analyst's procedure answers
+the intended population question. The finite-sample variance formula uses
+the lecture's n-1 sample variance, rather than silently substituting a
+null-imposed Bernoulli variance. This is a t-statistic with a normal
+approximation, not an exact binomial test.
+:::
+
+## Solution 15 · More observations preserve selection
+
+::: {.answer}
+
+$$\bar y=0.60,\quad SE=\sqrt{\frac{0.24}{399}}\approx `r four_decimals(respondent_se)`,\quad
+t_{\mathrm{obs}}\approx `r four_decimals(respondent_t)`.$$
+
+The analyst reports $p\approx `r sprintf("%.7f", normal_p_value(respondent_t))`$ and rejects at 5%.
+
+$$\bar Y\xrightarrow{p}0.60,\qquad
+\frac{\sqrt n(\bar Y-0.60)}{\sqrt{0.24}}\xrightarrow{d}N(0,1).$$
+
+The respondent mean stays centered on **0.60**, not the town's 0.50. As $n$ grows, $SE\to_p0$, $t_n\to_p+\infty$, and the reported p-value tends to zero. More respondents do not correct selection into the app.
+
+:::
+
+::: {.notes}
+The naive calculation is a test of the respondent-population mean if
+interpreted under the actual sampling process. It cannot establish that
+the town mean differs from 0.50. The target town null is true in this
+thought experiment; the respondent sampling model is incompatible with
+treating those observations as an i.i.d. town sample. The LLN and CLT work
+for the population actually sampled. Representativeness is a separate
+requirement. No causal conclusion follows from the survey.
+:::
