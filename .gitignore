@@ -33,6 +33,10 @@ outputs/
 quiz/quiz[0-9]*/**
 !quiz/quiz[0-9]*/README.md
 
+# Quiz 1 materials linked from the course README.
+!quiz/quiz1/quiz1_five_forms.pdf
+!quiz/quiz1/quiz1_instructor_key.pdf
+
 # Never commit raw live-student scans by default.
 quiz/**/raw_scans/
 quiz/**/scans/

@@ -88,3 +88,9 @@ Quizzes are short, in-class assessments based only on material already taught an
 - [Mock quiz](quiz/mock_quiz/mock_quiz_five_forms.pdf)
 - [Mock quiz answer key](quiz/mock_quiz/mock_quiz_instructor_key.pdf)
 - [Example completed answer sheets](quiz/mock_quiz/mock_quiz_answer_sheets.pdf)
+
+### Quiz 1: Probability review
+
+- [Quiz 1: all five forms](quiz/quiz1/quiz1_five_forms.pdf)
+- [Quiz 1: answer key and worked solutions](quiz/quiz1/quiz1_instructor_key.pdf)
+- [Quiz 1 grades (Excel)](quiz/grades.xlsx)
