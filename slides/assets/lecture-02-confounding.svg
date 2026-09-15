@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="400" viewBox="0 0 1200 400" role="img" aria-labelledby="title desc">
+<title id="title">A possible confounding path through district resources</title>
+<desc id="desc">District resources Z cause both class size X and test scores Y. Class size also causes test scores. The backdoor path X left arrow Z right arrow Y can confound the class size comparison.</desc>
+<defs><marker id="red" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="#B83D2F"/></marker><marker id="ink" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="#242424"/></marker></defs>
+<rect width="1200" height="400" fill="white"/>
+<g font-family="Arial,sans-serif" text-anchor="middle" fill="#242424">
+<rect x="385" y="12" width="430" height="85" rx="10" fill="#FBE9E5" stroke="#B83D2F" stroke-width="2"/>
+<text x="600" y="48" font-size="30">District resources (Z)</text><text x="600" y="79" font-size="22">Omitted from the short regression</text>
+<rect x="50" y="260" width="340" height="82" rx="10" fill="#F7F6F3" stroke="#242424" stroke-width="2"/>
+<text x="220" y="310" font-size="32">Class size (X)</text>
+<rect x="810" y="260" width="340" height="82" rx="10" fill="#F7F6F3" stroke="#242424" stroke-width="2"/>
+<text x="980" y="310" font-size="32">Test scores (Y)</text>
+<path d="M460 98 L245 247" stroke="#B83D2F" stroke-width="4" fill="none" marker-end="url(#red)"/>
+<path d="M740 98 L955 247" stroke="#B83D2F" stroke-width="4" fill="none" marker-end="url(#red)"/>
+<path d="M402 301 L797 301" stroke="#242424" stroke-width="4" fill="none" marker-end="url(#ink)"/>
+<text x="600" y="281" font-size="26">Causal effect of interest</text>
+<text x="600" y="386" font-size="25" fill="#B83D2F">Backdoor path: X ← Z → Y</text>
+</g></svg>

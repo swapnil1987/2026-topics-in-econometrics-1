@@ -1284,17 +1284,17 @@ unique global solution; that condition is discussed shortly.
 $$
 \sum_iY_i-n\hat\beta_0-\hat\beta_1\sum_iX_i=0
 \quad\Rightarrow\quad
-\hat\beta_0=\bar Y-\hat\beta_1\bar X.
+\hat\beta_0=\overline{Y}-\hat\beta_1\overline{X}.
 $$
 
 Substituting into the fitted line gives
 
 $$
-\hat Y_i=\bar Y+\hat\beta_1(X_i-\bar X).
+\hat Y_i=\overline{Y}+\hat\beta_1(X_i-\overline{X}).
 $$
 
 ::: {.key-idea}
-Every OLS line with an intercept passes through **$(\bar X,\bar Y)$**.
+Every OLS line with an intercept passes through **$(\overline{X},\overline{Y})$**.
 :::
 
 ## Center the data to solve for the slope
@@ -1615,26 +1615,6 @@ $$
 
 The line captures **60% of the sample variation around the mean**.
 
-## With one regressor, R-squared is squared correlation
-
-Since $\hat Y_i-\bar Y=\hat\beta_1(X_i-\bar X)$,
-
-$$
-R^2=\frac{\hat\beta_1^2S_{XX}}{S_{YY}}
-=\frac{S_{XY}^2}{S_{XX}S_{YY}}=r_{XY}^2.
-$$
-
-- This identity holds for simple OLS **with an intercept**.
-- Squaring removes the sign: equal positive and negative correlations give the same $R^2$.
-- $R^2$ describes strength of linear fit, not the direction of the association.
-
-::: {.notes}
-S_YY denotes TSS. Both sample variances must be positive for the correlation.
-For multiple regressors, the R-squared is not the squared correlation of
-Y with any one regressor. A zero sample linear correlation does not rule
-out a nonlinear relationship.
-:::
-
 ## The standard error of the regression measures residual scale
 
 $$
@@ -1790,5 +1770,647 @@ stopifnot(
   abs(hand_r2 - cor(hand_regression$x, hand_regression$y)^2) < 1e-12,
   abs(hand_ser - summary(hand_fit)$sigma) < 1e-12,
   abs((698.9 - 2.28 * 20) - 653.3) < 1e-10
+)
+```
+
+## When does OLS identify a causal effect? {.section-slide background-color="#E85D4A"}
+
+Section 4.4 · The least squares assumptions
+
+The central question: what else changes when $X$ changes?
+
+::: {.notes}
+Source: Stock and Watson, supplied Chapter 4, Section 4.4 and Key Concept
+4.3. The derivation of the OLS error decomposition uses Appendix 4.3.
+The DAG, numerical examples, and classroom exercises below are teaching
+extensions, not empirical claims about the California data.
+:::
+
+## Three assumptions, three different jobs
+
+For $Y_i=\beta_0+\beta_1X_i+u_i$, with $\beta_1$ the proposed causal effect:
+
+| Assumption | What it asks | Main role |
+|---|---|---|
+| **1. Zero conditional mean** | $E(u_i\mid X_i)=0$ | Separate the effect of $X$ from other outcome drivers |
+| **2. Random sampling** | The pairs $(X_i,Y_i)$ are i.i.d. | Connect the sample to a population and justify sampling calculations |
+| **3. Controlled tails** | $X_i,Y_i$ have finite fourth moments | Support the usual large-sample approximations |
+
+::: {.key-idea}
+Assumption 1 is our main identification question. Assumptions 2 and 3 still matter for what we can learn from a sample.
+:::
+
+::: {.notes}
+Key Concept 4.3 states nonzero finite fourth moments. We also require
+variation in X: Var(X)>0 in the population and S_XX>0 for the fitted sample.
+These are sufficient textbook conditions, not the weakest possible ones.
+:::
+
+## First decide what the coefficient is meant to describe
+
+**A causal model:** changing $X$ while holding other determinants fixed changes $Y$.
+
+$$
+Y_i(x)=\beta_0+\beta_1x+u_i,
+\qquad Y_i(x+1)-Y_i(x)=\beta_1.
+$$
+
+- Here $Y_i(x)$ is the outcome unit $i$ would have under an intervention setting $X=x$.
+- This is an additive, constant-effect model; $u_i$ collects other determinants.
+- Defining a fitted line does **not** establish that it represents this intervention.
+
+::: {.notes}
+Section 4.4 defines beta_1 as an intervention effect. Potential-outcome
+notation makes that interpretation explicit here. We assume well-defined
+interventions and no interference for this classroom model. A linear
+conditional expectation, by itself, need not be a causal response function.
+:::
+
+## What is inside the error term?
+
+For a regression of district test scores on class size:
+
+$$
+Y_i=\beta_0+\beta_1X_i+u_i.
+$$
+
+- $X_i$: class size; $Y_i$: test score.
+- $u_i$: contributions from resources, teachers, family background, and other omitted influences.
+- An influence can be systematic and important even though we call it an **error**.
+
+::: {.key-idea}
+The issue is not whether other influences exist. It is whether their average contribution differs across values of $X$.
+:::
+
+## Zero conditional mean compares like with like on average
+
+$$
+E(u_i\mid X_i=x)=0\quad\text{for every relevant }x.
+$$
+
+Imagine grouping districts by class size and averaging the **other** contributions to scores within each group.
+
+- Individual districts can have positive or negative errors.
+- Each class-size group must have the same average omitted contribution, normalized to zero.
+- Smaller classes must not systematically come bundled with other score advantages or disadvantages.
+
+::: {.notes}
+Strictly, the condition holds almost surely over the support of X.
+An X-invariant nonzero conditional mean can be absorbed into the intercept.
+The substantive restriction is constancy across X, not the chosen zero.
+:::
+
+## Zero in every group is stronger than zero overall
+
+Suppose half the districts are in each group. These numbers are hypothetical.
+
+| Class size | $E(u\mid X)$ | Interpretation |
+|---|---:|---|
+| 20 students | $+4$ score points | Other factors raise scores on average |
+| 30 students | $-4$ score points | Other factors lower scores on average |
+
+$$
+E(u)=\tfrac12(4)+\tfrac12(-4)=0,
+\qquad E(u\mid X)\ne0.
+$$
+
+The overall average hides sorting: the small-class group has an **8-point advantage from other factors**.
+
+## What assumption 1 does not require
+
+- **Not** $u_i=0$: individual outcomes need not lie on the line.
+- **Not** constant error variance: $\operatorname{Var}(u_i\mid X_i)$ may change with $X_i$.
+- **Not** normally distributed errors.
+- **Not** full independence of $X_i$ and $u_i$.
+
+**Example:** suppose each error below is equally likely within its group.
+
+| Class size $X$ | Possible errors $u$ | $E(u\mid X)$ | $\operatorname{Var}(u\mid X)$ |
+|---|---|---:|---:|
+| Small classes | $-2$ or $+2$ | $0$ | $4$ |
+| Large classes | $-10$ or $+10$ | $0$ | $100$ |
+
+::: {.key-idea}
+Knowing $X$ tells us the **size** of the error, but not its sign. The means are zero, yet the distributions differ: heteroskedasticity without violating assumption 1.
+:::
+
+::: {.notes}
+Hypothetical illustration, not a claim about actual class-size data.
+Within each group, the two stated errors each have probability one half.
+Their variances are 4 and 100 because their means are zero. Independence
+would require the entire conditional distribution of u to be unchanged
+across X. Zero conditional mean only requires its mean to be zero.
+:::
+
+## The observed comparison contains two parts
+
+Taking conditional expectations of the causal model gives
+
+$$
+E(Y\mid X=x)=\beta_0+\beta_1x+E(u\mid X=x).
+$$
+
+For two values $x_H>x_L$:
+
+$$
+E(Y\mid x_H)-E(Y\mid x_L)
+=\beta_1(x_H-x_L)+\big[E(u\mid x_H)-E(u\mid x_L)\big].
+$$
+
+**Observed difference = causal change + difference in other determinants.**
+
+::: {.notes}
+Here E(Y|x) abbreviates E(Y|X=x). Under assumption 1, the bracket
+vanishes. In the previous hypothetical example, x_H=30 and x_L=20,
+so the noncausal component is -8 points. This is selection across groups,
+not an additional effect of changing class size within a district.
+:::
+
+## Endogeneity: the regressor carries omitted influences
+
+In the linear model, the standard slope-bias problem is
+
+$$
+\operatorname{Cov}(X_i,u_i)\ne0.
+$$
+
+- $X$ moves together with other determinants of $Y$ that remain in $u$.
+- OLS uses that co-movement when estimating the slope.
+- The resulting slope can mix the causal effect with selection or confounding.
+
+::: {.definition}
+We call this regressor **endogenous** relative to the proposed causal model. It necessarily violates zero conditional mean.
+:::
+
+## Zero covariance is not the full conditional-mean assumption
+
+By iterated expectations,
+
+$$
+E(u\mid X)=0\ \Rightarrow\ E(u)=0,\quad
+E(Xu)=E\{X E(u\mid X)\}=0
+\ \Rightarrow\ \operatorname{Cov}(X,u)=0.
+$$
+
+**The converse fails.** Let $X$ take $-1,0,1$ with equal probabilities and set $u=X^2-2/3$.
+
+$$
+\operatorname{Cov}(X,u)=0,
+\qquad E(u\mid X)=X^2-2/3\ne0.
+$$
+
+A nonlinear pattern can have zero linear covariance. Not every violation of assumption 1 creates slope inconsistency.
+
+::: {.notes}
+Terminology varies: some texts use endogeneity for any conditional-mean
+failure, others for nonzero regressor-error covariance. Keep the two
+mathematical conditions distinct. With suitable LLN conditions, zero
+covariance suffices for consistency of this linear slope, but does not
+give the full conditional-mean model or the same unbiasedness argument.
+:::
+
+## A causal diagram makes the omitted path visible
+
+![](assets/lecture-02-confounding.svg){width=1050 fig-alt="District resources Z affect both class size X and test scores Y; X also affects Y. The path X left arrow Z right arrow Y is a possible confounding path."}
+
+- The straight arrow $X\to Y$ is the causal effect we want.
+- The path $X\leftarrow Z\to Y$ is another source of association.
+- This DAG is a **proposed causal story**, not something established by a scatterplot.
+
+::: {.notes}
+DAG means directed acyclic graph: arrows represent assumed causal
+directions and there are no directed cycles. This illustrative graph
+assumes resources precede class size; it is not an empirical claim about
+any particular school system. The omitted path is called a backdoor path
+because its first arrow points into X. It can generate confounding;
+the diagram alone does not give a numerical magnitude or sign.
+:::
+
+## Translate the diagram into an omitted-variable model
+
+**1. Start with the richer model:**
+
+$$
+Y=\alpha+\beta X+\delta Z+\varepsilon,
+\qquad E(\varepsilon\mid X,Z)=0.
+$$
+
+**2. Add and subtract $\delta E(Z)$; regroup:**
+
+$$
+\begin{aligned}
+Y&=\alpha+\beta X+\delta E(Z)+\delta[Z-E(Z)]+\varepsilon\\
+ &=\underbrace{[\alpha+\delta E(Z)]}_{\beta_0}+\beta X
++\underbrace{\{\delta[Z-E(Z)]+\varepsilon\}}_{u}.
+\end{aligned}
+$$
+
+The intercept absorbs the **average** contribution of $Z$; its remaining variation enters $u$.
+
+**3. Expand the covariance:**
+
+$$
+\begin{aligned}
+\operatorname{Cov}(X,u)
+&=\delta\operatorname{Cov}(X,Z)-\delta\underbrace{\operatorname{Cov}(X,E(Z))}_{0}
++\underbrace{\operatorname{Cov}(X,\varepsilon)}_{0}\\
+&=\delta\operatorname{Cov}(X,Z).
+\end{aligned}
+$$
+
+$E(Z)$ is a constant; $E(\varepsilon\mid X,Z)=0$ implies $\operatorname{Cov}(X,\varepsilon)=0$.
+
+::: {.notes}
+This example imposes a correctly specified additive model. The intercept
+absorbs the unconditional contribution of Z. Zero conditional mean of
+epsilon given X,Z implies E(epsilon)=0 and Cov(X,epsilon)=0.
+Omission alone is not enough to bias the slope; the product must be nonzero.
+:::
+
+## Derive the omitted-variable distortion
+
+**1. Start with the population slope (with an intercept):**
+
+$$
+b_{\mathrm{short}}=\frac{\operatorname{Cov}(X,Y)}{\operatorname{Var}(X)},
+\qquad \operatorname{Var}(X)>0.
+$$
+
+**2. Substitute $Y=\alpha+\beta X+\delta Z+\varepsilon$ into the numerator:**
+
+$$
+\begin{aligned}
+\operatorname{Cov}(X,Y)
+&=\operatorname{Cov}(X,\alpha)+\beta\operatorname{Cov}(X,X)
++\delta\operatorname{Cov}(X,Z)+\operatorname{Cov}(X,\varepsilon)\\
+&=0+\beta\operatorname{Var}(X)+\delta\operatorname{Cov}(X,Z)+0.
+\end{aligned}
+$$
+
+$\alpha$ is constant; $E(\varepsilon\mid X,Z)=0$ makes $\operatorname{Cov}(X,\varepsilon)=0$.
+
+**3. Divide each remaining term by $\operatorname{Var}(X)$:**
+
+$$
+b_{\mathrm{short}}
+=\frac{\beta\operatorname{Var}(X)+\delta\operatorname{Cov}(X,Z)}{\operatorname{Var}(X)}
+=\beta+\delta\frac{\operatorname{Cov}(X,Z)}{\operatorname{Var}(X)}.
+$$
+
+::: {.key-idea}
+**Distortion:** $b_{\mathrm{short}}-\beta=\delta\,\pi$, where $\pi=\operatorname{Cov}(X,Z)/\operatorname{Var}(X)$ is the population slope of $Z$ on $X$.
+:::
+
+::: {.notes}
+This is an exact population linear-projection identity, with Var(X)>0
+and the required moments. It is also the probability limit of the short
+OLS slope under suitable sampling conditions. It is not generally an
+exact formula for finite-sample unconditional bias.
+:::
+
+## Zero residual correlation is not evidence of exogeneity
+
+OLS with an intercept mechanically delivers
+
+$$
+\sum_i\hat u_i=0,\qquad \sum_iX_i\hat u_i=0.
+$$
+
+But the assumption concerns **$u_i$**, not **$\hat u_i$**:
+
+$$
+\hat u_i=u_i+(\beta_0-\hat\beta_0)+(\beta_1-\hat\beta_1)X_i.
+$$
+
+The fitted slope can absorb the part of $u$ associated with $X$, leaving residuals orthogonal to $X$ even when $X$ is endogenous.
+
+::: {.key-idea}
+An OLS identity cannot validate an assumption about the unobserved causal error.
+:::
+
+```{r}
+#| label: section44-checks
+#| include: false
+
+# Exact checks of the invented examples, not empirical estimates.
+check_x <- c(-1, 0, 1)
+check_u <- check_x^2 - 2 / 3
+stopifnot(
+  abs(mean(check_u)) < 1e-12,
+  abs(mean(check_x * check_u)) < 1e-12,
+  all(abs(check_u) > 0),
+  abs(mean(c(4, -4))) < 1e-12
+)
+```
+
+## How much would the fitted line change in another sample? {.section-slide background-color="#E85D4A"}
+
+Section 4.5 · The sampling distribution of the OLS estimators
+
+One population relationship; many possible fitted lines.
+
+::: {.notes}
+Source: Stock and Watson, supplied Chapter 4, Section 4.5, equations
+4.18–4.20 and Key Concept 4.4. We state the sampling results without
+restoring the appendix-style proof slides removed from Section 4.4.
+:::
+
+## A regression coefficient is a random variable before sampling
+
+Imagine repeatedly drawing $n$ observations from the **same population**.
+
+1. Draw a sample of pairs $(X_i,Y_i)$.
+2. Fit the OLS line and record $(\hat\beta_0,\hat\beta_1)$.
+3. Repeat with a fresh sample of the same size.
+
+- The population coefficients stay fixed; the estimates change.
+- The distribution of the recorded slopes is the **sampling distribution of $\hat\beta_1$**.
+- It is not the distribution of individual outcomes or residuals in one sample.
+
+## Three properties answer three different questions
+
+Under the least squares assumptions, with variation in $X$:
+
+| Property | Statement, for $j=0,1$ | Meaning |
+|---|---|---|
+| Unbiasedness | $E(\hat\beta_j)=\beta_j$ | Correct center across repeated samples |
+| Consistency | $\hat\beta_j\xrightarrow{p}\beta_j$ | Estimates concentrate near the target as $n$ grows |
+| Asymptotic normality | Standardized estimation error approaches $N(0,1)$ | A usable approximation to the sampling distribution |
+
+::: {.key-idea}
+An unbiased estimator can still be imprecise in a small sample. A normal approximation is a large-sample result, not an exact finite-sample guarantee.
+:::
+
+::: {.notes}
+Source: Section 4.5, equation 4.18 and Key Concept 4.4. Conditions include
+E(u|X)=0, i.i.d. pairs, the textbook moment restrictions, and Var(X)>0.
+Finite-sample unbiasedness presumes a nondegenerate fitted design and
+existence of the expectations. Normality statements below refer to the
+usual nondegenerate asymptotic distribution. No new proof is inserted here.
+:::
+
+## Why the LLN and CLT appear again
+
+Write $\mu_X=E(X)$, $q=\operatorname{Var}(X)>0$, and $v_i=(X_i-\mu_X)u_i$.
+
+Because $E(u_i\mid X_i)=0$, we have $E(v_i)=0$. For large $n$,
+
+$$
+\sqrt n(\hat\beta_1-\beta_1)
+=\frac{1}{q}\frac{1}{\sqrt n}\sum_{i=1}^n v_i
++r_n,\qquad r_n\xrightarrow{p}0.
+$$
+
+- $r_n$ is a remainder that becomes negligible as the sample grows.
+- **LLN:** the sample variance of $X$ settles near $q$.
+- **CLT:** the scaled sum of the mean-zero products $v_i$ approaches a normal distribution.
+- Together they give a normal approximation for the slope estimator.
+
+::: {.notes}
+Source: Section 4.5's CLT discussion and Appendix 4.3. This is an
+asymptotic representation, not an exact equality with the remainder
+omitted. Replacing sample centering by population centering contributes
+a term negligible at the square-root-n scale under the stated assumptions.
+:::
+
+## The slope's large-sample distribution
+
+Define the asymptotic variance factor
+
+$$
+V_1=\frac{\operatorname{Var}[(X_i-\mu_X)u_i]}{[\operatorname{Var}(X_i)]^2}.
+$$
+
+Then the formal limit and its working approximation are
+
+$$
+\sqrt n(\hat\beta_1-\beta_1)\xrightarrow{d}N(0,V_1),
+\qquad \hat\beta_1\ \text{approximately}\ N\!\left(\beta_1,\frac{V_1}{n}\right).
+$$
+
+- **Center:** $\beta_1$; **approximate sampling variance:** $V_1/n$.
+- **Approximate sampling SD:** $\sqrt{V_1/n}$, measured in the same units as the slope.
+- This formula allows error variance to differ across values of $X$.
+
+::: {.notes}
+Source: equation 4.19. V_1/n is the variance of the large-sample normal
+approximation, not a general exact finite-sample variance formula. The
+asymptotic variance factor V_1 does not itself depend on n when the
+population distribution is fixed. Heteroskedasticity is permitted.
+:::
+
+## Read the variance formula as signal versus noise
+
+For intuition only, add **constant conditional error variance**:
+
+$$
+\operatorname{Var}(u\mid X)=\sigma_u^2.
+$$
+
+Since $E(u\mid X)=0$,
+
+$$
+\operatorname{Var}[(X-\mu_X)u]
+=E[(X-\mu_X)^2E(u^2\mid X)]
+=\sigma_u^2\operatorname{Var}(X).
+$$
+
+Therefore
+
+$$
+\operatorname{Var}_{\mathrm{approx}}(\hat\beta_1)
+=\frac{\sigma_u^2}{n\operatorname{Var}(X)},
+\qquad \operatorname{SD}_{\mathrm{approx}}(\hat\beta_1)
+=\frac{\sigma_u}{\sqrt n\,\sigma_X}.
+$$
+
+This simplification is **not** an extra requirement for the general result.
+
+::: {.notes}
+Algebraic teaching extension of equation 4.19 under homoskedasticity.
+The mean of (X-mu_X)u is zero, so its variance equals its second moment.
+Under heteroskedasticity, changing the distribution of X can also change
+the numerator; do not infer an unconditional precision improvement from
+the denominator alone.
+:::
+
+## What makes a slope estimate more precise?
+
+Using $\operatorname{SD}_{\mathrm{approx}}(\hat\beta_1)=\sigma_u/(\sqrt n\,\sigma_X)$:
+
+| Change, holding the other quantities fixed | Effect on the slope's sampling SD |
+|---|---|
+| Multiply sample size $n$ by 4 | Divide by 2 |
+| Double the spread $\sigma_X$ in the same units | Divide by 2 |
+| Halve the error SD $\sigma_u$ | Divide by 2 |
+
+- More observations average out sampling noise.
+- A wider range of $X$ makes competing slopes easier to distinguish.
+- Less scatter around the population line makes its slope easier to estimate.
+
+::: {.notes}
+Source: Section 4.5 precision discussion and Figure 4.5; quantified here
+using the homoskedastic special case. Expanding X support is not the same
+as changing its measurement units: a units change rescales the coefficient
+and its SD together and creates no new information. The comparison also
+presumes the model and exogeneity remain valid across that support.
+:::
+
+## A numerical precision comparison
+
+Hypothetical homoskedastic population: $\beta_1=-1$, $\sigma_u=10$, $\sigma_X=5$.
+
+$$
+\operatorname{SD}_{\mathrm{approx}}(\hat\beta_1)=\frac{10}{5\sqrt n}=\frac{2}{\sqrt n}.
+$$
+
+| Sample size $n$ | Approximate sampling SD | Approximate central 95% range for $\hat\beta_1$ |
+|---:|---:|---|
+| 100 | 0.20 | $-1\pm1.96(0.20)=[-1.392,-0.608]$ |
+| 400 | 0.10 | $-1\pm1.96(0.10)=[-1.196,-0.804]$ |
+| 1600 | 0.05 | $-1\pm1.96(0.05)=[-1.098,-0.902]$ |
+
+These are **repeated-sampling ranges around a known population coefficient**, not confidence intervals computed from an observed sample.
+
+::: {.notes}
+Invented quantities, not estimates from the school data. X is students
+per class and Y is score points, so slope SD is score points per student.
+Ranges come from the normal approximation; finite-sample coverage is not
+asserted to be exact. The next slide plots these reference distributions.
+:::
+
+## Larger samples produce narrower sampling distributions
+
+```{r}
+#| label: section45-normal-reference
+#| echo: false
+#| fig-width: 12
+#| fig-height: 4.7
+#| fig-alt: "Three normal reference densities centered at minus one; sample sizes 100, 400, and 1600 have standard deviations 0.20, 0.10, and 0.05."
+
+reference_slopes <- seq(-1.7, -0.3, length.out = 1201)
+reference_n <- c(100, 400, 1600)
+reference_densities <- do.call(rbind, lapply(reference_n, function(n) {
+  data.frame(slope = reference_slopes,
+             density = dnorm(reference_slopes, mean = -1, sd = 2 / sqrt(n)),
+             sample_size = factor(n, levels = reference_n))
+}))
+ggplot(reference_densities, aes(slope, density, colour = sample_size)) +
+  geom_line(linewidth = 1.15) +
+  geom_vline(xintercept = -1, linetype = "dashed", colour = "#68645F") +
+  scale_colour_manual(values = c("#999188", "#E85D4A", "#242424")) +
+  labs(x = "Estimated slope across repeated samples", y = "Density",
+       colour = "Sample size n") +
+  theme(legend.position = "top")
+```
+
+All three curves have the same center. Their widths differ—not the true effect.
+
+::: {.notes}
+Deterministic normal reference curves from the preceding hypothetical
+example, not a Monte Carlo histogram and not empirical data. No random
+draws are made. The equal total areas, not the heights, represent probability.
+:::
+
+## The intercept also has a sampling distribution
+
+Section 4.5 gives
+
+$$
+\hat\beta_0\ \text{approximately}\ N\!\left(\beta_0,\frac{V_0}{n}\right),
+\qquad V_0=\frac{\operatorname{Var}(H_i u_i)}{[E(H_i^2)]^2},
+\qquad H_i=1-\frac{\mu_X}{E(X_i^2)}X_i.
+$$
+
+- The intercept estimates the population line's level at $X=0$.
+- If zero is far from the observed values of $X$, that level can be poorly determined.
+- Centering $X$ at a meaningful reference value changes the intercept's interpretation, not the slope or fitted outcomes.
+
+::: {.notes}
+Source: equation 4.20. With q=Var(X)>0, E(H_i^2)=q/E(X_i^2)>0.
+Under homoskedasticity, V_0=sigma_u^2[1+mu_X^2/q]. This explains the
+precision issue when zero is distant relative to the spread of X.
+Centering at a fixed reference c gives intercept beta_0+beta_1 c; centering
+at the sample mean gives fitted intercept bar Y, with a random reference.
+:::
+
+## Jointly normal does not mean independent
+
+In large samples, $(\hat\beta_0,\hat\beta_1)$ are approximately **jointly normal**.
+
+$$
+\hat\beta_0=\overline{Y}-\hat\beta_1\overline{X}.
+$$
+
+- Both estimates use the same data, so their sampling errors can be correlated.
+- A steeper fitted slope can be accompanied by a lower fitted intercept.
+- Uncertainty about a prediction combines uncertainty about **both coefficients**, including their covariance.
+
+::: {.notes}
+Source: Section 4.5 joint-distribution statement. The direction of their
+covariance is not universally negative: it depends on the regressor
+distribution and error variance. Under homoskedasticity the large-sample
+covariance is -mu_X sigma_u^2/[n Var(X)]. We introduce the dependence
+concept without developing prediction intervals in this section.
+:::
+
+## What the normal approximation does not say
+
+- Individual $Y_i$, $X_i$, and $u_i$ do **not** have to be normally distributed.
+- A small-sample OLS distribution need not be normal.
+- There is no universal sample-size cutoff guaranteeing a good approximation.
+- Dependence, heavy tails, and influential observations can make approximation difficult.
+
+::: {.key-idea}
+The CLT concerns the sampling distribution of an estimator—not the shape of the raw data.
+:::
+
+::: {.notes}
+Section 4.5 motivates a large-sample rule of thumb. We deliberately avoid
+treating its discussion of n greater than 100 as a universal theorem.
+The approximation depends on the data-generating distribution and design.
+This is distinct from exact finite-sample normal results that require
+additional assumptions not made in the main argument.
+:::
+
+## From a sampling distribution to inference
+
+The population variance factor $V_1$ is unknown. A **standard error** estimates the slope's sampling SD:
+
+$$
+\mathrm{SE}(\hat\beta_1)\ \text{estimates}\ \sqrt{V_1/n}.
+$$
+
+Using a valid standard error, the next step is familiar:
+
+$$
+t=\frac{\hat\beta_1-\beta_{1,0}}{\mathrm{SE}(\hat\beta_1)},
+\qquad \hat\beta_1\pm1.96\,\mathrm{SE}(\hat\beta_1)
+\quad\text{(large-sample 95% interval)}.
+$$
+
+- **SER:** estimates residual spread, in units of $Y$.
+- **Slope SE:** estimates coefficient uncertainty, in units of $Y$ per unit of $X$.
+
+::: {.notes}
+Section 4.5 closes by motivating inference; the displayed t statistic
+and interval are a preview of Chapter 5. They require valid SE estimation
+and the large-sample conditions. Because the main assumptions allow
+heteroskedasticity, a homoskedastic-only SE is not generally valid.
+Neither a small SE nor a small p-value validates causal identification.
+:::
+
+```{r}
+#| label: section45-checks
+#| include: false
+
+# Deterministic checks of the illustrative precision calculations.
+reference_sd <- 10 / (sqrt(reference_n) * 5)
+stopifnot(
+  max(abs(reference_sd - c(0.20, 0.10, 0.05))) < 1e-12,
+  max(abs((-1 - 1.96 * reference_sd) - c(-1.392, -1.196, -1.098))) < 1e-12,
+  max(abs((-1 + 1.96 * reference_sd) - c(-0.608, -0.804, -0.902))) < 1e-12,
+  all(is.finite(reference_densities$density)),
+  all(reference_densities$density >= 0)
 )
 ```
