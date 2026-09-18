@@ -1,0 +1,1036 @@
+---
+title: "Practice Set 3: Questions and Solutions"
+subtitle: "Lecture 3 · Regression through the causal diagram"
+author: "Swapnil Singh"
+date: "2026-09-18"
+date-format: "D MMMM YYYY"
+footer: "Topics in Econometrics I · Practice Set 3"
+execute:
+  warning: true
+  message: true
+---
+
+```{r}
+#| label: practice03-setup
+#| include: false
+
+# All numerical examples are invented and deterministic; no seed is needed.
+hand_data <- data.frame(x = 1:4, y = c(2, 3, 5, 6))
+hand_fit <- lm(y ~ x, data = hand_data)
+hand_residuals <- residuals(hand_fit)
+hand_tss <- sum((hand_data$y - mean(hand_data$y))^2)
+hand_ess <- sum((fitted(hand_fit) - mean(hand_data$y))^2)
+hand_ssr <- sum(hand_residuals^2)
+
+rent_data <- data.frame(area = c(20, 40, 60, 80, 100))
+rent_data$rent <- 300 + 12 * rent_data$area + c(40, -40, 0, -40, 40)
+rent_fit <- lm(rent ~ area, data = rent_data)
+rent_data$rent_hundreds <- rent_data$rent / 100
+rent_data$area_tens <- rent_data$area / 10
+rent_scaled_fit <- lm(rent_hundreds ~ area_tens, data = rent_data)
+
+# Check the worked arithmetic and algebra against independently fitted models.
+stopifnot(
+  isTRUE(all.equal(unname(coef(hand_fit)), c(0.5, 1.4))),
+  max(abs(hand_residuals - c(0.1, -0.3, 0.3, -0.1))) < 1e-12,
+  abs(sum(hand_residuals)) < 1e-12,
+  abs(sum(hand_data$x * hand_residuals)) < 1e-12,
+  abs(hand_tss - 10) < 1e-12,
+  abs(hand_ess - 9.8) < 1e-12,
+  abs(hand_ssr - 0.2) < 1e-12,
+  abs(hand_tss - hand_ess - hand_ssr) < 1e-12,
+  abs(summary(hand_fit)$r.squared - 0.98) < 1e-12,
+  abs(summary(hand_fit)$sigma - sqrt(0.1)) < 1e-12,
+  isTRUE(all.equal(unname(coef(rent_scaled_fit)), c(3, 1.2))),
+  abs(summary(rent_fit)$r.squared - summary(rent_scaled_fit)$r.squared) < 1e-12,
+  abs(summary(rent_scaled_fit)$sigma - summary(rent_fit)$sigma / 100) < 1e-12
+)
+
+two_decimals <- function(value) sprintf("%.2f", value)
+three_decimals <- function(value) sprintf("%.3f", value)
+```
+
+## How to use this deck
+
+::: {.key-idea}
+**Attempt each question before advancing to its worked solution.**
+:::
+
+- **25 questions**, progressing from interpretation to calculations, proofs, and causal reasoning.
+- Use a calculator or R to check arithmetic; show the reasoning first.
+- Questions marked **Adapted** identify the Stock and Watson exercise used.
+- All numerical examples are hypothetical.
+
+::: {.notes}
+Lecture 3 continued the regression material in slides/lecture-02.qmd.
+Scope begins at “The linear regression model” and ends, inclusively, at
+“A causal diagram makes the omitted path visible.” The set covers Sections
+4.1–4.3 and only the taught part of Section 4.4. It excludes the subsequent
+omitted-variable-bias formula, OLS sampling distributions, coefficient tests,
+and formal confidence or prediction intervals. The slide following the
+cutoff, “Translate the diagram into an omitted-variable model,” is excluded.
+The source is the supplied local Stock and Watson Chapter 4 transcription;
+exercise references follow that copy. Adaptations use fresh wording and
+modified numbers or contexts. No book extracts or private data are embedded.
+:::
+
+## Difficulty map
+
+| Questions | Level | Main ideas |
+|---|---|---|
+| 1–5 | Foundations ★ | notation, slopes, errors, least squares |
+| 6–10 | Calculations ★★ | fit, OLS by hand, recovering summaries |
+| 11–15 | Applications ★★ | units, R, prediction, uncertainty |
+| 16–20 | Reasoning ★★★ | derivations, assumptions, random assignment |
+| 21–25 | Causal challenges ★★★ | conditional means, confounding, diagrams |
+
+**Conventions:** OLS includes an intercept unless stated otherwise.
+$SSR$ means **sum of squared residuals**; $ESS$ means explained sum of squares.
+
+## Foundations · Questions 1–5 {.section-slide background-color="#E85D4A"}
+
+## Question 1 · Which object is which? ★
+
+::: {.exercise}
+The population conditional mean is $E(Y\mid X)=\beta_0+\beta_1X$.
+A sample produces the fitted line $\hat Y=\hat\beta_0+\hat\beta_1X$.
+
+1. Which slope is a population parameter, and which is calculated from a sample?
+2. Write formulas for the population error $u_i$ and fitted residual $\hat u_i$.
+3. In repeated samples from the same population, which slope can change? Must an error equal its residual?
+:::
+
+::: {.small-note}
+Adapted from Stock and Watson, Chapter 4, Review the Concepts 4.1.
+:::
+
+## Solution 1 · Population and sample objects
+
+::: {.answer}
+
+- $\beta_1$ is the fixed **population slope**; $\hat\beta_1$ is its **sample estimator**.
+- The two deviations use different lines:
+
+$$u_i=Y_i-(\beta_0+\beta_1X_i),\qquad
+\hat u_i=Y_i-(\hat\beta_0+\hat\beta_1X_i).$$
+
+- $\hat\beta_1$ can change with the sample. The population parameter stays fixed.
+- Generally $u_i\ne\hat u_i$, because the fitted coefficients need not equal the population coefficients.
+
+:::
+
+## Question 2 · Read the slope in its units ★
+
+::: {.exercise}
+For workers aged **25–60**, a fitted regression is
+
+$$\widehat{\text{Weekly earnings}}=480+12\,\text{Age},$$
+
+with earnings in euros and age in years.
+
+1. Interpret the slope and predict earnings at ages 30 and 40.
+2. What does the intercept represent mathematically? Is it useful economically here?
+3. Does the equation show that aging ten years raises a given worker's earnings by €120?
+:::
+
+::: {.small-note}
+Adapted from Stock and Watson, Exercise 4.3(a), (d), (e); values modified.
+:::
+
+## Solution 2 · A comparison across workers
+
+::: {.answer}
+
+- One additional year of age is associated with **€12 higher fitted weekly earnings**.
+- At age 30: $480+12(30)=€840$ per week.
+- At age 40: $480+12(40)=€960$ per week.
+- The intercept predicts €480 at age zero, far outside the sample's age range. It locates the line but has no useful earnings interpretation here.
+- The €120 fitted difference compares workers of different ages. It does not establish an individual worker's causal earnings change over time.
+
+:::
+
+## Question 3 · Same mean, different outcomes ★
+
+::: {.exercise}
+Suppose the **population** conditional mean of an exam score is
+
+$$E(\text{Score}\mid H)=50+4H,$$
+
+where $H$ is weekly study hours. Two students each study three hours; their scores are 65 and 59.
+
+1. Calculate their common conditional mean and each population error.
+2. Is the lower score inconsistent with the model?
+3. Must these two errors average to zero? Explain.
+:::
+
+## Solution 3 · Zero in expectation
+
+::: {.answer}
+
+$$E(\text{Score}\mid H=3)=50+4(3)=62.$$
+
+The population errors are $65-62=3$ and $59-62=-3$ points.
+
+- Both observations are compatible with a model for the **mean** score.
+- $E(u\mid H=3)=0$ describes a population conditional average.
+- These two errors happen to average to zero. The condition does not require every finite pair or sample of errors to do so.
+
+:::
+
+## Question 4 · Predict a level and a change ★
+
+::: {.exercise}
+A regression of average test score on class size $CS$ gives
+
+$$\widehat{\text{Score}}=760-3CS.$$
+
+The observed class sizes range from 15 to 30 students.
+
+1. Predict the score for a class of 24 students.
+2. Calculate the fitted difference when class size falls from 24 to 20.
+3. Explain why the fitted difference is not automatically the effect of a class-size policy.
+:::
+
+::: {.small-note}
+Adapted from Stock and Watson, Exercise 4.1(a)–(b); values modified.
+:::
+
+## Solution 4 · Keep the direction of the change
+
+::: {.answer}
+
+$$\widehat{\text{Score}}(24)=760-3(24)=688.$$
+
+$$\Delta\widehat{\text{Score}}=-3(20-24)=+12\text{ points}.$$
+
+The fitted score is 12 points higher for the smaller class.
+The classes may also differ in resources, family background, or teachers.
+A policy interpretation requires assumptions that separate class size from those other influences.
+
+:::
+
+## Question 5 · Which candidate fits better? ★
+
+::: {.exercise}
+Two candidate lines produce the following residuals on the **same three observations**:
+
+| Candidate | Residual 1 | Residual 2 | Residual 3 |
+|---|---:|---:|---:|
+| A | 0 | 0 | 6 |
+| B | −3 | 2 | 1 |
+
+1. Which candidate has the smaller least-squares objective?
+2. Why is adding the signed residuals a poor measure of fit?
+3. Does winning this comparison prove that the candidate is the OLS line?
+:::
+
+## Solution 5 · Compare squared distances
+
+::: {.answer}
+
+$$Q_A=0^2+0^2+6^2=36,\qquad
+Q_B=(-3)^2+2^2+1^2=14.$$
+
+- **B fits better by the least-squares criterion.**
+- B's signed residuals sum to zero, but its prediction errors are not all zero. Positive and negative errors cancel when added.
+- OLS minimizes the objective over **all** intercept–slope pairs. Comparing two candidates does not establish the global minimum.
+
+:::
+
+::: {.notes}
+The candidates are feasible, for example with X=(0,1,2), Y=(0,0,6):
+line A is zero and line B is 3-2X. B beats A but is not the OLS fit.
+The question does not require reconstructing these observations.
+:::
+
+## Calculations · Questions 6–10 {.section-slide background-color="#B83D2F"}
+
+## Question 6 · What do fit measures tell us? ★★
+
+::: {.exercise}
+A regression of weekly earnings in euros on age reports
+$R^2=0.25$ and $SER=90$.
+Assess each statement and correct any error.
+
+1. “Age captures 25% of the sample variation in earnings around their mean.”
+2. “The typical residual scale is about €90 per week.”
+3. “The slope has a standard error of €90.”
+4. “Age causes 25% of earnings, and 95% of future predictions will be within €90.”
+:::
+
+::: {.small-note}
+Adapted from Stock and Watson, Review the Concepts 4.3; interpretations extended.
+:::
+
+## Solution 6 · Relative fit and residual scale
+
+::: {.answer}
+
+1. **Correct:** $R^2$ measures the fraction of centered sample variation captured by the line. It is unitless.
+2. **Reasonable as a descriptive scale:** SER is in outcome units, euros per week.
+3. **Incorrect:** SER measures residual dispersion. It is not the estimated sampling SD of the slope.
+4. **Incorrect on both counts:** $R^2$ does not measure causality, and $\hat Y\pm SER$ has no guaranteed 95% coverage for future outcomes.
+
+:::
+
+## Question 7 · Fit from summary statistics ★★
+
+::: {.exercise}
+For a sample of shops, $X$ is weekly advertising spending in **hundreds of euros**, and $Y$ is weekly sales in **thousands of euros**.
+
+$$\bar X=10,\quad \bar Y=30,\quad s_X=2,\quad s_Y=5,\quad r_{XY}=0.60.$$
+
+1. Find the OLS slope and intercept.
+2. Verify that the line passes through the sample means.
+3. Interpret a one-unit increase in $X$, including both monetary units.
+:::
+
+::: {.small-note}
+Adapted from Stock and Watson, Exercises 4.12(c) and 4.14.
+:::
+
+## Solution 7 · Correlation becomes a slope
+
+::: {.answer}
+
+$$\hat\beta_1=r_{XY}\frac{s_Y}{s_X}=0.60\frac52=1.5,$$
+
+$$\hat\beta_0=\bar Y-\hat\beta_1\bar X=30-1.5(10)=15.$$
+
+Thus $\hat Y=15+1.5X$; at $X=10$, the prediction is $30=\bar Y$.
+
+An extra **€100 of advertising** is associated with **€1,500 higher fitted weekly sales**. These summaries alone do not establish a causal return to advertising.
+
+:::
+
+## Question 8 · OLS by hand ★★
+
+::: {.exercise}
+Use the four invented observations below.
+
+| $X_i$ | 1 | 2 | 3 | 4 |
+|---|---:|---:|---:|---:|
+| $Y_i$ | 2 | 3 | 5 | 6 |
+
+1. Calculate $\bar X$, $\bar Y$, $S_{XX}=\sum_i(X_i-\bar X)^2$, and $S_{XY}=\sum_i(X_i-\bar X)(Y_i-\bar Y)$.
+2. Find the OLS coefficients, fitted values, and residuals.
+3. Check $\sum_i\hat u_i=0$ and $\sum_iX_i\hat u_i=0$.
+:::
+
+## Solution 8 · First center the data
+
+::: {.answer}
+
+$$\bar X=2.5,\qquad\bar Y=4.$$
+
+| $X_i-\bar X$ | $Y_i-\bar Y$ | Product | $(X_i-\bar X)^2$ |
+|---:|---:|---:|---:|
+| −1.5 | −2 | 3 | 2.25 |
+| −0.5 | −1 | 0.5 | 0.25 |
+| 0.5 | 1 | 0.5 | 0.25 |
+| 1.5 | 2 | 3 | 2.25 |
+
+$$S_{XY}=7,\quad S_{XX}=5,\quad
+\hat\beta_1=1.4,\quad\hat\beta_0=4-1.4(2.5)=0.5.$$
+
+:::
+
+## Solution 8 · Then check the residuals
+
+::: {.answer}
+
+$$\hat Y_i=0.5+1.4X_i.$$
+
+| $X_i$ | $Y_i$ | $\hat Y_i$ | $\hat u_i$ |
+|---:|---:|---:|---:|
+| 1 | 2 | 1.9 | 0.1 |
+| 2 | 3 | 3.3 | −0.3 |
+| 3 | 5 | 4.7 | 0.3 |
+| 4 | 6 | 6.1 | −0.1 |
+
+$$\sum_i\hat u_i=0.1-0.3+0.3-0.1=0,$$
+$$\sum_iX_i\hat u_i=0.1-0.6+0.9-0.4=0.$$
+
+:::
+
+## Question 9 · Account for the variation ★★
+
+::: {.exercise}
+For the data in Question 8, $Y=(2,3,5,6)$, $\bar Y=4$, fitted values are $(1.9,3.3,4.7,6.1)$, and residuals are $(0.1,-0.3,0.3,-0.1)$.
+
+1. Calculate $TSS$, $ESS$, and $SSR$. Verify the decomposition.
+2. Calculate $R^2$ and $SER$.
+3. State the units of each measure. Does the resulting fit establish a causal effect of $X$?
+:::
+
+## Solution 9 · Almost all variation is fitted
+
+::: {.answer}
+
+$$TSS=4+1+1+4=10,\qquad SSR=0.01+0.09+0.09+0.01=0.2,$$
+$$ESS=4.41+0.49+0.49+4.41=9.8;\qquad10=9.8+0.2.$$
+
+$$R^2=1-\frac{0.2}{10}=0.98,\qquad
+SER=\sqrt{\frac{0.2}{4-2}}\approx `r three_decimals(summary(hand_fit)$sigma)`.$$
+
+Sums of squares use **squared $Y$ units**; SER uses **$Y$ units**; $R^2$ is unitless. The line captures 98% of centered sample variation, which does not establish causality.
+
+:::
+
+## Question 10 · Recover the missing summaries ★★
+
+::: {.exercise}
+An OLS regression using **102 observations** reports
+
+$$\hat Y=90-1.5X,\qquad R^2=0.36,\qquad SER=4,\qquad\bar X=20.$$
+
+Recover:
+
+1. the sample mean $\bar Y$;
+2. $SSR$ and $TSS$;
+3. the sample standard deviation $s_Y$.
+
+Explain why the SER and sample-variance denominators differ.
+:::
+
+::: {.small-note}
+Adapted from Stock and Watson, Exercise 4.1(c)–(d); values modified.
+:::
+
+## Solution 10 · Work backward from the definitions
+
+::: {.answer}
+
+$$\bar Y=90-1.5(20)=60.$$
+
+$$SSR=(n-2)SER^2=100(16)=1600,$$
+$$TSS=\frac{SSR}{1-R^2}=\frac{1600}{0.64}=2500,$$
+$$s_Y=\sqrt{\frac{TSS}{n-1}}=\sqrt{\frac{2500}{101}}
+\approx `r three_decimals(sqrt(2500 / 101))`.$$
+
+SER accounts for **two fitted coefficients**. The sample variance centers observations using **one estimated mean**.
+
+:::
+
+## Applications · Questions 11–15 {.section-slide background-color="#E85D4A"}
+
+## Question 11 · Change the units ★★
+
+::: {.exercise}
+A fitted apartment-rent regression reports
+
+$$\widehat{\text{Rent}}=300+12\,\text{Area},\qquad R^2=0.64,\qquad SER=80,$$
+
+where rent is **euros per month** and area is **square metres**.
+Define $Y^*=\text{Rent}/100$ and $X^*=\text{Area}/10$.
+
+1. Write the fitted equation for $Y^*$ on $X^*$.
+2. Give the new $R^2$ and SER, including units.
+3. Check that a 50-square-metre apartment has the same euro prediction under both equations.
+:::
+
+::: {.small-note}
+Adapted from Stock and Watson, Exercise 4.2(c); context and units modified.
+:::
+
+## Solution 11 · Scale the quantities, preserve the fit
+
+::: {.answer}
+
+Substitute $\text{Area}=10X^*$ and divide the fitted rent by 100:
+
+$$\hat Y^*=\frac{300+12(10X^*)}{100}=3+1.2X^*.$$
+
+- $R^2=0.64$: the common $1/100^2$ factor in $SSR$ and $TSS$ cancels.
+- $SER^*=80/100=0.8$ **hundreds of euros per month**.
+- At 50 square metres, $X^*=5$ and $\hat Y^*=9$, or **€900 per month**, matching $300+12(50)$.
+
+:::
+
+## Question 12 · Can we estimate the slope? ★★
+
+::: {.exercise}
+A researcher observes $X=(5,5,5)$ and $Y=(6,8,10)$.
+
+1. Calculate $S_{XX}$. Why does the usual slope formula fail?
+2. Find the constant fitted value that minimizes squared residuals.
+3. Give two different intercept–slope pairs producing that fitted value for every observation.
+4. Would observing 1,000 more units with $X=5$ solve the slope problem?
+:::
+
+## Solution 12 · A level without a slope
+
+::: {.answer}
+
+$S_{XX}=0$: the data contain no variation in $X$.
+The fitted value is the same for every observation, $b_0+5b_1$.
+Least squares chooses that value to equal $\bar Y=8$.
+
+$$b_0+5b_1=8.$$
+
+Both $(b_0,b_1)=(8,0)$ and $(3,1)$ satisfy this equation; infinitely many pairs do.
+
+More observations at the same $X$ do not reveal how $Y$ varies across different $X$ values. A unique slope requires variation in $X$.
+
+:::
+
+## Question 13 · Repair the R analysis ★★
+
+::: {.exercise}
+We want to predict **score from study hours**. Identify and fix the two mistakes below. Then calculate the corrected line and the residual for the student with two study hours.
+:::
+
+```{r}
+#| eval: false
+students <- data.frame(hours = 0:3, score = c(1, 3, 2, 6))
+model <- lm(hours ~ score, data = students)
+students$residual <- fitted(model) - students$score
+```
+
+::: {.notes}
+The incorrect code is intentionally displayed but not executed.
+All scores and study hours are invented. The solution executes the corrected
+analysis, avoiding dependence on a package or external dataset.
+:::
+
+## Solution 13 · Outcome first; observed minus fitted
+
+```{r}
+#| label: practice03-r-solution
+#| echo: true
+students <- data.frame(hours = 0:3, score = c(1, 3, 2, 6))
+model <- lm(score ~ hours, data = students)
+students$residual <- residuals(model)
+round(coef(model), 2)
+```
+
+::: {.answer}
+
+The corrected equation is $\widehat{\text{Score}}=0.9+1.4\,\text{Hours}$.
+For two hours, $\hat Y=3.7$ and $\hat u=2-3.7=-1.7$ points.
+
+`score ~ hours` places the outcome on the left.
+Residuals are **observed minus fitted**, both measured in score points.
+
+:::
+
+## Question 14 · Which model predicts better? ★★
+
+::: {.exercise}
+Models A and B predict the same outcome. On the same training sample,
+their residual sums of squares are **40** and **20**, respectively.
+They are then evaluated on three observations used in neither fit:
+
+| Validation observation | 1 | 2 | 3 |
+|---|---:|---:|---:|
+| Actual $Y$ | 10 | 12 | 14 |
+| Prediction A | 9 | 12 | 15 |
+| Prediction B | 7 | 12 | 18 |
+
+Which model fits training data better? Which has lower validation mean squared error? What can three validation observations establish?
+:::
+
+## Solution 14 · Training success need not transfer
+
+::: {.answer}
+
+**B** has better training fit: its SSR is 20 rather than 40.
+On the held-out observations:
+
+$$MSE_A=\frac{(10-9)^2+(12-12)^2+(14-15)^2}{3}=\frac23,$$
+
+$$MSE_B=\frac{(10-7)^2+(12-12)^2+(14-18)^2}{3}=\frac{25}{3}.$$
+
+**A** predicts these three observations better.
+This is a small validation comparison; it does not establish A's expected performance on all future observations or in a different population.
+
+:::
+
+## Question 15 · A mean versus one new outcome ★★
+
+::: {.exercise}
+The true conditional mean is $E(Y\mid X)=10+2X$.
+A fitted line is $\hat Y=12+1.8X$ with $SER=3$.
+For a new observation, $X=5$ and the population error is $u=3$.
+
+1. Find the true mean, fitted value, actual outcome, and prediction error $Y-\hat Y$.
+2. Split the prediction error into individual noise and error in estimating the conditional mean.
+3. Is $\hat Y\pm SER$ a 95% prediction interval? Would knowing the true coefficients remove individual noise?
+:::
+
+## Solution 15 · Two sources of prediction error
+
+::: {.answer}
+
+The true mean is 20, the fitted value is 21, and the actual outcome is $20+3=23$.
+Therefore $Y-\hat Y=2$.
+
+$$Y-\hat Y=\underbrace{u}_{3}
++\underbrace{(10-12)+(2-1.8)5}_{-1}=2.$$
+
+- $21\pm3=(18,24)$ is a one-SER descriptive range, with no guaranteed 95% coverage.
+- Even knowing the true coefficients would leave this observation's population error of 3. Estimating a mean and predicting an individual outcome are different tasks.
+
+:::
+
+## Reasoning · Questions 16–20 {.section-slide background-color="#B83D2F"}
+
+## Question 16 · Derive the OLS coefficients ★★★
+
+::: {.exercise}
+Start from
+
+$$Q(b_0,b_1)=\sum_{i=1}^n(Y_i-b_0-b_1X_i)^2.$$
+
+Assume $S_{XX}>0$.
+
+1. Differentiate with respect to both coefficients and obtain the normal equations.
+2. Use the first equation to express $\hat\beta_0$ in terms of $\hat\beta_1$.
+3. Substitute into the second equation and derive the centered slope formula.
+:::
+
+## Solution 16 · Start with the normal equations
+
+::: {.answer}
+
+$$\frac{\partial Q}{\partial b_0}=-2\sum_i(Y_i-b_0-b_1X_i)=0,$$
+$$\frac{\partial Q}{\partial b_1}=-2\sum_iX_i(Y_i-b_0-b_1X_i)=0.$$
+
+At the fitted coefficients, these give
+$\sum_i\hat u_i=0$ and $\sum_iX_i\hat u_i=0$.
+The first equation implies
+
+$$n\bar Y-n\hat\beta_0-n\hat\beta_1\bar X=0
+\quad\Rightarrow\quad\hat\beta_0=\bar Y-\hat\beta_1\bar X.$$
+
+:::
+
+## Solution 16 · Center and solve
+
+::: {.answer}
+
+Substitution gives $\hat u_i=(Y_i-\bar Y)-\hat\beta_1(X_i-\bar X)$.
+Subtract $\bar X\sum_i\hat u_i=0$ from the second normal equation:
+
+$$0=\sum_i(X_i-\bar X)\big[(Y_i-\bar Y)-\hat\beta_1(X_i-\bar X)\big].$$
+
+Thus
+
+$$\boxed{\hat\beta_1=\frac{S_{XY}}{S_{XX}},\qquad
+\hat\beta_0=\bar Y-\hat\beta_1\bar X.}$$
+
+Because the objective is a quadratic with positive curvature when $S_{XX}>0$, this is the unique minimum.
+
+:::
+
+::: {.notes}
+One direct uniqueness check: around the solution, changing coefficients by
+(a,b) increases Q by sum_i(a+b X_i)^2. This equals zero only for a=b=0
+when X varies. The cross terms vanish by the normal equations.
+:::
+
+## Question 17 · Prove the fit identities ★★★
+
+::: {.exercise}
+Assume OLS with an intercept, $S_{XX}>0$, and $TSS>0$.
+
+1. Starting from $Y_i-\bar Y=(\hat Y_i-\bar Y)+\hat u_i$, show why the summed cross term is zero.
+2. Deduce $TSS=ESS+SSR$.
+3. Use $\hat Y_i-\bar Y=\hat\beta_1(X_i-\bar X)$ to prove that $R^2=0$ **if and only if** $\hat\beta_1=0$.
+:::
+
+::: {.small-note}
+Adapted from Stock and Watson, Exercise 4.9 and Appendix 4.3.
+:::
+
+## Solution 17 · Orthogonality removes the cross term
+
+::: {.answer}
+
+Squaring the deviation identity and summing yields
+
+$$TSS=ESS+SSR+2\sum_i(\hat Y_i-\bar Y)\hat u_i.$$
+
+But
+
+$$\sum_i(\hat Y_i-\bar Y)\hat u_i
+=\hat\beta_1\left[\sum_iX_i\hat u_i-\bar X\sum_i\hat u_i\right]=0.$$
+
+Both terms vanish by the normal equations, proving $TSS=ESS+SSR$.
+These are properties of the sample fit; no causal assumption was used.
+
+:::
+
+## Solution 17 · Zero fit means a flat fitted line
+
+::: {.answer}
+
+$$ESS=\sum_i\big[\hat\beta_1(X_i-\bar X)\big]^2
+=\hat\beta_1^2S_{XX}.$$
+
+Therefore
+
+$$R^2=\frac{\hat\beta_1^2S_{XX}}{TSS}.$$
+
+Since $S_{XX}>0$ and $TSS>0$, this fraction is zero exactly when $\hat\beta_1=0$.
+The fitted prediction is then $\bar Y$ for every observation.
+
+:::
+
+## Question 18 · Reverse the regression ★★★
+
+::: {.exercise}
+Both variables have positive sample variance. Let $r$ be their sample correlation.
+
+1. Use $ESS=\hat\beta_1^2S_{XX}$ and $\hat\beta_1=r(s_Y/s_X)$ to prove $R^2=r^2$.
+2. Derive the slope of $X$ on $Y$. Is it generally the reciprocal of the slope of $Y$ on $X$?
+3. Calculate both slopes and both $R^2$ values when $r=0.60$, $s_X=2$, and $s_Y=5$.
+:::
+
+::: {.small-note}
+Adapted from Stock and Watson, Exercise 4.12; reciprocal-slope comparison added.
+:::
+
+## Solution 18 · Same correlation, different slopes
+
+::: {.answer}
+
+Since $S_{XX}=(n-1)s_X^2$ and $TSS=(n-1)s_Y^2$,
+
+$$R^2=\frac{r^2(s_Y^2/s_X^2)(n-1)s_X^2}{(n-1)s_Y^2}=r^2.$$
+
+The reversed slope is $r(s_X/s_Y)$. The product of the two slopes is $r^2$, so they are reciprocals only when $|r|=1$.
+
+Here the slopes are $0.6(5/2)=1.5$ and $0.6(2/5)=0.24$.
+Both regressions have $R^2=0.36$, but $0.24\ne1/1.5$.
+
+:::
+
+## Question 19 · What does zero conditional mean do? ★★★
+
+::: {.exercise}
+Start with $Y=\beta_0+\beta_1X+u$, where the coefficients are proposed causal parameters.
+
+1. Derive $E(Y\mid X=x)$ and impose $E(u\mid X=x)=0$.
+2. Suppose instead that $E(u\mid X=x)=3$ for every $x$. Redefine the intercept and error so the new error has conditional mean zero. Does the slope change?
+3. Why can an intercept change not fix $E(u\mid X=x)=3+x$ while preserving the proposed causal slope?
+:::
+
+::: {.small-note}
+Adapted from Stock and Watson, Exercises 4.6 and 4.8; only conditional means are used.
+:::
+
+## Solution 19 · A constant can enter the intercept
+
+::: {.answer}
+
+$$E(Y\mid X=x)=\beta_0+\beta_1x+E(u\mid X=x).$$
+
+- If the final term is zero, the conditional-mean slope equals $\beta_1$.
+- If it is always 3, define $\alpha_0=\beta_0+3$ and $v=u-3$. Then $Y=\alpha_0+\beta_1X+v$ and $E(v\mid X)=0$. The slope is unchanged.
+- If it is $3+x$, then $E(Y\mid X=x)=(\beta_0+3)+(\beta_1+1)x$. A constant intercept shift cannot remove the extra slope of 1.
+
+:::
+
+::: {.notes}
+For the last case, redefining the error as u-3-X would give zero conditional
+mean, but the slope would become beta_1+1. That redefinition does not prove
+that beta_1+1 is the causal effect. Similarly, defining a prediction error
+as Y-E(Y|X) ensures its conditional mean is zero by construction; it does
+not verify zero conditional mean for a separately specified causal error.
+:::
+
+## Question 20 · Random assignment or sampling? ★★★
+
+::: {.exercise}
+For **every student in one class**, a coin independently assigns 30 or 60 minutes of supervised practice. Everyone complies; there are no spillovers or missing scores. Scores lie between 0 and 100. Assume an additive constant-effect causal model. The fitted line is $\widehat{\text{Score}}=50+0.3M$.
+
+1. Explain why assignment supports zero conditional mean after centering the other score determinants.
+2. Does this design alone provide an i.i.d. random sample of all university students? Are fourth moments finite?
+3. Find the fitted 60-versus-30-minute contrast. Does assignment validate extrapolation to 90 minutes?
+:::
+
+::: {.small-note}
+Adapted from Stock and Watson, Exercise 4.5; design and values modified.
+:::
+
+## Solution 20 · Assignment separates the groups
+
+::: {.answer}
+
+- The coin does not use students' other score determinants. Their average contribution is the same in both assignment groups **in expectation**; centering it gives $E(u\mid M)=0$.
+- Random assignment of practice time is different from random sampling of students. One existing class need not represent all university students, and its observations need not be i.i.d. draws from that population.
+- Time and score are bounded, so their fourth moments are finite.
+
+:::
+
+## Solution 20 · Stay within the assigned comparison
+
+::: {.answer}
+
+$$\hat Y(30)=59,\qquad\hat Y(60)=68,\qquad
+\hat Y(60)-\hat Y(30)=9\text{ points}.$$
+
+Random assignment supports a causal comparison of the two assigned practice durations for this class, subject to sampling variability.
+
+The line predicts $\hat Y(90)=77$, but nobody was assigned 90 minutes.
+Extending the same effect to that duration requires an additional functional-form assumption beyond what the experiment can check.
+
+:::
+
+::: {.notes}
+The constant-effect model is supplied to connect directly to the lecture's
+structural equation. Randomization also supports the average contrast
+between assigned durations with heterogeneous effects, but that extension
+is not needed here. A fixed class with randomized assignments need not
+satisfy the textbook's i.i.d. sampling assumption; the two roles must not
+be conflated. Random assignment balances determinants in expectation,
+not exactly in every realized assignment.
+:::
+
+## Causal challenges · Questions 21–25 {.section-slide background-color="#E85D4A"}
+
+## Question 21 · Zero overall, different by group ★★★
+
+::: {.exercise}
+Suppose $Y=50-0.5X+u$ is a constant-effect causal model, with:
+
+| Class size $X$ | Population probability | $E(u\mid X)$ |
+|---|---:|---:|
+| 10 | 0.25 | 6 |
+| 20 | 0.75 | −2 |
+
+1. Find $E(u)$. Does zero conditional mean hold?
+2. Compute each conditional mean of $Y$ and their observed difference, large minus small classes.
+3. Separate that difference into the causal change and the difference in other determinants. What slope connects the two group means?
+:::
+
+## Solution 21 · Averaging can hide sorting
+
+::: {.answer}
+
+$$E(u)=0.25(6)+0.75(-2)=0,$$
+but $E(u\mid X)$ is nonzero and differs between groups.
+
+$$E(Y\mid X=10)=50-5+6=51,$$
+$$E(Y\mid X=20)=50-10-2=38.$$
+
+The observed difference is $38-51=-13$ points:
+
+$$\underbrace{-13}_{\text{observed}}
+=\underbrace{-0.5(20-10)}_{-5\text{ causal}}
++\underbrace{(-2)-6}_{-8\text{ other determinants}}.$$
+
+The slope between means is $-13/10=-1.3$, rather than the causal slope $-0.5$.
+
+:::
+
+## Question 22 · Mean zero with unequal variances ★★★
+
+::: {.exercise}
+Let $X$ be 0 or 1 with equal probabilities. Conditional on $X$, each listed error is equally likely:
+
+| $X$ | Possible values of $u$ |
+|---|---|
+| 0 | −1, +1 |
+| 1 | −3, +3 |
+
+Pairs are drawn i.i.d. and $Y=\beta_0+\beta_1X+u$ has finite coefficients.
+
+1. Calculate $E(u\mid X)$ and $\operatorname{Var}(u\mid X)$.
+2. Are $X$ and $u$ independent? Are the errors normal?
+3. Do zero conditional mean and finite fourth moments hold? Explain why unequal error variances are compatible with these assumptions.
+:::
+
+::: {.small-note}
+Adapted from Stock and Watson, Exercise 4.10(a); a discrete error replaces the normal error.
+:::
+
+## Solution 22 · The mean need not describe the spread
+
+::: {.answer}
+
+| $X$ | $E(u\mid X)$ | $\operatorname{Var}(u\mid X)$ |
+|---|---:|---:|
+| 0 | 0 | 1 |
+| 1 | 0 | 9 |
+
+- $X$ and $u$ are **dependent**: knowing $X$ determines whether $|u|$ is 1 or 3. Errors are discrete, not normal.
+- Zero conditional mean holds. All variables are bounded, so fourth moments are finite; i.i.d. sampling is given.
+- The errors are **heteroskedastic**. Equal conditional means do not require equal conditional variances or independence.
+
+:::
+
+## Question 23 · Uncorrelated but predictable ★★★
+
+::: {.exercise}
+Let $X$ take $-2,0,2$ with equal probabilities, and define
+
+$$u=X^2-\frac83.$$
+
+1. Calculate $E(X)$, $E(u)$, and $E(Xu)$.
+2. Find $\operatorname{Cov}(X,u)$ and each value of $E(u\mid X)$.
+3. A researcher argues: “Zero covariance proves the zero-conditional-mean assumption.” Explain exactly where this argument fails.
+:::
+
+## Solution 23 · A nonlinear pattern survives
+
+::: {.answer}
+
+| $X$ | $u=E(u\mid X)$ | $Xu$ |
+|---:|---:|---:|
+| −2 | $4/3$ | $-8/3$ |
+| 0 | $-8/3$ | $0$ |
+| 2 | $4/3$ | $8/3$ |
+
+$$E(X)=E(u)=E(Xu)=0,\qquad\operatorname{Cov}(X,u)=0.$$
+
+Yet $E(u\mid X)=X^2-8/3\ne0$. The negative and positive $X$ contributions cancel in the covariance, while $X$ perfectly predicts this nonlinear error pattern.
+
+:::
+
+::: {.notes}
+Zero conditional mean implies zero covariance when the relevant moments
+exist, but zero covariance does not imply zero conditional mean. Do not
+claim that this example necessarily produces a distorted population linear
+slope: the lesson explicitly distinguishes those conditions. No sampling
+distribution or omitted-variable-bias formula is required.
+:::
+
+## Question 24 · Draw the competing paths ★★★
+
+::: {.exercise}
+Consider a proposed causal story: district resources $Z$ influence both class size $X$ and test scores $Y$. Class size may also affect scores. Resources are omitted from the regression of $Y$ on $X$.
+
+1. Draw a directed acyclic graph for this story. Identify the effect of interest and the alternative path linking $X$ and $Y$.
+2. Explain how resources can enter the causal error and threaten zero conditional mean.
+3. A colleague claims the graph proves the sign and size of the class-size effect. Assess this claim. Name one kind of design evidence that would strengthen a causal interpretation.
+:::
+
+## Solution 24 · The diagram states a causal story
+
+![](assets/lecture-02-confounding.svg){width=960 fig-alt="Proposed graph: district resources Z point to class size X and test scores Y; X also points to Y. The alternative path is X left arrow Z right arrow Y."}
+
+- **Target:** $X\to Y$. **Alternative path:** $X\leftarrow Z\to Y$.
+- If resources affect scores and their average contribution differs across class sizes, $E(u\mid X)$ need not be zero.
+- Arrows encode assumed directions, not numerical signs or sizes. Credible random assignment of class size would strengthen the causal comparison.
+
+::: {.notes}
+The graphic is the same locally maintained SVG used at the lecture cutoff.
+A DAG alone neither establishes its own arrows nor measures their effects.
+The alternative path is the possible confounding or backdoor path. Formal
+adjustment rules, multiple regression, mediators, and colliders are not
+required. Random assignment must also have compliance, no relevant spillovers,
+and appropriate outcome observation for the simple intervention interpretation.
+:::
+
+## Question 25 · Two worlds, the same observed line ★★★
+
+::: {.exercise}
+In both worlds, $X$ is 10 or 20 with equal probabilities.
+Let $\varepsilon$ be independent of $X$, with mean zero and finite variance.
+Each equation is a **causal model**: its error stays fixed when we intervene on $X$.
+
+| World | Causal equation | Error in the observed population |
+|---|---|---|
+| A | $Y=90-X+u_A$ | $u_A=\varepsilon$ |
+| B | $Y=75+0X+u_B$ | $u_B=15-X+\varepsilon$ |
+
+1. Derive $E(Y\mid X)$ in each world. Check $E(u)$ and $E(u\mid X)$.
+2. Compare their causal effects of moving $X$ from 10 to 20.
+3. Can the observed $(X,Y)$ data, even in a huge sample, distinguish these causal explanations? Relate your answer to the omitted path in Question 24.
+:::
+
+::: {.notes}
+The expression u_B=15-X+epsilon specifies sorting in the observed joint
+distribution, not a causal response of u_B to an intervention on X.
+One explicit common-cause construction: Z takes 10 or 20 equally;
+observationally X=30-Z, u_B=Z-15+epsilon, and Y=60+Z+epsilon.
+Intervening on X leaves Z and epsilon fixed. This gives a graph
+X <- Z -> Y and no direct effect of X on Y. The same observed joint
+distribution in world A arises with X exogenous and Y=90-X+epsilon.
+This is an identification exercise within the taught conditional-mean
+and DAG material, not an exercise in the later bias formula.
+:::
+
+## Solution 25 · The observed distributions agree
+
+::: {.answer}
+
+In A, $E(u_A\mid X)=0$, so $E(Y\mid X)=90-X$.
+In B, $E(u_B\mid X)=15-X$, giving
+
+$$E(Y\mid X)=75+(15-X)=90-X.$$
+
+In both worlds, $E(u)=0$: for B, $\tfrac12(5)+\tfrac12(-5)=0$.
+But only A has zero conditional mean for its causal error.
+
+Both worlds generate $Y=90-X+\varepsilon$ **in the observed population**.
+They have the same joint distribution of $(X,Y)$ and therefore the same distribution of fitted lines and fit statistics.
+
+:::
+
+## Solution 25 · Their interventions disagree
+
+::: {.answer}
+
+- **World A:** holding the causal error fixed, the change is $-1(20-10)=-10$ points.
+- **World B:** holding its causal error fixed, the change is $0(20-10)=0$.
+- In B, the observed link between $X$ and $u_B$ represents sorting. It must not be mechanically updated when we intervene on $X$.
+- An omitted common cause, represented by $X\leftarrow Z\to Y$, can produce that sorting. More observations of the same joint distribution cannot decide between these causal stories. We need credible design evidence or additional justified assumptions.
+
+:::
+
+## Textbook connections
+
+Adaptations refer to **Stock and Watson, Introduction to Econometrics**, Chapter 4, in the supplied course copy. Wording, settings, and numerical values have been modified.
+
+| This set | Textbook connection |
+|---|---|
+| 1, 6 | Review the Concepts 4.1 and 4.3 |
+| 2, 4, 10, 11 | Exercises 4.3, 4.1, and 4.2 |
+| 7, 17, 18 | Exercises 4.12, 4.14, 4.9; Appendix 4.3 |
+| 19, 20, 22 | Exercises 4.6, 4.8, 4.5, and 4.10(a) |
+
+Other questions are original exercises based on the covered lecture material.
+
+```{r}
+#| label: practice03-final-checks
+#| include: false
+
+nonlinear_x <- c(-2, 0, 2)
+nonlinear_u <- nonlinear_x^2 - 8 / 3
+group_x <- c(10, 20)
+group_probability <- c(0.25, 0.75)
+group_error_mean <- c(6, -2)
+group_y_mean <- 50 - 0.5 * group_x + group_error_mean
+validation_y <- c(10, 12, 14)
+candidate_a <- c(9, 12, 15)
+candidate_b <- c(7, 12, 18)
+
+stopifnot(
+  sum(c(0, 0, 6)^2) == 36,
+  sum(c(-3, 2, 1)^2) == 14,
+  480 + 12 * 30 == 840,
+  480 + 12 * 40 == 960,
+  760 - 3 * 24 == 688,
+  -3 * (20 - 24) == 12,
+  90 - 1.5 * 20 == 60,
+  (102 - 2) * 4^2 == 1600,
+  abs(1600 / (1 - 0.36) - 2500) < 1e-12,
+  isTRUE(all.equal(unname(coef(model)), c(0.9, 1.4))),
+  abs(students$residual[3] + 1.7) < 1e-12,
+  abs(mean((validation_y - candidate_a)^2) - 2 / 3) < 1e-12,
+  abs(mean((validation_y - candidate_b)^2) - 25 / 3) < 1e-12,
+  10 + 2 * 5 + 3 - (12 + 1.8 * 5) == 2,
+  50 + 0.3 * 60 - (50 + 0.3 * 30) == 9,
+  sum(group_probability * group_error_mean) == 0,
+  all(group_y_mean == c(51, 38)),
+  diff(group_y_mean) / diff(group_x) == -1.3,
+  abs(mean(nonlinear_u)) < 1e-12,
+  abs(mean(nonlinear_x * nonlinear_u)) < 1e-12,
+  all(abs(nonlinear_u) > 0),
+  all(90 - group_x == 75 + (15 - group_x)),
+  mean(15 - group_x) == 0
+)
+```

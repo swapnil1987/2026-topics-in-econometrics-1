@@ -1,5 +1,9 @@
 # Econometric Theory and Practice I (2026/27)
 
+## News
+
+**18 September 2026 — Practice Set 3 is uploaded!** [Open the 25 practice questions and worked solutions](https://swapnil1987.github.io/2026-topics-in-econometrics-1/practice-03.html), progressing from easy to hard and covering regression through the causal-diagram slide.
+
 ## Syllabus and grading
 
 This course introduces econometrics: the statistical study of economic data. We will use simulations and real-world data to understand how econometric methods work, while also studying the mathematical ideas, derivations, and assumptions behind them. By the end of the course, students should be able to conduct basic regression analysis and explain the assumptions on which it depends.
@@ -66,6 +70,13 @@ and upload it to your own Colab session. Use **Runtime → Run all** to execute 
 
 Earlier [combined examples](codes/lecture-2/) and [reusable R functions](R/lecture-02.R)
 remain available as reference material; they are not the current classroom sequence.
+
+### Lecture 3: Regression and causal interpretation
+
+Continues the regression material in the [Lecture 2 slide deck](https://swapnil1987.github.io/2026-topics-in-econometrics-1/lecture-02.html), from “The linear regression model” through “A causal diagram makes the omitted path visible.”
+
+- [Practice set 3: 25 questions and worked solutions](https://swapnil1987.github.io/2026-topics-in-econometrics-1/practice-03.html) — easy to hard, with selected Stock and Watson adaptations; covers OLS, fit, prediction, and the causal assumptions taught so far.
+- [Practice set 3 source](slides/practice-03.qmd)
 
 ## Quizzes
 
