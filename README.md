@@ -2,7 +2,7 @@
 
 ## News
 
-**21 September 2026 — Quiz 2 solutions and grades are available.** [Read the answer key and worked solutions](quiz/quiz2/quiz2_instructor_key.pdf) and [download the grades workbook](quiz/grades.xlsx) (see the **Quiz 2** sheet).
+**21 September 2026 — Quiz 2 solutions and grades are available.** [Read the answer key and worked solutions](quiz/quiz2/quiz2_instructor_key.pdf).
 
 **18 September 2026 — Practice Set 3 is uploaded!** [Open the 25 practice questions and worked solutions](https://swapnil1987.github.io/2026-topics-in-econometrics-1/practice-03.html), progressing from easy to hard and covering regression through the causal-diagram slide.
 
@@ -84,6 +84,8 @@ Continues the regression material in the [Lecture 2 slide deck](https://swapnil1
 
 Quizzes are short, in-class assessments based only on material already taught and exercises already made available. The working format is three multiple-choice questions, seven answer choices per question, and five equivalent coded forms. Each correct answer earns one point. Incorrect and blank answers receive zero points; there is no negative marking unless announced otherwise.
 
+[Download all quiz grades (Excel)](quiz/grades.xlsx) — one worksheet per quiz.
+
 > **Student ID is essential.** Fill in all three digits of your student ID correctly and clearly. An incorrect, incomplete, or unreadable ID cannot be corrected after submission. If the quiz cannot be assigned using the bubbled ID, the score is zero.
 
 ### Quiz rules
@@ -106,9 +108,7 @@ Quizzes are short, in-class assessments based only on material already taught an
 
 - [Quiz 1: all five forms](quiz/quiz1/quiz1_five_forms.pdf)
 - [Quiz 1: answer key and worked solutions](quiz/quiz1/quiz1_instructor_key.pdf)
-- [Quiz 1 grades (Excel)](quiz/grades.xlsx)
 
 ### Quiz 2: Estimation and inference
 
 - [Quiz 2: answer key and worked solutions](quiz/quiz2/quiz2_instructor_key.pdf)
-- [Quiz 2 grades (Excel)](quiz/grades.xlsx) — open the **Quiz 2** sheet.
