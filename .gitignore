@@ -37,6 +37,9 @@ quiz/quiz[0-9]*/**
 !quiz/quiz1/quiz1_five_forms.pdf
 !quiz/quiz1/quiz1_instructor_key.pdf
 
+# Quiz 2 solutions linked from the course README.
+!quiz/quiz2/quiz2_instructor_key.pdf
+
 # Never commit raw live-student scans by default.
 quiz/**/raw_scans/
 quiz/**/scans/

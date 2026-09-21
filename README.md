@@ -2,6 +2,8 @@
 
 ## News
 
+**21 September 2026 — Quiz 2 solutions and grades are available.** [Read the answer key and worked solutions](quiz/quiz2/quiz2_instructor_key.pdf) and [download the grades workbook](quiz/grades.xlsx) (see the **Quiz 2** sheet).
+
 **18 September 2026 — Practice Set 3 is uploaded!** [Open the 25 practice questions and worked solutions](https://swapnil1987.github.io/2026-topics-in-econometrics-1/practice-03.html), progressing from easy to hard and covering regression through the causal-diagram slide.
 
 ## Syllabus and grading
@@ -105,3 +107,8 @@ Quizzes are short, in-class assessments based only on material already taught an
 - [Quiz 1: all five forms](quiz/quiz1/quiz1_five_forms.pdf)
 - [Quiz 1: answer key and worked solutions](quiz/quiz1/quiz1_instructor_key.pdf)
 - [Quiz 1 grades (Excel)](quiz/grades.xlsx)
+
+### Quiz 2: Estimation and inference
+
+- [Quiz 2: answer key and worked solutions](quiz/quiz2/quiz2_instructor_key.pdf)
+- [Quiz 2 grades (Excel)](quiz/grades.xlsx) — open the **Quiz 2** sheet.
