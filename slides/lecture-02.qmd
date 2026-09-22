@@ -2149,268 +2149,171 @@ existence of the expectations. Normality statements below refer to the
 usual nondegenerate asymptotic distribution. No new proof is inserted here.
 :::
 
-## Why the LLN and CLT appear again
+## Recall: what do the LLN and CLT say?
 
-Write $\mu_X=E(X)$, $q=\operatorname{Var}(X)>0$, and $v_i=(X_i-\mu_X)u_i$.
+For independent draws $W_1,\ldots,W_n$ from the same population:
 
-Because $E(u_i\mid X_i)=0$, we have $E(v_i)=0$. For large $n$,
+- **Law of large numbers (LLN):** the sample average $\bar W$ gets close to its population mean $E(W)$ as $n$ grows.
+- **Central limit theorem (CLT):** after centering and multiplying by $\sqrt n$, the sample average has an approximately normal sampling distribution.
+
+$$
+\bar W\xrightarrow{p}E(W),\qquad
+\sqrt n\big[\bar W-E(W)\big]\xrightarrow{d}N\!\left(0,\operatorname{Var}(W)\right).
+$$
+
+The LLN tells us **where** a sample average settles; the CLT describes its **remaining sampling variation**.
+
+::: {.notes}
+This reminder assumes the relevant finite moments. The LLN and CLT have
+different roles: convergence in probability versus convergence in distribution
+after square-root-n scaling. Recall the sample-mean consistency proof earlier
+in this lecture. We now apply these tools to the ingredients of the OLS slope.
+:::
+
+## Substitute the model into the OLS slope
+
+The OLS slope uses the centered $X_i$ values:
+
+$$
+\hat\beta_1
+=\frac{\sum_{i=1}^n(X_i-\bar X)Y_i}
+{\sum_{i=1}^n(X_i-\bar X)^2}.
+$$
+
+Now substitute $Y_i=\beta_0+\beta_1X_i+u_i$:
+
+$$
+\hat\beta_1
+=\frac{\sum_{i=1}^n(X_i-\bar X)(\beta_0+\beta_1X_i+u_i)}
+{\sum_{i=1}^n(X_i-\bar X)^2}.
+$$
+
+::: {.notes}
+This is algebra: replace each Y_i in the OLS formula by the population
+regression model. No large-sample approximation has been used. The
+denominator must be positive, so X must vary in the sample.
+:::
+
+## Centering removes two terms
+
+The deviations from the sample mean sum to zero:
+
+$$
+\sum_{i=1}^n(X_i-\bar X)=0.
+$$
+
+Also, writing $X_i=(X_i-\bar X)+\bar X$ gives
+
+$$
+\sum_{i=1}^n(X_i-\bar X)X_i
+=\sum_{i=1}^n(X_i-\bar X)^2.
+$$
+
+So the intercept term vanishes and the slope term simplifies:
+
+$$
+\hat\beta_1
+=\beta_1+\frac{\sum_{i=1}^n(X_i-\bar X)u_i}
+{\sum_{i=1}^n(X_i-\bar X)^2}.
+$$
+
+::: {.notes}
+In the second identity, expanding X_i gives a sum of squared deviations
+plus Xbar times the sum of deviations; that second term is zero. The
+same zero sum removes beta_0 from the preceding slide's numerator.
+This identity uses the population errors u_i, not the fitted residuals.
+:::
+
+## Isolate the exact slope error
+
+Subtract $\beta_1$ and divide the numerator and denominator by $n$:
+
+$$
+\hat\beta_1-\beta_1
+=\frac{\frac1n\sum_{i=1}^n(X_i-\bar X)u_i}
+{\frac1n\sum_{i=1}^n(X_i-\bar X)^2}.
+$$
+
+- **Numerator:** how the regressor and error happen to move together in this sample.
+- **Denominator:** how much $X$ varies in this sample.
+
+::: {.key-idea}
+To understand the slope's sampling variation, study the numerator and denominator separately.
+:::
+
+::: {.notes}
+The identity is exact when the sample has variation in X. Dividing both
+parts of the ratio by n does not change it; it prepares each part for
+the LLN and CLT. No zero-conditional-mean assumption was needed for
+this algebra. That assumption matters for the distributional argument
+that follows.
+:::
+
+## The LLN stabilizes the denominator
+
+Let $\mu_X=E(X)$ and $q=\operatorname{Var}(X)>0$.
+
+$$
+\underbrace{\frac1n\sum_{i=1}^n(X_i-\bar X)^2}_{\text{sample variation in }X}
+\xrightarrow{p}
+\underbrace{E[(X_i-\mu_X)^2]}_{q}.
+$$
+
+- As we draw more observations, the denominator settles near the positive number $q$.
+- The slope's remaining uncertainty comes mainly from the numerator.
+
+::: {.notes}
+Under i.i.d. sampling and suitable finite moments, apply the LLN to X and
+X squared, using n^{-1} sum (X_i-Xbar)^2 = n^{-1} sum (X_i-mu_X)^2
+- (Xbar-mu_X)^2. The denominator uses n, not n-1, to match the exact
+OLS ratio; both versions have the same large-sample limit.
+:::
+
+## The CLT describes the numerator
+
+Define $v_i=(X_i-\mu_X)u_i$. Zero conditional mean implies $E(v_i)=0$.
+
+$$
+\frac1{\sqrt n}\sum_{i=1}^n v_i
+=\sqrt n\,\bar v
+\xrightarrow{d}N\!\left(0,\operatorname{Var}(v_i)\right).
+$$
+
+- These products vary across samples even though their population mean is zero.
+- Replacing $\mu_X$ with $\bar X$ in the numerator has a negligible effect at this scale as $n$ grows.
+
+::: {.notes}
+Source: Stock and Watson, Section 4.5 and Appendix 4.3. Under i.i.d.
+sampling, E(u_i|X_i)=0, and sufficient finite moments, the CLT applies to
+v_i. The exact centered sum differs by
+sqrt(n)(Xbar-mu_X) ubar, which converges in probability to zero under
+these assumptions. This is an asymptotic step, not an exact equality.
+:::
+
+## Combine the LLN and CLT for the slope
+
+The denominator settles near $q$; the scaled numerator approaches a normal distribution. Therefore
 
 $$
 \sqrt n(\hat\beta_1-\beta_1)
-=\frac{1}{q}\frac{1}{\sqrt n}\sum_{i=1}^n v_i
-+r_n,\qquad r_n\xrightarrow{p}0.
+\xrightarrow{d}
+N\!\left(0,V_1\right),\qquad
+V_1=\frac{\operatorname{Var}[(X_i-\mu_X)u_i]}{q^2}.
 $$
 
-- $r_n$ is a remainder that becomes negligible as the sample grows.
-- **LLN:** the sample variance of $X$ settles near $q$.
-- **CLT:** the scaled sum of the mean-zero products $v_i$ approaches a normal distribution.
-- Together they give a normal approximation for the slope estimator.
+For a large sample, we use the working approximation
+
+$$
+\hat\beta_1\ \text{approximately}\ N\!\left(\beta_1,\frac{V_1}{n}\right).
+$$
+
+- **Center:** $\beta_1$; **approximate sampling SD:** $\sqrt{V_1/n}$.
+- The formula permits error variance to differ across values of $X$.
 
 ::: {.notes}
-Source: Section 4.5's CLT discussion and Appendix 4.3. This is an
-asymptotic representation, not an exact equality with the remainder
-omitted. Replacing sample centering by population centering contributes
-a term negligible at the square-root-n scale under the stated assumptions.
+Source: Stock and Watson, Section 4.5, equation 4.19 and Appendix 4.3.
+Combining the LLN and CLT uses Slutsky's theorem. V_1/n is the variance
+of the large-sample normal approximation, not a general exact finite-sample
+variance formula. V_1 does not depend on n for a fixed population.
+Heteroskedasticity is permitted.
 :::
-
-## The slope's large-sample distribution
-
-Define the asymptotic variance factor
-
-$$
-V_1=\frac{\operatorname{Var}[(X_i-\mu_X)u_i]}{[\operatorname{Var}(X_i)]^2}.
-$$
-
-Then the formal limit and its working approximation are
-
-$$
-\sqrt n(\hat\beta_1-\beta_1)\xrightarrow{d}N(0,V_1),
-\qquad \hat\beta_1\ \text{approximately}\ N\!\left(\beta_1,\frac{V_1}{n}\right).
-$$
-
-- **Center:** $\beta_1$; **approximate sampling variance:** $V_1/n$.
-- **Approximate sampling SD:** $\sqrt{V_1/n}$, measured in the same units as the slope.
-- This formula allows error variance to differ across values of $X$.
-
-::: {.notes}
-Source: equation 4.19. V_1/n is the variance of the large-sample normal
-approximation, not a general exact finite-sample variance formula. The
-asymptotic variance factor V_1 does not itself depend on n when the
-population distribution is fixed. Heteroskedasticity is permitted.
-:::
-
-## Read the variance formula as signal versus noise
-
-For intuition only, add **constant conditional error variance**:
-
-$$
-\operatorname{Var}(u\mid X)=\sigma_u^2.
-$$
-
-Since $E(u\mid X)=0$,
-
-$$
-\operatorname{Var}[(X-\mu_X)u]
-=E[(X-\mu_X)^2E(u^2\mid X)]
-=\sigma_u^2\operatorname{Var}(X).
-$$
-
-Therefore
-
-$$
-\operatorname{Var}_{\mathrm{approx}}(\hat\beta_1)
-=\frac{\sigma_u^2}{n\operatorname{Var}(X)},
-\qquad \operatorname{SD}_{\mathrm{approx}}(\hat\beta_1)
-=\frac{\sigma_u}{\sqrt n\,\sigma_X}.
-$$
-
-This simplification is **not** an extra requirement for the general result.
-
-::: {.notes}
-Algebraic teaching extension of equation 4.19 under homoskedasticity.
-The mean of (X-mu_X)u is zero, so its variance equals its second moment.
-Under heteroskedasticity, changing the distribution of X can also change
-the numerator; do not infer an unconditional precision improvement from
-the denominator alone.
-:::
-
-## What makes a slope estimate more precise?
-
-Using $\operatorname{SD}_{\mathrm{approx}}(\hat\beta_1)=\sigma_u/(\sqrt n\,\sigma_X)$:
-
-| Change, holding the other quantities fixed | Effect on the slope's sampling SD |
-|---|---|
-| Multiply sample size $n$ by 4 | Divide by 2 |
-| Double the spread $\sigma_X$ in the same units | Divide by 2 |
-| Halve the error SD $\sigma_u$ | Divide by 2 |
-
-- More observations average out sampling noise.
-- A wider range of $X$ makes competing slopes easier to distinguish.
-- Less scatter around the population line makes its slope easier to estimate.
-
-::: {.notes}
-Source: Section 4.5 precision discussion and Figure 4.5; quantified here
-using the homoskedastic special case. Expanding X support is not the same
-as changing its measurement units: a units change rescales the coefficient
-and its SD together and creates no new information. The comparison also
-presumes the model and exogeneity remain valid across that support.
-:::
-
-## A numerical precision comparison
-
-Hypothetical homoskedastic population: $\beta_1=-1$, $\sigma_u=10$, $\sigma_X=5$.
-
-$$
-\operatorname{SD}_{\mathrm{approx}}(\hat\beta_1)=\frac{10}{5\sqrt n}=\frac{2}{\sqrt n}.
-$$
-
-| Sample size $n$ | Approximate sampling SD | Approximate central 95% range for $\hat\beta_1$ |
-|---:|---:|---|
-| 100 | 0.20 | $-1\pm1.96(0.20)=[-1.392,-0.608]$ |
-| 400 | 0.10 | $-1\pm1.96(0.10)=[-1.196,-0.804]$ |
-| 1600 | 0.05 | $-1\pm1.96(0.05)=[-1.098,-0.902]$ |
-
-These are **repeated-sampling ranges around a known population coefficient**, not confidence intervals computed from an observed sample.
-
-::: {.notes}
-Invented quantities, not estimates from the school data. X is students
-per class and Y is score points, so slope SD is score points per student.
-Ranges come from the normal approximation; finite-sample coverage is not
-asserted to be exact. The next slide plots these reference distributions.
-:::
-
-## Larger samples produce narrower sampling distributions
-
-```{r}
-#| label: section45-normal-reference
-#| echo: false
-#| fig-width: 12
-#| fig-height: 4.7
-#| fig-alt: "Three normal reference densities centered at minus one; sample sizes 100, 400, and 1600 have standard deviations 0.20, 0.10, and 0.05."
-
-reference_slopes <- seq(-1.7, -0.3, length.out = 1201)
-reference_n <- c(100, 400, 1600)
-reference_densities <- do.call(rbind, lapply(reference_n, function(n) {
-  data.frame(slope = reference_slopes,
-             density = dnorm(reference_slopes, mean = -1, sd = 2 / sqrt(n)),
-             sample_size = factor(n, levels = reference_n))
-}))
-ggplot(reference_densities, aes(slope, density, colour = sample_size)) +
-  geom_line(linewidth = 1.15) +
-  geom_vline(xintercept = -1, linetype = "dashed", colour = "#68645F") +
-  scale_colour_manual(values = c("#999188", "#E85D4A", "#242424")) +
-  labs(x = "Estimated slope across repeated samples", y = "Density",
-       colour = "Sample size n") +
-  theme(legend.position = "top")
-```
-
-All three curves have the same center. Their widths differ—not the true effect.
-
-::: {.notes}
-Deterministic normal reference curves from the preceding hypothetical
-example, not a Monte Carlo histogram and not empirical data. No random
-draws are made. The equal total areas, not the heights, represent probability.
-:::
-
-## The intercept also has a sampling distribution
-
-Section 4.5 gives
-
-$$
-\hat\beta_0\ \text{approximately}\ N\!\left(\beta_0,\frac{V_0}{n}\right),
-\qquad V_0=\frac{\operatorname{Var}(H_i u_i)}{[E(H_i^2)]^2},
-\qquad H_i=1-\frac{\mu_X}{E(X_i^2)}X_i.
-$$
-
-- The intercept estimates the population line's level at $X=0$.
-- If zero is far from the observed values of $X$, that level can be poorly determined.
-- Centering $X$ at a meaningful reference value changes the intercept's interpretation, not the slope or fitted outcomes.
-
-::: {.notes}
-Source: equation 4.20. With q=Var(X)>0, E(H_i^2)=q/E(X_i^2)>0.
-Under homoskedasticity, V_0=sigma_u^2[1+mu_X^2/q]. This explains the
-precision issue when zero is distant relative to the spread of X.
-Centering at a fixed reference c gives intercept beta_0+beta_1 c; centering
-at the sample mean gives fitted intercept bar Y, with a random reference.
-:::
-
-## Jointly normal does not mean independent
-
-In large samples, $(\hat\beta_0,\hat\beta_1)$ are approximately **jointly normal**.
-
-$$
-\hat\beta_0=\overline{Y}-\hat\beta_1\overline{X}.
-$$
-
-- Both estimates use the same data, so their sampling errors can be correlated.
-- A steeper fitted slope can be accompanied by a lower fitted intercept.
-- Uncertainty about a prediction combines uncertainty about **both coefficients**, including their covariance.
-
-::: {.notes}
-Source: Section 4.5 joint-distribution statement. The direction of their
-covariance is not universally negative: it depends on the regressor
-distribution and error variance. Under homoskedasticity the large-sample
-covariance is -mu_X sigma_u^2/[n Var(X)]. We introduce the dependence
-concept without developing prediction intervals in this section.
-:::
-
-## What the normal approximation does not say
-
-- Individual $Y_i$, $X_i$, and $u_i$ do **not** have to be normally distributed.
-- A small-sample OLS distribution need not be normal.
-- There is no universal sample-size cutoff guaranteeing a good approximation.
-- Dependence, heavy tails, and influential observations can make approximation difficult.
-
-::: {.key-idea}
-The CLT concerns the sampling distribution of an estimator—not the shape of the raw data.
-:::
-
-::: {.notes}
-Section 4.5 motivates a large-sample rule of thumb. We deliberately avoid
-treating its discussion of n greater than 100 as a universal theorem.
-The approximation depends on the data-generating distribution and design.
-This is distinct from exact finite-sample normal results that require
-additional assumptions not made in the main argument.
-:::
-
-## From a sampling distribution to inference
-
-The population variance factor $V_1$ is unknown. A **standard error** estimates the slope's sampling SD:
-
-$$
-\mathrm{SE}(\hat\beta_1)\ \text{estimates}\ \sqrt{V_1/n}.
-$$
-
-Using a valid standard error, the next step is familiar:
-
-$$
-t=\frac{\hat\beta_1-\beta_{1,0}}{\mathrm{SE}(\hat\beta_1)},
-\qquad \hat\beta_1\pm1.96\,\mathrm{SE}(\hat\beta_1)
-\quad\text{(large-sample 95% interval)}.
-$$
-
-- **SER:** estimates residual spread, in units of $Y$.
-- **Slope SE:** estimates coefficient uncertainty, in units of $Y$ per unit of $X$.
-
-::: {.notes}
-Section 4.5 closes by motivating inference; the displayed t statistic
-and interval are a preview of Chapter 5. They require valid SE estimation
-and the large-sample conditions. Because the main assumptions allow
-heteroskedasticity, a homoskedastic-only SE is not generally valid.
-Neither a small SE nor a small p-value validates causal identification.
-:::
-
-```{r}
-#| label: section45-checks
-#| include: false
-
-# Deterministic checks of the illustrative precision calculations.
-reference_sd <- 10 / (sqrt(reference_n) * 5)
-stopifnot(
-  max(abs(reference_sd - c(0.20, 0.10, 0.05))) < 1e-12,
-  max(abs((-1 - 1.96 * reference_sd) - c(-1.392, -1.196, -1.098))) < 1e-12,
-  max(abs((-1 + 1.96 * reference_sd) - c(-0.608, -0.804, -0.902))) < 1e-12,
-  all(is.finite(reference_densities$density)),
-  all(reference_densities$density >= 0)
-)
-```

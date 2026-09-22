@@ -73,10 +73,14 @@ and upload it to your own Colab session. Use **Runtime → Run all** to execute 
 Earlier [combined examples](codes/lecture-2/) and [reusable R functions](R/lecture-02.R)
 remain available as reference material; they are not the current classroom sequence.
 
-### Lecture 3: Regression and causal interpretation
+### Lecture 3: Inference for Regression Coefficients
 
-Continues the regression material in the [Lecture 2 slide deck](https://swapnil1987.github.io/2026-topics-in-econometrics-1/lecture-02.html), from “The linear regression model” through “A causal diagram makes the omitted path visible.”
+Stock and Watson, Chapter 5, Sections 5.1–5.2
 
+Standard errors, hypothesis tests, and confidence intervals for simple regression.
+
+- [View the slides](https://swapnil1987.github.io/2026-topics-in-econometrics-1/lecture-03.html)
+- [Slide source](slides/lecture-03.qmd)
 - [Practice set 3: 25 questions and worked solutions](https://swapnil1987.github.io/2026-topics-in-econometrics-1/practice-03.html) — easy to hard, with selected Stock and Watson adaptations; covers OLS, fit, prediction, and the causal assumptions taught so far.
 - [Practice set 3 source](slides/practice-03.qmd)
 

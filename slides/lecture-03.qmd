@@ -1,0 +1,624 @@
+---
+title: "Lecture 3: Inference for Regression Coefficients"
+subtitle: "Standard errors, hypothesis tests, and confidence intervals"
+author: "Swapnil Singh"
+date: "2026-09-22"
+date-format: "D MMMM YYYY"
+footer: "Topics in Econometrics I · Lecture 3"
+format:
+  revealjs:
+    incremental: false
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+library(ggplot2)
+```
+
+## From a sampling distribution to a decision
+
+Last lecture: the estimated slope $\hat\beta_1$ varies across samples.
+
+::: {.key-idea}
+**Today:** Which regression coefficient values are consistent with our sample?
+:::
+
+- A **standard error** estimates how much $\hat\beta_1$ varies across samples.
+- A **$t$-statistic** measures the gap from a proposed value in standard-error units.
+- A **$p$-value** turns that comparison into a test.
+- A **confidence interval** collects coefficient values the test would retain.
+
+::: {.notes}
+Source: Stock and Watson, Chapter 5, Sections 5.1–5.2, supplied in
+book/chapter5. Section 5.3 on binary regressors is beyond this deck.
+:::
+
+## Testing one regression coefficient {.section-slide background-color="#E85D4A"}
+
+Section 5.1 · From a claim about a coefficient to evidence from a sample
+
+::: {.notes}
+The California estimates below are the textbook's reported results, not a
+new analysis of district-level data.
+:::
+
+## A claim about class size
+
+The textbook studies test scores and the student–teacher ratio in **420 California school districts**.
+
+$$
+\text{TestScore}_i=\beta_0+\beta_1\text{STR}_i+u_i.
+$$
+
+- A taxpayer claims that changing class size has no effect: $\beta_1=0$.
+- The estimated slope is $\hat\beta_1=-2.28$ score points per additional student per teacher.
+- Could a slope this far from zero arise through sampling variation?
+
+::: {.notes}
+STR is students per teacher, used as a measure of class size. The coefficient
+is an association unless the regression's causal assumptions hold. A test
+cannot establish those assumptions.
+:::
+
+## State the claim before examining the test
+
+$$
+H_0:\beta_1=\beta_{1,0}
+\qquad\text{versus}\qquad
+H_1:\beta_1\ne\beta_{1,0}.
+$$
+
+- $H_0$ is the **null hypothesis**: a specific population slope.
+- $H_1$ is **two-sided**: the slope could lie on either side.
+- For the taxpayer's claim, $\beta_{1,0}=0$.
+- Choose a significance level, such as $\alpha=0.05$, **before** looking at the result.
+
+::: {.notes}
+The parameter is fixed and unknown; the estimate is random before sampling.
+Failure to reject does not prove that the null is true.
+:::
+
+## The familiar $t$-statistic has a new estimator
+
+$$
+t=\frac{\text{estimator}-\text{hypothesized value}}
+        {\text{standard error of the estimator}}.
+$$
+
+::: columns
+::: {.column width="48%"}
+
+### Population mean
+
+$$t=\frac{\bar Y-\mu_{Y,0}}{SE(\bar Y)}$$
+
+:::
+::: {.column width="48%"}
+
+### Regression slope
+
+$$t=\frac{\hat\beta_1-\beta_{1,0}}{SE(\hat\beta_1)}$$
+
+:::
+:::
+
+::: {.key-idea}
+The numerator is a distance from the null; the denominator puts that distance on the scale of sampling uncertainty.
+:::
+
+::: {.notes}
+Equations 5.1 and 5.5. Section 5.1 uses a large-sample standard normal
+approximation, not an exact Student t distribution.
+:::
+
+## What the slope's standard error measures
+
+::: {.definition}
+$SE(\hat\beta_1)$ estimates the standard deviation of the **sampling distribution** of $\hat\beta_1$.
+:::
+
+- Imagine repeatedly drawing districts and fitting the same regression.
+- The slope estimates would differ across samples.
+- A larger standard error means the observed slope is less precise.
+- It measures uncertainty about the estimated **slope**, not the spread of individual test scores.
+
+::: {.notes}
+The standard error differs from SER, which summarizes residual scale around
+the fitted line.
+:::
+
+## Start with the OLS slope error
+
+Recall the population model $Y_i=\beta_0+\beta_1X_i+u_i$. Write
+$d_i=X_i-\bar X$ and $S_{XX}=\sum_i d_i^2$.
+
+$$
+\hat\beta_1
+=\frac{\sum_i d_iY_i}{S_{XX}}
+=\beta_1+\frac{\sum_i d_i u_i}{S_{XX}}.
+$$
+
+::: {.key-idea}
+The fitted slope differs from the population slope because the sampled $X_i$ and unobserved $u_i$ happen to move together.
+:::
+
+- Larger spread in $X$ increases $S_{XX}$ and helps pin down the slope.
+- This identity holds for the observed sample; no normality assumption is needed.
+
+::: {.notes}
+Recall Lecture 2's exact slope-error identity. Substitution gives
+sum_i d_i beta_0=0 and sum_i d_i beta_1 X_i=beta_1 S_XX.
+The distinction between the exact identity and the following variance
+calculation matters: the next slide conditions on the observed X values.
+:::
+
+## Derive the slope's conditional variance
+
+Write $X=(X_1,\ldots,X_n)$. Once we condition on $X$, the weights $d_i$ and denominator $S_{XX}$ are fixed:
+
+$$
+\operatorname{Var}(\hat\beta_1\mid X)
+=\frac{1}{S_{XX}^2}\operatorname{Var}\!\left(\sum_i d_i u_i\mid X\right).
+$$
+
+For a weighted sum, add the individual variances and the pairwise covariances:
+
+$$
+\operatorname{Var}\!\left(\sum_i d_i u_i\mid X\right)
+=\sum_i d_i^2\operatorname{Var}(u_i\mid X_i)
++\underbrace{2\sum_{i<j}d_i d_j\operatorname{Cov}(u_i,u_j\mid X)}_{=\,0\text{ with independent observations}}.
+$$
+
+::: {.key-idea}
+Therefore $\displaystyle \operatorname{Var}(\hat\beta_1\mid X)
+=\frac{\sum_i d_i^2\operatorname{Var}(u_i\mid X_i)}{S_{XX}^2}$.
+:::
+
+::: {.notes}
+From the previous slide, beta-hat_1 = beta_1 + sum_i d_i u_i/S_XX.
+A constant beta_1 does not affect variance, and scaling by 1/S_XX
+scales variance by 1/S_XX squared. Conditional on the full X vector,
+independent sampled pairs make Cov(u_i,u_j|X)=0 for i unequal j;
+Var(u_i|X)=Var(u_i|X_i). The displayed result allows
+heteroskedasticity because Var(u_i|X_i) need not be constant.
+Zero conditional mean is needed for the regression model's OLS properties,
+though the variance-of-a-sum algebra itself does not require it.
+Assume S_XX>0 and finite relevant moments.
+:::
+
+## Replace the unknown error variation with residuals
+
+We do not observe $u_i$ or $\operatorname{Var}(u_i\mid X_i)$. After fitting OLS, use
+$\hat u_i=Y_i-\hat\beta_0-\hat\beta_1X_i$.
+
+$$
+\widehat{\operatorname{Var}}(\hat\beta_1)
+=\underbrace{\frac{n}{n-2}}_{\text{degrees-of-freedom adjustment}}
+\frac{\sum_i d_i^2\hat u_i^2}{S_{XX}^2},
+\qquad
+SE(\hat\beta_1)=\sqrt{\widehat{\operatorname{Var}}(\hat\beta_1)}.
+$$
+
+- The squared residuals stand in for unknown error variation.
+- The $n/(n-2)$ factor adjusts for estimating two coefficients.
+- This **heteroskedasticity-robust** standard error supports large-sample inference.
+
+::: {.notes}
+This is Equation 5.4, rearranged, often called HC1 in simple regression.
+The residual plug-in and degrees-of-freedom correction do not make the
+formula an exact unbiased conditional variance estimator in every finite
+sample. Its justification is large-sample consistency under the maintained
+conditions. R's default lm summary uses a homoskedastic-only standard error;
+a robust covariance estimator is needed for this formula.
+:::
+
+## Three steps for a two-sided slope test
+
+::: {.incremental}
+
+1. Estimate $\hat\beta_1$ and its standard error.
+2. Calculate $t=(\hat\beta_1-\beta_{1,0})/SE(\hat\beta_1)$.
+3. Compare $|t|$ with the cutoff, or calculate the two-sided $p$-value.
+
+:::
+
+$$
+\text{At }\alpha=0.05:\quad
+|t|>1.96\ \Longrightarrow\ \text{reject }H_0.
+$$
+
+::: {.notes}
+Key Concept 5.2. The cutoff uses a large-sample standard normal reference
+distribution. Rejection is evidence under the maintained model assumptions.
+:::
+
+## What a two-sided $p$-value asks
+
+For an observed statistic $t^{\mathrm{obs}}$, the large-sample $p$-value is
+
+$$
+p=\Pr\!\left(|Z|\ge |t^{\mathrm{obs}}|\right)
+  =2\Phi\!\left(-|t^{\mathrm{obs}}|\right),
+\qquad Z\sim N(0,1).
+$$
+
+- It is a **tail probability calculated under $H_0$**.
+- Both tails count because the alternative allows positive or negative departures.
+- Reject at 5% when $p<0.05$; equivalently, when $|t|>1.96$.
+
+::: {.notes}
+Equation 5.7. The p-value is not the probability that the null is true.
+:::
+
+## Read the California regression report
+
+$$
+\widehat{\text{TestScore}}=698.9-2.28\,\text{STR},
+\qquad R^2=0.051,\quad SER=18.6.
+$$
+
+| Coefficient | Estimate | Standard error |
+|:--|--:|--:|
+| Intercept | $698.9$ | $10.4$ |
+| STR slope | $-2.28$ | $0.52$ |
+
+::: {.key-idea}
+The slope's **$0.52$ standard error** is the number needed to test a claim about the slope.
+:::
+
+::: {.notes}
+Stock and Watson, Equation 5.8. These are reported textbook values, rounded
+for display. R-squared and SER measure fit, not slope uncertainty.
+:::
+
+## Test the claim that the slope is zero
+
+$$
+t^{\mathrm{obs}}=\frac{-2.28-0}{0.52}\approx-4.38.
+$$
+
+::: {.fragment}
+
+$$|t^{\mathrm{obs}}|=4.38>1.96.$$
+
+The null hypothesis $\beta_1=0$ is rejected at the **5% two-sided** level.
+
+:::
+
+::: {.notes}
+The ratio uses rounded estimates. The test concerns the population regression
+slope. Causal interpretation needs additional assumptions from Chapter 4.
+:::
+
+## See the two-sided rejection regions
+
+```{r}
+#| label: two-sided-tail-plot
+#| echo: false
+#| fig-width: 11
+#| fig-height: 5
+#| out-width: "85%"
+
+test_statistic <- -2.28 / 0.52
+normal_curve <- data.frame(z = seq(-5, 5, length.out = 1001))
+normal_curve$density <- dnorm(normal_curve$z)
+normal_curve$tail <- abs(normal_curve$z) >= 1.96
+
+ggplot(normal_curve, aes(z, density)) +
+  geom_area(
+    data = subset(normal_curve, tail),
+    aes(group = z < 0),
+    fill = "#E85D4A",
+    alpha = 0.8
+  ) +
+  geom_line(colour = "#242424", linewidth = 1.2) +
+  geom_vline(
+    xintercept = c(-1.96, 1.96),
+    linetype = "dashed",
+    colour = "#242424"
+  ) +
+  geom_vline(xintercept = test_statistic, colour = "#B83D2F", linewidth = 1.2) +
+  annotate("text", x = -3.5, y = 0.11, label = "Observed t ≈ −4.38",
+           colour = "#B83D2F", size = 5.5) +
+  annotate("text", x = 0, y = 0.16, label = "95% non-rejection region",
+           colour = "#242424", size = 5) +
+  scale_x_continuous(breaks = c(-4.38, -1.96, 0, 1.96, 4.38)) +
+  labs(x = "Standard normal statistic under the null", y = "Density") +
+  theme(axis.title.y = element_blank())
+```
+
+::: {.notes}
+The shaded areas begin at the two-sided 5% critical values. The solid red
+line marks the observed statistic; its p-value corresponds to more extreme
+areas beyond plus/minus 4.38. The curve is the approximate
+reference distribution under the null.
+:::
+
+## A one-sided alternative changes the tail
+
+If theory specifies a negative slope **before seeing the estimate**:
+
+$$
+H_0:\beta_1=0
+\qquad\text{versus}\qquad
+H_1:\beta_1<0.
+$$
+
+- The $t$-statistic remains $-4.38$.
+- For a left-sided test, $p=\Phi(t^{\mathrm{obs}})$.
+- At the 5% level, reject when $t<-1.645$.
+
+::: {.definition}
+A positive estimate, however large, does **not** support a negative-slope alternative.
+:::
+
+::: {.notes}
+Equations 5.9–5.10. A right-sided alternative uses the right tail. Choose the
+direction from a substantive prior reason, not after seeing the estimate.
+:::
+
+## Choose the test for the question
+
+| Alternative | Evidence against $H_0$ | Large-sample 5% cutoff |
+|:--|:--|:--|
+| $\beta_1\ne\beta_{1,0}$ | Either direction | $|t|>1.96$ |
+| $\beta_1<\beta_{1,0}$ | Negative direction | $t<-1.645$ |
+| $\beta_1>\beta_{1,0}$ | Positive direction | $t>1.645$ |
+
+::: {.exercise}
+Suppose $t=+2.3$. Which alternatives reject at 5%?
+:::
+
+::: {.answer .fragment}
+The **two-sided** and **right-sided** tests reject. The left-sided test does not.
+:::
+
+::: {.notes}
+Check that students apply the direction as well as the size of a statistic.
+:::
+
+## The intercept follows the same procedure
+
+For a proposed intercept $\beta_{0,0}$:
+
+$$
+H_0:\beta_0=\beta_{0,0},
+\qquad
+t=\frac{\hat\beta_0-\beta_{0,0}}{SE(\hat\beta_0)}.
+$$
+
+- Use the **intercept's** standard error; the California report gives $10.4$.
+- Choose a two-sided or one-sided alternative according to the question.
+- Apply the same large-sample $p$-value or critical-value rule.
+
+::: {.notes}
+Equation 5.11. Here the intercept is the fitted score at STR=0, well outside
+the observed range, so many intercept hypotheses have little practical meaning.
+:::
+
+
+## Confidence intervals for regression coefficients {.section-slide background-color="#E85D4A"}
+
+Section 5.2 · Which coefficient values remain consistent with the data?
+
+::: {.notes}
+Source: Stock and Watson, Chapter 5, Section 5.2, supplied in
+book/chapter5. This section uses the same large-sample approximation and
+standard errors as the hypothesis tests in Section 5.1.
+:::
+
+## A confidence interval collects plausible slope values
+
+For each proposed value $b$, imagine testing $H_0:\beta_1=b$ against a two-sided alternative.
+
+::: {.key-idea}
+A **95% confidence interval** contains the values of $b$ that a 5% two-sided test would **not reject**.
+:::
+
+- Values close to $\hat\beta_1$ produce small absolute $t$-statistics.
+- Values far from $\hat\beta_1$ produce large absolute $t$-statistics.
+- The boundary occurs where $|t|=1.96$ in the large-sample approximation.
+
+::: {.notes}
+This is test inversion: one confidence interval summarizes the results of
+testing every possible null value b. "Not rejected" does not mean the null
+is proven true. The equivalence uses the same standard error and normal
+critical value as the Section 5.1 test.
+:::
+
+## Solve the test rule for the unknown slope
+
+A proposed value $b$ is retained at the 5% level when
+
+$$
+\left|\frac{\hat\beta_1-b}{SE(\hat\beta_1)}\right|\leq1.96.
+$$
+
+Multiply by the positive standard error and rearrange:
+
+$$
+-1.96\,SE(\hat\beta_1)
+\leq\hat\beta_1-b
+\leq1.96\,SE(\hat\beta_1)
+$$
+
+$$
+\Longleftrightarrow\quad
+\hat\beta_1-1.96\,SE(\hat\beta_1)
+\leq b\leq
+\hat\beta_1+1.96\,SE(\hat\beta_1).
+$$
+
+::: {.notes}
+This derives Equation 5.12 from the non-rejection rule. The standard error
+is positive and, for this simple test, does not depend on the proposed null
+value b. The bounds are approximate because the 1.96 reference value comes
+from the large-sample normal approximation.
+:::
+
+## The 95% interval is estimate ± uncertainty
+
+$$
+CI_{95\%}(\beta_1)=
+\left[
+\hat\beta_1-1.96\,SE(\hat\beta_1),\
+\hat\beta_1+1.96\,SE(\hat\beta_1)
+\right].
+$$
+
+::: columns
+::: {.column width="48%"}
+
+### Center
+
+$\hat\beta_1$ is the estimated slope.
+
+:::
+::: {.column width="48%"}
+
+### Margin
+
+$1.96\,SE(\hat\beta_1)$ reflects sampling uncertainty.
+
+:::
+:::
+
+::: {.key-idea}
+A larger standard error makes the interval wider; a more precise estimate makes it narrower.
+:::
+
+::: {.notes}
+Key Concept 5.3. The heteroskedasticity-robust SE from the prior section
+can be used here. Do not confuse this interval for a population coefficient
+with the SER or an interval for an individual future outcome.
+:::
+
+## What does 95% confidence mean?
+
+Imagine drawing many new samples, fitting the same regression, and constructing a new interval each time.
+
+- The **population slope $\beta_1$ stays fixed**.
+- The estimate, standard error, and interval vary across samples.
+- Under the maintained assumptions, **about 95% of these intervals cover $\beta_1$** in large samples.
+
+::: {.definition}
+After observing one interval, its endpoints are fixed. The 95% describes the **coverage of the method across repeated samples**.
+:::
+
+::: {.notes}
+The textbook states the repeated-sampling interpretation. Avoid assigning a
+95% probability to the fixed parameter conditional on this realized interval.
+Coverage is approximate here because inference uses a large-sample reference
+distribution and an estimated standard error. Biased sampling, a misspecified
+model, or an invalid SE can spoil coverage.
+:::
+
+## Calculate the California slope interval
+
+For the student–teacher ratio regression,
+$\hat\beta_1=-2.28$ and $SE(\hat\beta_1)=0.52$.
+
+$$
+\begin{aligned}
+\text{Margin}&=1.96(0.52)=1.0192,\\
+CI_{95\%}(\beta_1)
+&=[-2.28-1.0192,\,-2.28+1.0192]\\
+&\approx\boxed{[-3.30,\,-1.26]}.
+\end{aligned}
+$$
+
+- Both endpoints are in **test-score points per additional student per teacher**.
+- Zero is outside the interval, agreeing with the 5% two-sided test.
+
+::: {.notes}
+Stock and Watson's California example following Equation 5.12. The
+coefficient and SE are rounded textbook figures, so the displayed bounds
+are approximate. The negative association is statistically distinguishable
+from zero under the maintained assumptions; the interval alone does not
+establish a causal class-size effect.
+:::
+
+## The intercept can have an interval too
+
+Replace the slope estimate and standard error with those for the intercept:
+
+$$
+CI_{95\%}(\beta_0)=
+\left[
+\hat\beta_0-1.96\,SE(\hat\beta_0),\
+\hat\beta_0+1.96\,SE(\hat\beta_0)
+\right].
+$$
+
+For the California regression, $698.9\pm1.96(10.4)$ gives approximately **$[678.5,\,719.3]$**.
+
+::: {.key-idea}
+The calculation is valid under the model, but the intercept is the predicted score at $\text{STR}=0$, far outside a meaningful district comparison.
+:::
+
+::: {.notes}
+Section 5.2 says the same construction applies to beta_0. The numerical
+intercept interval uses the reported estimates in Equation 5.8 and rounds
+the endpoints to one decimal place. Avoid treating extrapolation to STR=0
+as a useful policy estimate.
+:::
+
+## Translate a slope interval into a change in X
+
+In the linear conditional-mean model, a change of $\Delta x$ gives
+
+$$
+E(Y\mid X=x+\Delta x)-E(Y\mid X=x)=\beta_1\Delta x.
+$$
+
+If $CI_{95\%}(\beta_1)=[L,U]$, multiply **both endpoints** by $\Delta x$:
+
+$$
+CI_{95\%}(\beta_1\Delta x)
+=
+[\min(L\Delta x,U\Delta x),\,
+ \max(L\Delta x,U\Delta x)].
+$$
+
+::: {.definition}
+When $\Delta x<0$, multiplication reverses the order of the endpoints.
+:::
+
+::: {.notes}
+This is Equation 5.13 with the interval reordered when the change is
+negative. The mapping has the same approximate coverage because multiplying
+by a known nonzero constant is one-to-one. This is an interval for a model
+mean difference, not an individual prediction interval. A causal
+interpretation requires the identifying assumptions discussed in Lecture 2.
+:::
+
+## Two fewer students per teacher
+
+Suppose the student–teacher ratio falls by two: $\Delta x=-2$.
+
+$$
+\widehat{\Delta\text{TestScore}}
+=(-2.28)(-2)=4.56\text{ points}.
+$$
+
+The slope interval $[-3.30,-1.26]$ becomes
+
+$$
+[(-1.26)(-2),\,(-3.30)(-2)]
+=\boxed{[2.52,\,6.60]\text{ points}}.
+$$
+
+::: {.key-idea}
+The model predicts a mean score increase between **2.52 and 6.60 points** at the 95% confidence level.
+:::
+
+::: {.notes}
+Stock and Watson's final example in Section 5.2. The endpoints use the
+rounded slope interval; applying -2 to the unrounded bounds leads to the
+same values at two decimals. The interval describes uncertainty about the
+model's mean difference. It does not describe the range of scores for
+individual districts and is causal only if the slope has a credible causal
+interpretation.
+:::

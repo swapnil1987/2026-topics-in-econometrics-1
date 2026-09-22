@@ -5,6 +5,7 @@ project:
     - template.qmd
     - lecture-01.qmd
     - lecture-02.qmd
+    - lecture-03.qmd
     - practice-01.qmd
     - practice-02.qmd
     - practice-03.qmd
