@@ -2,6 +2,8 @@
 
 ## News
 
+**25 September 2026 — Quiz 3 solutions and updated grades are available.** [Read the answer key and worked solutions](quiz/quiz3/quiz3_instructor_key.pdf) and [download the updated grades workbook](quiz/grades.xlsx).
+
 **21 September 2026 — Quiz 2 solutions and grades are available.** [Read the answer key and worked solutions](quiz/quiz2/quiz2_instructor_key.pdf).
 
 **18 September 2026 — Practice Set 3 is uploaded!** [Open the 25 practice questions and worked solutions](https://swapnil1987.github.io/2026-topics-in-econometrics-1/practice-03.html), progressing from easy to hard and covering regression through the causal-diagram slide.
