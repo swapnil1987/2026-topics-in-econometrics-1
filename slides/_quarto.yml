@@ -9,6 +9,7 @@ project:
     - practice-01.qmd
     - practice-02.qmd
     - practice-03.qmd
+    - practice-04.qmd
   resources:
     - theme/fonts/latinmodern-math.otf
     - theme/fonts/GUST-FONT-LICENSE.txt

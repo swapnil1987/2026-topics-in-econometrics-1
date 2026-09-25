@@ -1,0 +1,689 @@
+---
+title: "Practice Set 4: Questions and Solutions"
+subtitle: "Lecture 4 · Omitted variable bias, LLN, and CLT"
+author: "Swapnil Singh"
+date: "2026-09-25"
+date-format: "D MMMM YYYY"
+footer: "Topics in Econometrics I · Practice Set 4"
+execute:
+  warning: true
+  message: true
+---
+
+```{r}
+#| label: practice04-setup
+#| include: false
+
+# All numerical examples are hypothetical.
+four_decimals <- function(value) sprintf("%.4f", value)
+
+commute_probability_n144 <- pnorm(2) - pnorm(-2)
+commute_probability_n576 <- pnorm(4) - pnorm(-4)
+rmse_n100 <- sqrt(0.5^2 + 9 / 100)
+rmse_n900 <- sqrt(0.5^2 + 9 / 900)
+wrong_target_probability_n400 <- pnorm(-1) - pnorm(-2)
+wrong_target_probability_n1600 <- pnorm(-2) - pnorm(-4)
+
+stopifnot(
+  abs(commute_probability_n144 - 0.9544997) < 1e-7,
+  abs(commute_probability_n576 - 0.9999367) < 1e-7,
+  abs(rmse_n100 - sqrt(0.34)) < 1e-12,
+  abs(rmse_n900 - sqrt(0.26)) < 1e-12,
+  abs(wrong_target_probability_n400 - 0.1359051) < 1e-7,
+  abs(wrong_target_probability_n1600 - 0.0227185) < 1e-7
+)
+```
+
+## How to use this deck
+
+::: {.key-idea}
+**Attempt each question before advancing to its worked solution.**
+:::
+
+- Questions 1–5 establish the core ideas.
+- Questions 6–10 apply the formulas and large-sample tools.
+- Questions 11–15 require derivations and combined reasoning.
+- Show the sign, units, and target of every omitted-variable calculation.
+
+::: {.notes}
+This set follows the instructor's stated Lecture 4 scope: the omitted-variable-
+bias formula and a return to the law of large numbers and central limit theorem.
+The questions are original, all examples are hypothetical, and no external or
+student data are used. Formal coefficient testing is outside the main scope.
+:::
+
+## Common setup and notation
+
+The richer population model is
+
+$$
+Y=\alpha+\beta X+\delta Z+\varepsilon,
+\qquad E(\varepsilon\mid X,Z)=0.
+$$
+
+If $Z$ is omitted, the population slope in the short regression of $Y$ on $X$ is
+
+$$
+b_{\text{short}}
+=\beta+\delta\pi,
+\qquad
+\pi=\frac{\operatorname{Cov}(X,Z)}{\operatorname{Var}(X)}.
+$$
+
+::: {.definition}
+$\delta\pi$ is the **omitted-variable distortion**: $Z$ must affect $Y$ and move with $X$ for the product to be nonzero.
+:::
+
+::: {.notes}
+Beta is interpreted as the causal effect under the maintained richer model.
+The formula is an exact population linear-projection identity and, under
+suitable sampling conditions, the probability-limit gap of the short OLS
+slope. It is not generally an exact finite-sample unconditional bias formula.
+Pi is the population slope from regressing Z on X with an intercept.
+:::
+
+## Difficulty map
+
+| Questions | Level | Main ideas |
+|---|---|---|
+| 1–5 | Easy ★ | theorem meanings, OVB pieces, signs, zero-bias cases |
+| 6–10 | Medium ★★ | reverse calculations, units, probabilities, precision |
+| 11–15 | Hard ★★★ | cancellation, derivations, binary regressors, wrong targets |
+
+Unless stated otherwise, observations are **i.i.d.** and the moments needed for the displayed LLN and CLT results are finite. Write $N(a,b)$ with mean $a$ and variance $b$.
+
+## Easy · Q1–5 {.section-slide background-color="#E85D4A"}
+
+::: {.notes}
+Suggested time: 20–25 minutes. Require a sentence of interpretation after
+each calculation so that the algebra remains tied to the causal question.
+:::
+
+## Question 1 · LLN or CLT? ★
+
+::: {.exercise}
+For i.i.d. observations with mean $\mu$ and variance $\sigma^2$, identify the theorem behind statements 1–2 and correct statements 3–4.
+
+1. $\bar Y\xrightarrow{p}\mu$.
+2. $\sqrt n(\bar Y-\mu)/\sigma\xrightarrow{d}N(0,1)$.
+3. “The CLT says that individual observations become normally distributed as $n$ grows.”
+4. “The LLN tells us the probability that $\bar Y$ lies within one unit of $\mu$ for a particular $n$.”
+:::
+
+## Solution 1 · Destination versus shape
+
+::: {.answer}
+
+1. **LLN:** the sample mean converges in probability to the population mean.
+2. **CLT:** the standardized sampling error approaches a standard normal distribution.
+3. The CLT concerns the **sampling distribution of the standardized mean**, not the distribution of each $Y_i$.
+4. The LLN is a convergence statement. A numerical finite-$n$ probability needs more information, a bound, or a distributional approximation such as the CLT.
+
+:::
+
+## Question 2 · Read every part of the OVB formula ★
+
+::: {.exercise}
+In
+
+$$b_{\text{short}}=\beta+\delta\pi,$$
+
+explain in words what each of $b_{\text{short}}$, $\beta$, $\delta$, and $\pi$ represents. Which term is the omitted-variable distortion? Why are **two** relationships needed for a nonzero distortion?
+:::
+
+## Solution 2 · One effect and one association
+
+::: {.answer}
+
+- $b_{\text{short}}$: population slope from regressing $Y$ on $X$ while omitting $Z$.
+- $\beta$: effect of $X$ on $Y$, holding $Z$ fixed, under the maintained causal model.
+- $\delta$: effect of $Z$ on $Y$, holding $X$ fixed.
+- $\pi$: population slope from regressing $Z$ on $X$.
+- $\delta\pi$: omitted-variable distortion.
+
+The product is nonzero only if $Z$ matters for $Y$ ($\delta\ne0$) **and** $Z$ is linearly associated with $X$ ($\pi\ne0$).
+
+:::
+
+## Question 3 · Predict the direction ★
+
+::: {.exercise}
+For each sign combination, state whether omitting $Z$ biases the short slope **upward** or **downward** relative to $\beta$.
+
+| Case | Sign of $\delta$ | Sign of $\pi$ |
+|---|:---:|:---:|
+| A | $+$ | $+$ |
+| B | $+$ | $-$ |
+| C | $-$ | $+$ |
+| D | $-$ | $-$ |
+
+Does “upward” necessarily mean that the short-regression slope is positive?
+:::
+
+## Solution 3 · Multiply the signs
+
+::: {.answer}
+
+| Case | Sign of $\delta\pi$ | Direction |
+|---|:---:|---|
+| A | $+$ | Upward |
+| B | $-$ | Downward |
+| C | $-$ | Downward |
+| D | $+$ | Upward |
+
+“Upward” means $b_{\text{short}}>\beta$. It does **not** require either slope to be positive. For example, $-1$ is upward relative to $-3$.
+
+:::
+
+## Question 4 · Calculate the distortion ★
+
+::: {.exercise}
+Suppose
+
+$$
+\beta=2,
+\qquad \delta=3,
+\qquad \operatorname{Cov}(X,Z)=4,
+\qquad \operatorname{Var}(X)=8.
+$$
+
+1. Calculate $\pi$.
+2. Calculate the omitted-variable distortion.
+3. Find $b_{\text{short}}$ and state its direction relative to $\beta$.
+:::
+
+## Solution 4 · Association enters through a slope
+
+::: {.answer}
+
+$$
+\pi=\frac{4}{8}=0.5,
+\qquad \delta\pi=3(0.5)=1.5.
+$$
+
+Therefore,
+
+$$b_{\text{short}}=2+1.5=3.5.$$
+
+The short-regression slope is distorted **upward by 1.5 units**. Its value is 3.5, while the target effect holding $Z$ fixed is 2.
+
+:::
+
+## Question 5 · Omitted but not biasing? ★
+
+::: {.exercise}
+For each case, state whether the OVB formula gives a nonzero distortion.
+
+1. $Z$ affects $Y$, but $\operatorname{Cov}(X,Z)=0$.
+2. $Z$ is associated with $X$, but $\delta=0$.
+3. $\delta\ne0$ and $\operatorname{Cov}(X,Z)\ne0$.
+4. A student concludes: “If $\delta\pi=0$, then the full conditional-mean assumption $E(u\mid X)=0$ must hold.” Is that conclusion justified?
+:::
+
+## Solution 5 · Omission alone is not enough
+
+::: {.answer}
+
+1. No linear slope distortion: $\pi=0$.
+2. No distortion: $\delta=0$.
+3. A nonzero distortion results because $\operatorname{Var}(X)>0$ makes $\pi\ne0$.
+4. **No.** A zero covariance can eliminate this linear slope distortion while nonlinear dependence between $X$ and the short-regression error remains. Zero distortion is weaker than $E(u\mid X)=0$.
+
+:::
+
+## Medium · Q6–10 {.section-slide background-color="#B83D2F"}
+
+::: {.notes}
+Suggested time: 30–40 minutes. Questions 8–10 deliberately separate
+concentration, normal approximation, and convergence to the correct target.
+:::
+
+## Question 6 · Recover the causal slope ★★
+
+::: {.exercise}
+A short regression reports a population slope of $b_{\text{short}}=-2.4$.
+Economic knowledge and auxiliary evidence imply $\delta=1.5$ and $\pi=-0.8$.
+
+1. Calculate the omitted-variable distortion.
+2. Recover $\beta$.
+3. Explain why the short slope is more negative than the causal effect.
+:::
+
+## Solution 6 · Subtract the distortion
+
+::: {.answer}
+
+$$\delta\pi=1.5(-0.8)=-1.2.$$
+
+Since $b_{\text{short}}=\beta+\delta\pi$,
+
+$$\beta=-2.4-(-1.2)=-1.2.$$
+
+$Z$ raises $Y$ but is negatively associated with $X$. The short regression assigns that negative pathway to $X$, making its slope **1.2 units too negative**.
+
+:::
+
+## Question 7 · Track the units ★★
+
+::: {.exercise}
+Let $Y$ be hourly wages in euros, $X$ training in weeks, and $Z$ prior experience in years. Suppose
+
+$$\beta=0.40,\qquad \delta=1.80,\qquad \pi=0.25.$$
+
+1. Give the units of $\beta$, $\delta$, and $\pi$.
+2. Calculate the distortion and short slope.
+3. Redefine training as $X^*=X/4$, measured in four-week months. Find $\beta^*$, $\pi^*$, the new distortion, and $b^*_{\text{short}}$.
+:::
+
+## Solution 7 · Rescaling changes coefficients, not content
+
+::: {.answer}
+
+- $\beta$: euros per hour per training week.
+- $\delta$: euros per hour per year of experience.
+- $\pi$: years of experience per training week.
+
+$$\delta\pi=1.80(0.25)=0.45,\qquad b_{\text{short}}=0.40+0.45=0.85.$$
+
+One unit of $X^*$ is four weeks, so all coefficients per unit of training multiply by four:
+
+$$
+\beta^*=1.60,
+\quad \pi^*=1.00,
+\quad \delta\pi^*=1.80,
+\quad b^*_{\text{short}}=3.40.
+$$
+
+The substantive relationship is unchanged; only the unit of the regressor changed.
+
+:::
+
+## Question 8 · Use the CLT for a probability ★★
+
+::: {.exercise}
+Commute time has population mean $30$ minutes and SD $12$ minutes. Its population distribution is not normal. For an i.i.d. sample of $n=144$:
+
+1. State the approximate CLT distribution of $\bar Y$.
+2. Approximate $\Pr(28\leq\bar Y\leq32)$.
+3. Repeat the approximation for $n=576$.
+4. What does the change illustrate about the LLN?
+:::
+
+## Solution 8 · The sampling distribution tightens
+
+::: {.answer}
+
+For $n=144$,
+
+$$\bar Y\overset{a}{\sim}N\!\left(30,\frac{12^2}{144}\right)=N(30,1).$$
+
+The bounds standardize to $-2$ and $2$:
+
+$$\Pr(28\leq\bar Y\leq32)\approx\Phi(2)-\Phi(-2)
+=`r four_decimals(commute_probability_n144)`.$$
+
+For $n=576$, $\operatorname{SD}(\bar Y)=12/24=0.5$, so the bounds are $\pm4$ SDs:
+
+$$\Pr(28\leq\bar Y\leq32)\approx\Phi(4)-\Phi(-4)
+=`r four_decimals(commute_probability_n576)`.$$
+
+The increasing concentration around 30 is the behavior formalized by the LLN.
+
+:::
+
+::: {.notes}
+These are CLT approximations, not exact probabilities, because the population
+shape is unspecified. The variance parameter in N(30,1) is one; its SD is also
+one in this particular calculation.
+:::
+
+## Question 9 · LLN and the short OLS slope ★★
+
+::: {.exercise}
+The sample short-regression slope can be written
+
+$$
+\hat b_{\text{short}}
+=\frac{n^{-1}\sum_i(X_i-\bar X)(Y_i-\bar Y)}
+{n^{-1}\sum_i(X_i-\bar X)^2}.
+$$
+
+1. Use the LLN to state the probability limit of the numerator and denominator.
+2. Deduce $\operatorname{plim}(\hat b_{\text{short}})$.
+3. If $\delta\pi\ne0$, does the estimator become consistent for $\beta$?
+4. What different role does the CLT play?
+:::
+
+## Solution 9 · Consistency requires naming the target
+
+::: {.answer}
+
+Under suitable moment conditions,
+
+$$
+\frac1n\sum_i(X_i-\bar X)(Y_i-\bar Y)
+\xrightarrow{p}\operatorname{Cov}(X,Y),
+$$
+
+$$
+\frac1n\sum_i(X_i-\bar X)^2
+\xrightarrow{p}\operatorname{Var}(X)>0.
+$$
+
+Therefore,
+
+$$
+\hat b_{\text{short}}\xrightarrow{p}
+\frac{\operatorname{Cov}(X,Y)}{\operatorname{Var}(X)}
+=b_{\text{short}}=\beta+\delta\pi.
+$$
+
+If $\delta\pi\ne0$, it is not consistent for $\beta$. The CLT describes the approximately normal, shrinking sampling variation **around $b_{\text{short}}$**, not around $\beta$.
+
+:::
+
+## Question 10 · Can a larger sample cure OVB? ★★
+
+::: {.exercise}
+Suppose $\beta=1$ and $\delta\pi=-0.5$. In large samples,
+
+$$\hat b_{\text{short}}\overset{a}{\sim}N\!\left(0.5,\frac9n\right).$$
+
+1. Find the approximate SD at $n=100$ and $n=900$.
+2. Compute the RMSE for estimating $\beta$, using
+$\operatorname{RMSE}=\sqrt{\text{distortion}^2+\operatorname{Var}(\hat b)}$.
+3. What improves with $n$? What does not?
+:::
+
+## Solution 10 · More precise around the wrong target
+
+::: {.answer}
+
+$$
+\operatorname{SD}_{100}=\frac3{10}=0.3,
+\qquad
+\operatorname{SD}_{900}=\frac3{30}=0.1.
+$$
+
+The distortion relative to $\beta$ is always $-0.5$:
+
+$$
+\operatorname{RMSE}_{100}=\sqrt{0.5^2+0.3^2}
+\approx `r four_decimals(rmse_n100)`,
+$$
+
+$$
+\operatorname{RMSE}_{900}=\sqrt{0.5^2+0.1^2}
+\approx `r four_decimals(rmse_n900)`.
+$$
+
+Sampling variation shrinks, but the omitted-variable distortion does not. The short estimator concentrates near 0.5, not the causal target 1.
+
+:::
+
+## Hard · Q11–15 {.section-slide background-color="#E85D4A"}
+
+::: {.notes}
+Suggested time: 45–55 minutes. The final problem combines the LLN target,
+the CLT approximation, and omitted-variable distortion in one calculation.
+:::
+
+## Question 11 · Two biases can cancel ★★★
+
+::: {.exercise}
+The richer model contains two omitted variables:
+
+$$Y=\alpha+\beta X+\delta_1Z_1+\delta_2Z_2+\varepsilon.$$
+
+Let $\pi_j=\operatorname{Cov}(X,Z_j)/\operatorname{Var}(X)$. Suppose
+
+$$
+\delta_1=4,\quad\pi_1=0.3,
+\qquad
+\delta_2=-2,\quad\pi_2=0.6.
+$$
+
+1. Derive the short-slope formula with both omitted variables.
+2. Calculate each contribution and the net distortion.
+3. Does a net distortion of zero show that neither variable is a confounder or that $E(u\mid X)=0$?
+:::
+
+## Solution 11 · A zero total can hide two pathways
+
+::: {.answer}
+
+Covariance is linear, so
+
+$$
+b_{\text{short}}
+=\beta+\delta_1\pi_1+\delta_2\pi_2.
+$$
+
+The two contributions are
+
+$$4(0.3)=1.2,
+\qquad
+(-2)(0.6)=-1.2.$$
+
+Thus the net distortion is zero and $b_{\text{short}}=\beta$.
+
+This is **cancellation**, not proof that the omitted pathways are absent. Each omitted variable is related to both $X$ and $Y$, and the full conditional-mean assumption need not hold. Small changes in the relationships would undo the cancellation.
+
+:::
+
+## Question 12 · Derive the OVB formula ★★★
+
+::: {.exercise}
+Starting from
+
+$$b_{\text{short}}=\frac{\operatorname{Cov}(X,Y)}{\operatorname{Var}(X)}$$
+
+and the richer model
+
+$$Y=\alpha+\beta X+\delta Z+\varepsilon,$$
+
+derive $b_{\text{short}}=\beta+\delta\pi$. Clearly state where you use
+$\operatorname{Cov}(X,\alpha)=0$ and $\operatorname{Cov}(X,\varepsilon)=0$.
+Why does $E(\varepsilon\mid X,Z)=0$ imply the second covariance is zero?
+:::
+
+## Solution 12 · Expand the numerator
+
+::: {.answer}
+
+$$
+\begin{aligned}
+\operatorname{Cov}(X,Y)
+&=\operatorname{Cov}(X,\alpha+\beta X+\delta Z+\varepsilon)\\
+&=\underbrace{\operatorname{Cov}(X,\alpha)}_{0}
++\beta\operatorname{Var}(X)
++\delta\operatorname{Cov}(X,Z)
++\underbrace{\operatorname{Cov}(X,\varepsilon)}_{0}.
+\end{aligned}
+$$
+
+Divide by $\operatorname{Var}(X)>0$:
+
+$$
+b_{\text{short}}
+=\beta+\delta\frac{\operatorname{Cov}(X,Z)}{\operatorname{Var}(X)}
+=\beta+\delta\pi.
+$$
+
+$\alpha$ is constant. Also,
+
+$$E(X\varepsilon)=E\{X E(\varepsilon\mid X,Z)\}=0,$$
+
+and the same assumption gives $E(\varepsilon)=0$, so $\operatorname{Cov}(X,\varepsilon)=0$.
+
+:::
+
+## Question 13 · Rewrite OVB using correlation ★★★
+
+::: {.exercise}
+Show that
+
+$$
+\pi=\operatorname{Corr}(X,Z)
+\frac{\operatorname{SD}(Z)}{\operatorname{SD}(X)}.
+$$
+
+Then suppose
+
+$$
+\operatorname{Corr}(X,Z)=0.4,
+\quad \operatorname{SD}(X)=2,
+\quad \operatorname{SD}(Z)=6,
+\quad \delta=-1.5,
+\quad \beta=2.
+$$
+
+Calculate $\pi$, the distortion, and $b_{\text{short}}$. Explain how a positive $X$–$Z$ correlation can generate a downward distortion.
+:::
+
+## Solution 13 · Correlation needs a scale conversion
+
+::: {.answer}
+
+Since $\operatorname{Cov}(X,Z)=\operatorname{Corr}(X,Z)\operatorname{SD}(X)\operatorname{SD}(Z)$,
+
+$$
+\pi=\frac{\operatorname{Cov}(X,Z)}{\operatorname{Var}(X)}
+=\operatorname{Corr}(X,Z)
+\frac{\operatorname{SD}(Z)}{\operatorname{SD}(X)}.
+$$
+
+Thus
+
+$$
+\pi=0.4\left(\frac62\right)=1.2,
+\qquad
+\delta\pi=-1.5(1.2)=-1.8,
+$$
+
+$$b_{\text{short}}=2-1.8=0.2.$$
+
+$X$ is positively related to $Z$, but $Z$ lowers $Y$. The omitted pathway therefore makes the short slope **smaller**.
+
+:::
+
+## Question 14 · Binary $X$ and differences in means ★★★
+
+::: {.exercise}
+Let $X\in\{0,1\}$ with $0<\Pr(X=1)<1$.
+
+1. Prove that the slope from regressing $Z$ on $X$ is
+$$\pi=E(Z\mid X=1)-E(Z\mid X=0).$$
+2. Suppose the two conditional means of $Z$ are 12 and 8, $\delta=2$, and $\beta=-1$. Calculate the distortion and short slope.
+3. Interpret the result as a treated-versus-untreated comparison.
+:::
+
+## Solution 14 · OVB becomes a group-composition gap
+
+::: {.answer}
+
+Let $p=\Pr(X=1)$. Then
+
+$$
+\operatorname{Var}(X)=p(1-p)
+$$
+
+and
+
+$$
+\operatorname{Cov}(X,Z)
+=p(1-p)\left[E(Z\mid X=1)-E(Z\mid X=0)\right].
+$$
+
+Dividing gives
+
+$$\pi=E(Z\mid X=1)-E(Z\mid X=0)=12-8=4.$$
+
+Therefore,
+
+$$\delta\pi=2(4)=8,
+\qquad
+b_{\text{short}}=-1+8=7.$$
+
+Although the causal effect of treatment is $-1$, treated units have four more units of the outcome-raising variable $Z$. The raw outcome comparison attributes that compositional advantage to treatment and reverses the sign.
+
+:::
+
+## Question 15 · Large samples reveal the wrong target ★★★
+
+::: {.exercise}
+Suppose the short slope has distortion $\delta\pi=0.3$ and
+
+$$
+\hat b_{\text{short}}
+\overset{a}{\sim}
+N\!\left(\beta+0.3,\frac{16}{n}\right).
+$$
+
+1. For $n=400$, approximate $\Pr(|\hat b_{\text{short}}-\beta|\leq0.1)$.
+2. Repeat for $n=1600$.
+3. What happens to this probability as $n\to\infty$?
+4. Explain the separate roles of the LLN and CLT in this result.
+:::
+
+## Solution 15 · Precision does not repair identification
+
+::: {.answer}
+
+Let $D=\hat b_{\text{short}}-\beta$. For $n=400$,
+
+$$D\overset{a}{\sim}N(0.3,0.2^2).$$
+
+The bounds $-0.1\leq D\leq0.1$ standardize to $-2$ and $-1$:
+
+$$
+\Pr(|D|\leq0.1)\approx\Phi(-1)-\Phi(-2)
+=`r four_decimals(wrong_target_probability_n400)`.
+$$
+
+For $n=1600$, $\operatorname{SD}(D)=0.1$ and the bounds standardize to $-4$ and $-2$:
+
+$$
+\Pr(|D|\leq0.1)\approx\Phi(-2)-\Phi(-4)
+=`r four_decimals(wrong_target_probability_n1600)`.
+$$
+
+:::
+
+## Solution 15 · Name the center before celebrating precision
+
+::: {.answer}
+
+As $n\to\infty$,
+
+$$\hat b_{\text{short}}\xrightarrow{p}\beta+0.3,$$
+
+so the probability of landing within 0.1 of $\beta$ tends to **zero**.
+
+- The **LLN** determines the probability limit: the estimator settles at the short-regression target $\beta+0.3$.
+- The **CLT** describes the shrinking, approximately normal fluctuations around that target.
+
+::: {.key-idea}
+A large sample can make an estimator highly precise about the wrong causal quantity.
+:::
+
+:::
+
+## What should you be able to do now?
+
+::: {.key-idea}
+**Separate the target, the distortion, and the sampling variation.**
+:::
+
+1. Use the signs and units in $\delta\pi$ to diagnose omitted-variable distortion.
+2. Derive the OVB formula from population covariances.
+3. Use the LLN to identify where an estimator converges.
+4. Use the CLT to describe its remaining large-sample variation.
+5. Explain why more data reduce variance but do not automatically solve confounding.
+
+::: {.notes}
+Suggested closing prompt: ask students which remedy addresses each problem.
+More observations reduce sampling variation. Measuring and controlling for Z,
+or using a design that breaks its association with X, addresses the omitted
+pathway under the relevant identifying assumptions.
+:::

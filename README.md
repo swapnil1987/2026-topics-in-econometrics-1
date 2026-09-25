@@ -2,6 +2,8 @@
 
 ## News
 
+**25 September 2026 — Practice Set 4 is uploaded!** [Open the 15 practice questions and worked solutions](https://swapnil1987.github.io/2026-topics-in-econometrics-1/practice-04.html), progressing from easy to hard and covering the omitted-variable-bias formula, the law of large numbers, and the central limit theorem.
+
 **25 September 2026 — Quiz 3 solutions and updated grades are available.** [Read the answer key and worked solutions](quiz/quiz3/quiz3_instructor_key.pdf) and [download the updated grades workbook](quiz/grades.xlsx).
 
 **21 September 2026 — Quiz 2 solutions and grades are available.** [Read the answer key and worked solutions](quiz/quiz2/quiz2_instructor_key.pdf).
@@ -85,6 +87,13 @@ Standard errors, hypothesis tests, and confidence intervals for simple regressio
 - [Slide source](slides/lecture-03.qmd)
 - [Practice set 3: 25 questions and worked solutions](https://swapnil1987.github.io/2026-topics-in-econometrics-1/practice-03.html) — easy to hard, with selected Stock and Watson adaptations; covers OLS, fit, prediction, and the causal assumptions taught so far.
 - [Practice set 3 source](slides/practice-03.qmd)
+
+### Lecture 4: Omitted Variable Bias and Large-Sample Reasoning
+
+The omitted-variable-bias formula, with a review of the law of large numbers and central limit theorem and their roles in regression.
+
+- [Practice set 4: 15 questions and worked solutions](https://swapnil1987.github.io/2026-topics-in-econometrics-1/practice-04.html) — five easy, five medium, and five hard questions on signs, calculations, derivations, consistency, and sampling variation.
+- [Practice set 4 source](slides/practice-04.qmd)
 
 ## Quizzes
 
