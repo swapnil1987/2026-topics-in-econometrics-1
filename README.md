@@ -95,6 +95,22 @@ The omitted-variable-bias formula, with a review of the law of large numbers and
 - [Practice set 4: 15 questions and worked solutions](https://swapnil1987.github.io/2026-topics-in-econometrics-1/practice-04.html) — five easy, five medium, and five hard questions on signs, calculations, derivations, consistency, and sampling variation.
 - [Practice set 4 source](slides/practice-04.qmd)
 
+### Lecture 5: Midterm Problem Workshop
+
+Fourteen hard multiple-choice questions, each presented with seven answer
+choices and followed immediately by a detailed, step-by-step solution. Longer
+derivations continue onto a second solution slide so that every substitution,
+algebraic step, and interpretation remains readable in class. Scope is limited
+to the Lecture 1 and Lecture 2 decks taught over the first four class meetings.
+Questions combine calculations, derivation completion, error diagnosis,
+counterexamples, and causal interpretation.
+
+- [View the Lecture 5 workshop slides](https://swapnil1987.github.io/2026-topics-in-econometrics-1/lecture-05.html)
+- [Workshop source and solutions](slides/lecture-05.qmd)
+- [Deterministic R checks](R/lecture-05-checks.R)
+- Each question is self-contained: choose A–G, then advance through its worked solution.
+- Render locally with `~/miniconda3/bin/conda run --name topics-econometrics quarto render slides/lecture-05.qmd`; output is `slides/_site/lecture-05.html`.
+
 ## Quizzes
 
 Quizzes are short, in-class assessments based only on material already taught and exercises already made available. The working format is three multiple-choice questions, seven answer choices per question, and five equivalent coded forms. Each correct answer earns one point. Incorrect and blank answers receive zero points; there is no negative marking unless announced otherwise.

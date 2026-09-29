@@ -1,0 +1,1356 @@
+---
+title: "Lecture 5: Midterm Practice"
+subtitle: "Multiple-choice questions and worked solutions"
+author: "Swapnil Singh"
+footer: "Econometric Theory and Practice I · Midterm practice"
+execute:
+  warning: true
+  message: true
+---
+
+```{r}
+#| label: lecture05-checks
+#| include: false
+
+# Deterministic checks on invented examples; no random draws are involved.
+source("../R/lecture-05-checks.R")
+```
+
+## How to practise
+
+::: {.key-idea}
+Read the question, work it out, and choose **one answer: A–G**.
+:::
+
+- Each question and all seven choices appear together.
+- The next slide gives the correct answer and worked solution.
+- The scope is **Lecture 1 and Lecture 2**, taught over the first four classes.
+- All 14 questions are practice questions; all numerical examples are invented.
+
+::: {.notes}
+The instructor requested direct exam-style practice: one question with its
+choices, followed immediately by its solution. There are no separate long
+problems or extracted questions. Keep the solution off screen while students
+work and commit to an option. Suggested classroom rhythm: 3–6 minutes of
+individual work, then 3–5 minutes discussing the solution; adjust to the class.
+Source boundary: slides/lecture-01.qmd and slides/lecture-02.qmd only.
+Lecture 3 coefficient tests and confidence intervals are excluded.
+Throughout, N(m,v) uses mean m and variance v. Preserve all question-specific
+assumptions when reusing a question in an exam. Speaker notes explain sources,
+hints, and distractors; they are not a secure location for unreleased exam items.
+:::
+
+## Q1 · Joint probabilities and group weights
+
+The table contains joint probabilities, and $E(Y)=1$.
+
+|  | $Y=0$ | $Y=2$ | Total |
+|---|---:|---:|---:|
+| $X=0$ | $0.30$ | $0.10$ | $0.40$ |
+| $X=1$ | $a$ | $b$ | $0.60$ |
+
+Let $w$ be the weight on $E(Y\mid X=1)$ in the law of iterated expectations. **Which triple $(a,b,w)$ is correct?**
+
+::: columns
+::: {.column width="48%"}
+
+A. $(0.20,\ 0.40,\ 0.50)$
+
+B. $(0.10,\ 0.50,\ 0.60)$
+
+C. $(0.20,\ 0.40,\ 0.60)$
+
+D. $(0.40,\ 0.20,\ 0.60)$
+
+:::
+::: {.column width="48%"}
+
+E. $(0.20,\ 0.40,\ 2/3)$
+
+F. $(0.30,\ 0.30,\ 0.60)$
+
+G. $(0.20,\ 0.40,\ 0.40)$
+
+:::
+:::
+
+::: {.notes}
+Source: Lecture 1, “Joint and marginal distributions”, “Conditional mean”,
+and “The law of iterated expectations”. Hint: E(Y)=2 Pr(Y=2). All entries
+inside the table are joint probabilities, not conditional probabilities.
+:::
+
+## Solution 1 · Correct answer: C
+
+::: {.answer}
+$a=0.20$, $b=0.40$, and $w=0.60$.
+:::
+
+**Step 1: recover the missing cells.** Because $Y$ is either $0$ or $2$,
+
+$$
+E(Y)=0\Pr(Y=0)+2\Pr(Y=2)=2(0.10+b)=1.
+$$
+
+Hence $0.10+b=0.50$, so $b=0.40$. The $X=1$ row must total $0.60$:
+
+$$a+b=0.60\quad\Rightarrow\quad a=0.60-0.40=0.20.$$
+
+**Step 2: convert joint probabilities into conditional probabilities.** Divide each cell by its row total:
+
+$$
+\begin{aligned}
+E(Y\mid X=0)
+&=0\frac{0.30}{0.40}+2\frac{0.10}{0.40}=\frac12,\\
+E(Y\mid X=1)
+&=0\frac{0.20}{0.60}+2\frac{0.40}{0.60}=\frac43.
+\end{aligned}
+$$
+
+## Solution 1 · Apply iterated expectations
+
+**Step 3: average the two conditional means using the group probabilities.**
+
+$$
+\begin{aligned}
+E(Y)
+&=E[E(Y\mid X)]\\
+&=\Pr(X=0)E(Y\mid X=0)+\Pr(X=1)E(Y\mid X=1)\\
+&=(0.40)\left(\frac12\right)+(0.60)\left(\frac43\right)\\
+&=0.20+0.80=1.
+\end{aligned}
+$$
+
+Therefore the weight on $E(Y\mid X=1)$ is
+
+$$\boxed{w=\Pr(X=1)=0.60}.$$
+
+::: {.key-idea}
+The inner expectation normalizes **within a row**. The outer expectation then weights the rows by their **marginal probabilities**.
+:::
+
+::: {.notes}
+A uses equal group weights; B forgets the contribution from X=0 to E(Y);
+D swaps the missing cells; E uses a conditional probability for the group
+weight; F assumes equiprobable outcomes within X=1; G uses the other group's
+marginal weight. No independence assumption is used.
+:::
+
+## Q2 · Complete the proof {#q2-repair-the-iterated-expectations-proof}
+
+Let $X,Y$ have finite support. Write $p_x=\Pr(X=x)>0$, $p_y=\Pr(Y=y)$, and $p_{xy}=\Pr(X=x,Y=y)$.
+
+**Which pair (blank 1, blank 2) completes the proof term by term, for each $(x,y)$, without assuming independence?**
+
+$$
+E[E(Y\mid X)]
+=\sum_x\sum_y y\Pr(Y=y\mid X=x)\underbrace{\,?\,}_{\text{blank 1}}
+=\sum_y y\sum_x\underbrace{\,?\,}_{\text{blank 2}}=E(Y).
+$$
+
+::: columns
+::: {.column width="48%"}
+
+A. $(1,\ \Pr(Y=y\mid X=x))$
+
+B. $(p_y,\ p_{xy})$
+
+C. $(p_x,\ p_xp_y)$
+
+D. $(p_x,\ \Pr(X=x\mid Y=y))$
+
+:::
+::: {.column width="48%"}
+
+E. $(1/p_x,\ p_{xy})$
+
+F. $(p_x,\ p_{xy})$
+
+G. $(p_x,\ p_y)$
+
+:::
+:::
+
+::: {.notes}
+Source: Lecture 1, “The law of iterated expectations”.
+“Term by term” is essential: require Pr(Y=y | X=x) times blank (1) to equal
+blank (2) for each pair, as well as the full displayed chain. Otherwise
+option C happens to give the same total after summing even without
+independence, although it is not the multiplication-rule replacement.
+The explicit slide ID preserves the user's existing browser location.
+:::
+
+## Solution 2 · Correct answer: F
+
+::: {.answer}
+Blank (1) is $p_x$; blank (2) is $p_{xy}$.
+:::
+
+Start from the outer expectation. Since $X$ is discrete,
+
+$$
+E[E(Y\mid X)]
+=\sum_x E(Y\mid X=x)\underbrace{\Pr(X=x)}_{p_x}.
+$$
+
+Now expand the conditional mean:
+
+$$E(Y\mid X=x)=\sum_y y\Pr(Y=y\mid X=x).$$
+
+Substitution therefore gives
+
+$$
+E[E(Y\mid X)]
+=\sum_x\sum_y y\Pr(Y=y\mid X=x)p_x.
+$$
+
+Thus blank 1 is $\boxed{p_x}$.
+
+## Solution 2 · Why blank 2 is the joint probability
+
+For every pair $(x,y)$, the multiplication rule gives
+
+$$
+\Pr(Y=y\mid X=x)p_x
+=\frac{p_{xy}}{p_x}p_x
+=p_{xy}.
+$$
+
+So blank 2 is $\boxed{p_{xy}}$. Finish by changing the order of summation and summing out $X$:
+
+$$
+\begin{aligned}
+E[E(Y\mid X)]
+&=\sum_y y\sum_x p_{xy}\\
+&=\sum_y y\,p_y\\
+&=E(Y).
+\end{aligned}
+$$
+
+::: {.key-idea}
+No independence is used. Replacing $p_{xy}$ by $p_xp_y$ would be an additional independence assumption.
+:::
+
+::: {.notes}
+A omits the outer weight; B weights by the wrong variable; C replaces a joint
+probability with a product of marginals, requiring independence term by term;
+D omits the Y marginal from reversed conditioning; E inverts the weight;
+G repeats the same Y marginal once for every x. The law holds without
+independence. All conditioning events are taken on the variables' supports.
+:::
+
+## Q3 · Which statements are true?
+
+$X$ takes $-2,-1,1,2$, each with probability $1/4$, and $u=X^2-5/2$.
+
+Consider the following statements:
+
+I. $E(u)=0$; II. $E(Xu)=0$; III. $E(u\mid X)=0$; IV. $X$ and $u$ are independent.
+
+**Which option lists all and only the true statements?**
+
+::: columns
+::: {.column width="48%"}
+
+A. I only
+
+B. I and II only
+
+C. II and III only
+
+D. I, II, and III only
+
+:::
+::: {.column width="48%"}
+
+E. I, II, and IV only
+
+F. I, III, and IV only
+
+G. I, II, III, and IV
+
+:::
+:::
+
+::: {.notes}
+Source: Lecture 1, “Zero correlation can hide a relationship”; Lecture 2,
+“Zero covariance is not the full conditional-mean assumption”.
+Hint: symmetry makes the odd moments zero.
+:::
+
+## Solution 3 · Correct answer: B
+
+::: {.answer}
+Only I and II are true.
+:::
+
+First calculate $u=X^2-5/2$ at every possible value of $X$:
+
+| $X$ | $-2$ | $-1$ | $1$ | $2$ |
+|---:|---:|---:|---:|---:|
+| $u$ | $3/2$ | $-3/2$ | $-3/2$ | $3/2$ |
+| $Xu$ | $-3$ | $3/2$ | $-3/2$ | $3$ |
+
+Therefore
+
+$$
+E(u)=\frac{3/2-3/2-3/2+3/2}{4}=0,
+$$
+
+and
+
+$$
+E(Xu)=\frac{-3+3/2-3/2+3}{4}=0.
+$$
+
+Thus statements I and II are true.
+
+## Solution 3 · Why zero covariance is not enough
+
+Because $u$ is completely determined by $X$,
+
+$$E(u\mid X=x)=u(x)=x^2-\frac52.$$
+
+For example,
+
+$$E(u\mid X=2)=\frac32\ne0,$$
+
+so statement III is false. Dependence is also immediate: knowing $X=2$ tells us that $u=3/2$ with certainty,
+
+$$
+\Pr(u=3/2\mid X=2)=1,
+\qquad
+\Pr(u=3/2)=\frac12.
+$$
+
+Hence statement IV is false.
+
+::: {.key-idea}
+$E(u)=0$ and $E(Xu)=0$ describe two averages. They do not require $E(u\mid X=x)=0$ separately for every $x$.
+:::
+
+::: {.notes}
+A misses odd-moment cancellation; C and D infer conditional mean zero from
+zero covariance; E infers independence; F and G combine these errors.
+Zero conditional mean implies both zero unconditional mean and zero
+covariance under suitable moments, but the converse fails.
+:::
+
+## Q4 · Compare two weighted estimators
+
+Let $Y_i$ be i.i.d. with variance $0<\sigma^2<\infty$, $n\ge2$, and $\bar Y_{-1}$ the mean of observations 2 through $n$. Define
+
+$$
+T_n=\frac{Y_1+\bar Y_{-1}}2,\qquad
+S_n=\frac{Y_1}{\sqrt n}+\left(1-\frac1{\sqrt n}\right)\bar Y_{-1}.
+$$
+
+**Which pair $(L_T,L_S)$ of limits is correct?**
+
+$$
+L_T=\lim_{n\to\infty}\frac{\operatorname{Var}(T_n)}{\sigma^2},
+\qquad
+L_S=\lim_{n\to\infty}\frac{\operatorname{Var}(S_n)}{\sigma^2/n}.
+$$
+
+::: columns
+::: {.column width="48%"}
+
+A. $(0,\ 1)$
+
+B. $(1/4,\ 1)$
+
+C. $(1/2,\ 2)$
+
+D. $(1/4,\ 2)$
+
+:::
+::: {.column width="48%"}
+
+E. $(0,\ 2)$
+
+F. $(1/4,\ 0)$
+
+G. $(1,\ 1)$
+
+:::
+:::
+
+::: {.notes}
+Source: Lecture 2, “Unequal weights: a cost in precision”, BLUE, and
+unbiasedness versus consistency. The two limits use different denominators.
+Hint: Y1 is independent of the mean of the remaining observations.
+:::
+
+## Solution 4 · Correct answer: D
+
+::: {.answer}
+$L_T=1/4$ and $L_S=2$.
+:::
+
+First,
+
+$$
+\operatorname{Var}(Y_1)=\sigma^2,
+\qquad
+\operatorname{Var}(\bar Y_{-1})=\frac{\sigma^2}{n-1}.
+$$
+
+Because $Y_1$ is independent of observations $2,\ldots,n$, it is independent of $\bar Y_{-1}$. Therefore variances add with **squared weights**:
+
+$$
+\begin{aligned}
+\operatorname{Var}(T_n)
+&=\frac14\operatorname{Var}(Y_1)+\frac14\operatorname{Var}(\bar Y_{-1})\\
+&=\frac{\sigma^2}{4}+\frac{\sigma^2}{4(n-1)}.
+\end{aligned}
+$$
+
+After dividing by $\sigma^2$,
+
+$$L_T=\lim_{n\to\infty}\left[\frac14+\frac1{4(n-1)}\right]=\frac14.$$
+
+## Solution 4 · Work out the second limit
+
+For $S_n$, square both weights:
+
+$$
+\operatorname{Var}(S_n)
+=\frac{\sigma^2}{n}
++\left(1-\frac1{\sqrt n}\right)^2\frac{\sigma^2}{n-1}.
+$$
+
+Divide by the benchmark $\sigma^2/n$:
+
+$$
+\begin{aligned}
+\frac{\operatorname{Var}(S_n)}{\sigma^2/n}
+&=1+\frac{n}{n-1}\left(1-\frac1{\sqrt n}\right)^2\\
+&\longrightarrow 1+(1)(1)^2=2.
+\end{aligned}
+$$
+
+Thus $L_S=2$. The special observation's weight $1/\sqrt n$ vanishes, but its variance contribution $(1/\sqrt n)^2\sigma^2=\sigma^2/n$ is as large as the ordinary sample mean's variance order.
+
+::: {.notes}
+A treats both rules as an ordinary mean; B ignores Y1's variance contribution
+to S; C fails to square one half; E assumes more observations force the
+variance of T to zero; F confuses absolute and relative variance; G ignores
+the actual weights. Both estimators are unbiased, but only S is consistent.
+Do not assert that positive limiting variance alone proves inconsistency
+in general. Here T-mu converges in probability to (Y1-mu)/2, a nondegenerate
+random variable, because the mean of observations 2 through n tends to mu.
+:::
+
+## Q5 · Find the first invalid equality
+
+Independent $Y_1,Y_2$ are Bernoulli$(p)$, with $0<p<1$. Weights select the smaller observation: $w_1=1$ if $Y_1\le Y_2$, otherwise $w_1=0$; $w_2=1-w_1$.
+
+A student claims this estimator is unbiased:
+
+$$
+E\left(\sum_{i=1}^2w_iY_i\right)
+\overset{(1)}=\sum_{i=1}^2E(w_iY_i)
+\overset{(2)}=\sum_{i=1}^2E(w_i)E(Y_i)
+\overset{(3)}=p.
+$$
+
+**Which diagnosis is correct?**
+
+::: columns
+::: {.column width="48%"}
+
+A. Step 1: expectation is nonlinear.
+
+B. Step 1: weights must be positive.
+
+C. Step 2: the $Y_i$ are dependent.
+
+D. Step 3: the weights sum to two.
+
+:::
+::: {.column width="48%"}
+
+E. Step 2: $w_i$ depends on $Y_i$.
+
+F. Step 3: $E(Y_i)=p^2$.
+
+G. No step is invalid.
+
+:::
+:::
+
+::: {.notes}
+Source: Lecture 2, “BLUE: make the comparison class explicit”; Lecture 1,
+Bernoulli probabilities and independence. The tie rule makes the weights
+fully specified. Students must distinguish independence between Y1 and Y2
+from dependence between a weight and its own observation.
+:::
+
+## Solution 5 · Correct answer: E
+
+::: {.answer}
+Step 2 is invalid: the weights depend on the observed outcomes.
+:::
+
+The rule always selects the smaller observation:
+
+| $(Y_1,Y_2)$ | $w_1Y_1+w_2Y_2$ |
+|---|---:|
+| $(0,0)$ | $0$ |
+| $(0,1)$ | $0$ |
+| $(1,0)$ | $0$ |
+| $(1,1)$ | $1$ |
+
+Thus $w_1Y_1+w_2Y_2=\min(Y_1,Y_2)$. It equals one only when both observations equal one. Independence gives
+
+$$E[\min(Y_1,Y_2)]=\Pr(Y_1=Y_2=1)=p^2\ne p.$$
+
+Therefore the bias for estimating $p$ is
+
+$$p^2-p=-p(1-p)<0.$$
+
+## Solution 5 · Locate the invalid equality
+
+Step (1) is valid: expectation is linear even when the two terms are dependent.
+
+$$E(w_1Y_1+w_2Y_2)=E(w_1Y_1)+E(w_2Y_2).$$
+
+Step (2) would require $w_i$ and $Y_i$ to be independent. They are not, because the weight is chosen after seeing the outcomes. For example,
+
+$$E(w_1Y_1)=\Pr(Y_1=1,Y_2=1)=p^2,$$
+
+whereas
+
+$$E(w_1)E(Y_1)=(1-p+p^2)p.$$
+
+These differ for $0<p<1$, so step (2) is the first invalid equality.
+
+::: {.key-idea}
+Weights summing to one is not enough: data-dependent selection can create bias.
+:::
+
+::: {.notes}
+A rejects a valid linearity rule; B imposes unnecessary positivity; C
+contradicts the stated independence of Y1 and Y2; D contradicts w1+w2=1;
+F substitutes the selected estimator's mean for an observation's mean;
+G overlooks selection. Step 3 is a correct manipulation of the preceding
+expression, because each Yi has mean p and sum E(wi)=1.
+:::
+
+## Q6 · A vanishing bias
+
+Let $Y_i$ be i.i.d. with mean $\mu$ and variance $0<\sigma^2<\infty$. Define
+
+$$B_n=\bar Y_n+\frac{\sigma}{\sqrt n}.$$
+
+**Which pair correctly gives its probability limit and the limiting distribution of its standardized error?** Here $N(m,v)$ uses variance $v$.
+
+| Option | Probability limit of $B_n$ | Limit of $\sqrt n(B_n-\mu)/\sigma$ |
+|---|---|---|
+| A | $\mu$ | $N(1,1)$ |
+| B | $\mu$ | $N(0,1)$ |
+| C | $\mu+\sigma$ | $N(1,1)$ |
+| D | $\mu$ | $N(0,2)$ |
+| E | $\mu$ | Constant zero |
+| F | $\mu$ | Diverges to $+\infty$ |
+| G | $\mu+1$ | $N(0,1)$ |
+
+::: {.notes}
+Source: Lecture 2, “Unbiasedness and consistency are different”, LLN/CLT,
+and the Slutsky argument in “Why the t-statistic is approximately normal”.
+Hint: simplify the standardized error before taking any limit.
+:::
+
+## Solution 6 · Correct answer: A
+
+::: {.answer}
+$B_n\xrightarrow{p}\mu$, but $\sqrt n(B_n-\mu)/\sigma\xrightarrow{d}N(1,1)$.
+:::
+
+At finite $n$,
+
+$$
+E(B_n)=E(\bar Y_n)+\frac{\sigma}{\sqrt n}
+=\mu+\frac{\sigma}{\sqrt n}.
+$$
+
+The bias is nonzero for every finite $n$, but it converges to zero. The LLN and the vanishing deterministic term give
+
+$$B_n=\bar Y_n+\frac{\sigma}{\sqrt n}\xrightarrow{p}\mu+0=\mu.$$
+
+Thus $B_n$ is biased but consistent.
+
+## Solution 6 · Examine the $\sqrt n$ scale
+
+Standardize before taking the limit:
+
+$$
+\begin{aligned}
+\frac{\sqrt n(B_n-\mu)}{\sigma}
+&=\frac{\sqrt n}{\sigma}\left(\bar Y_n-\mu+\frac{\sigma}{\sqrt n}\right)\\
+&=\underbrace{\frac{\sqrt n(\bar Y_n-\mu)}{\sigma}}_{\xrightarrow{d}N(0,1)}+1\\
+&\xrightarrow{d}N(1,1).
+\end{aligned}
+$$
+
+The bias and the sampling SD have the same order:
+
+$$
+\frac{\operatorname{Bias}(B_n)}{\operatorname{SD}(B_n)}
+=\frac{\sigma/\sqrt n}{\sigma/\sqrt n}=1.
+$$
+
+That is why the limiting normal distribution is shifted by one.
+
+::: {.notes}
+B confuses consistency with a centered CLT; C and G retain a vanishing term
+in the probability limit; D treats a deterministic shift as extra variance;
+E applies the LLN after multiplying by sqrt n; F overstates the scaled shift,
+which is exactly one. Population normality is unnecessary.
+:::
+
+## Q7 · Copies of the same observations
+
+An i.i.d. sample has $n=100$, $\bar Y=12$, and known population SD $\sigma=5$. Test $H_0:\mu=11$ against $H_1:\mu\ne11$.
+
+Each record is then repeated four times, producing **400 rows from the same 100 observations**. Using a normal approximation, **what are the correct $z$-statistic and two-sided $p$-value after copying?**
+
+Use $\Phi(2)=0.97725$ and $\Phi(4)=0.9999683$.
+
+::: columns
+::: {.column width="48%"}
+
+A. $z=4$, $p\approx0.0000634$
+
+B. $z=2$, $p\approx0.02275$
+
+C. $z=1$, $p\approx0.3173$
+
+D. $z=4$, $p\approx0.04550$
+
+:::
+::: {.column width="48%"}
+
+E. $z=2$, $p\approx0.95450$
+
+F. $z=0.5$, $p\approx0.6171$
+
+G. $z=2$, $p\approx0.04550$
+
+:::
+:::
+
+::: {.notes}
+Source: Lecture 1, i.i.d. and averaging; Lecture 2, standardizing a mean and
+two-sided p-values. Known sigma isolates dependence from changes in a sample
+SD. The question asks for the correct calculation, not the software output
+obtained by wrongly treating copies as independent.
+:::
+
+## Solution 7 · Correct answer: G
+
+::: {.answer}
+$z=2$ and the two-sided $p$-value is approximately $0.04550$.
+:::
+
+Let each $Y_i$ appear as four identical rows. The copied mean is
+
+$$\bar Y_{\mathrm{copied}}=\frac1{400}\sum_{i=1}^{100}4Y_i=\bar Y.$$
+
+The four copies of a given $Y_i$ move together perfectly. They are not new independent draws. Thus the effective independent sample size remains $100$:
+
+$$
+SE=\frac5{\sqrt{100}}=0.5,
+\qquad
+z=\frac{12-11}{0.5}=2.
+$$
+
+## Solution 7 · Compute the two-sided probability
+
+For a two-sided alternative, include both tails:
+
+$$
+\begin{aligned}
+p
+&\approx\Pr(|Z|\ge2)\\
+&=2\Pr(Z\ge2)\\
+&=2[1-\Phi(2)]\\
+&=2(1-0.97725)=0.04550.
+\end{aligned}
+$$
+
+If we incorrectly treated the copies as independent, we would obtain
+
+$$SE_{\mathrm{wrong}}=\frac5{\sqrt{400}}=0.25,
+\qquad z_{\mathrm{wrong}}=4.$$
+
+Duplicating rows changes the file size, not the amount of independent information.
+
+::: {.notes}
+A treats copies as new independent information; B uses one tail; C and F
+overstate the sampling SD; D combines a naive statistic with the correct
+p-value; E reports the central probability rather than the two-tailed
+probability. The correct 5% decision is rejection, since p<0.05. These are
+normal approximations, not exact finite-sample probabilities for arbitrary
+non-normal populations.
+:::
+
+## Q8 · Recover the missing observations
+
+OLS **with an intercept** gives $\hat Y=1+2X$ for
+
+$$X=(0,1,2,3),\qquad Y=(2,a,b,8).$$
+
+**Which triple gives the missing values $a,b$ and the regression's $R^2$?**
+
+| Option | $a$ | $b$ | $R^2$ |
+|---|---:|---:|---:|
+| A | 3 | 5 | $1$ |
+| B | 2 | 4 | $5/6$ |
+| C | 2 | 4 | $1/6$ |
+| D | 4 | 2 | $5/6$ |
+| E | 2 | 4 | $4/5$ |
+| F | 1 | 5 | $5/6$ |
+| G | 2 | 4 | $1$ |
+
+::: {.notes}
+Source: Lecture 2, the two normal equations and measures of fit. Hint:
+write the four residuals using the reported fitted line. Do not assume the
+missing observations equal their fitted values.
+:::
+
+## Solution 8 · Correct answer: B
+
+::: {.answer}
+$a=2$, $b=4$, and $R^2=5/6$.
+:::
+
+First calculate the fitted values:
+
+$$\hat Y=(1,3,5,7).$$
+
+Therefore
+
+$$\hat u=Y-\hat Y=(1,a-3,b-5,1).$$
+
+The intercept normal equation gives
+
+$$
+\sum_i\hat u_i=1+(a-3)+(b-5)+1=0
+\quad\Rightarrow\quad a+b=6.
+$$
+
+The slope normal equation gives
+
+$$
+\sum_iX_i\hat u_i=(a-3)+2(b-5)+3=0
+\quad\Rightarrow\quad a+2b=10.
+$$
+
+Subtracting the two equations yields $b=4$, and then $a=2$.
+
+## Solution 8 · Calculate $R^2$
+
+With $a=2$ and $b=4$,
+
+$$Y=(2,2,4,8),\qquad \bar Y=\frac{2+2+4+8}{4}=4,$$
+
+and $\hat u=(1,-1,-1,1)$. Hence
+
+$$
+\begin{aligned}
+SSR&=1^2+(-1)^2+(-1)^2+1^2=4,\\
+TSS&=(2-4)^2+(2-4)^2+(4-4)^2+(8-4)^2=24.
+\end{aligned}
+$$
+
+Therefore
+
+$$R^2=1-\frac{SSR}{TSS}=1-\frac4{24}=\frac56.$$
+
+The missing observations need not lie on the fitted line: OLS requires residual orthogonality, not zero residuals.
+
+::: {.notes}
+A places missing observations on the line without satisfying OLS conditions;
+C reports the unexplained fraction; D swaps a and b; E uses SSR/ESS rather
+than SSR/TSS; F satisfies only the zero-residual-sum equation; G mistakes zero
+residual sum for perfect fit. Orthogonality is an OLS identity, not proof
+that the population causal error satisfies zero conditional mean.
+:::
+
+## Q9 · Complete the fit decomposition
+
+For OLS with an intercept, squaring and summing
+$Y_i-\bar Y=(\hat Y_i-\bar Y)+\hat u_i$ gives
+
+$$TSS=ESS+SSR+2C,\qquad C=\sum_i(\hat Y_i-\bar Y)\hat u_i.$$
+
+**Which expression equals $C$ and is guaranteed to be zero by the normal equations?**
+
+A. $\hat\beta_1\sum_i(X_i-\bar X)^2$
+
+B. $\sum_i\hat u_i^2$
+
+C. $\hat\beta_1\sum_iX_i\hat u_i+\bar Y\sum_iY_i$
+
+D. $\hat\beta_1[\sum_iX_i\hat u_i-\bar X\sum_i\hat u_i]$
+
+E. $\hat\beta_1\sum_i(X_i-\bar X)Y_i$
+
+F. $\sum_i(Y_i-\bar Y)^2$
+
+G. $\hat\beta_1^2\sum_i(X_i-\bar X)^2$
+
+::: {.notes}
+Source: Lecture 2, “Why total variation decomposes exactly” and the normal
+equations. Assume the fitted design has SXX>0. The required guarantee is
+for arbitrary such OLS samples, not an accidental equality in a special
+zero-slope or perfectly fitted sample.
+:::
+
+## Solution 9 · Correct answer: D
+
+::: {.answer}
+$C=\hat\beta_1[\sum_iX_i\hat u_i-\bar X\sum_i\hat u_i]=0$.
+:::
+
+The fitted line is $\hat Y_i=\hat\beta_0+\hat\beta_1X_i$. Because an OLS line with an intercept passes through $(\bar X,\bar Y)$,
+
+$$\hat Y_i-\bar Y=\hat\beta_1(X_i-\bar X).$$
+
+Substitute this expression into the cross term:
+
+$$
+\begin{aligned}
+C&=\hat\beta_1\sum_i(X_i-\bar X)\hat u_i\\
+&=\hat\beta_1\left[\sum_iX_i\hat u_i
+-\bar X\sum_i\hat u_i\right].
+\end{aligned}
+$$
+
+This is exactly option D.
+
+## Solution 9 · Use the normal equations
+
+OLS with an intercept makes residuals orthogonal to the constant and to $X$:
+
+$$
+\underbrace{\sum_i\hat u_i}_{\text{orthogonal to constant}}=0,
+\qquad
+\underbrace{\sum_iX_i\hat u_i}_{\text{orthogonal to }X}=0.
+$$
+
+Therefore
+
+$$C=\hat\beta_1[0-\bar X(0)]=0.$$
+
+Returning to the squared identity,
+
+$$TSS=ESS+SSR+2C=ESS+SSR.$$
+
+::: {.key-idea}
+The decomposition follows from the OLS normal equations. No causal assumption is needed.
+:::
+
+::: {.notes}
+A is slope times regressor variation; B is SSR; C includes an unrelated
+term; E uses outcomes instead of residuals; F is TSS; G is ESS.
+These expressions need not vanish. This question assesses the crucial
+intermediate step rather than asking students to reproduce the entire proof.
+:::
+
+## Q10 · Separate an observed gap from a causal effect
+
+Assume the additive causal model
+
+$$Y=\alpha+\beta D+4Z+\varepsilon,\qquad E(\varepsilon\mid D,Z)=0,$$
+
+where $D$ is binary, $0<\Pr(D=1)<1$, and $Z$ is a pre-treatment determinant. The population group differences are
+
+$$E(Y\mid D=1)-E(Y\mid D=0)=-5,\qquad
+E(Z\mid D=1)-E(Z\mid D=0)=-2.$$
+
+**Which pair gives the short-regression slope on $D$ and the causal effect $\beta$?**
+
+::: columns
+::: {.column width="48%"}
+
+A. $(-5,\ 3)$
+
+B. $(-5,\ -13)$
+
+C. $(-5,\ -5)$
+
+D. $(3,\ -5)$
+
+:::
+::: {.column width="48%"}
+
+E. $(-5/4,\ 27/4)$
+
+F. $(5,\ 13)$
+
+G. $(-5,\ -3)$
+
+:::
+:::
+
+::: {.notes}
+Source: Lecture 1, LIE and Bernoulli moments; Lecture 2, “The observed
+comparison contains two parts” and the OVB derivation. The short regression
+includes an intercept. The causal interpretation is maintained as part of
+the question's model, not inferred from observed group differences.
+:::
+
+## Solution 10 · Correct answer: A
+
+::: {.answer}
+The short slope is $-5$; the causal effect is $\beta=3$.
+:::
+
+Let $p=\Pr(D=1)$, $m_1=E(Y\mid D=1)$, and $m_0=E(Y\mid D=0)$. For binary $D$,
+
+$$
+E(D)=p,
+\qquad
+E(D^2)=p,
+$$
+
+because $D^2=D$ whenever $D\in\{0,1\}$. Therefore
+
+$$
+\operatorname{Var}(D)
+=E(D^2)-[E(D)]^2
+=p-p^2
+=p(1-p).
+$$
+
+The law of iterated expectations also gives
+
+$$
+E(Y)=pm_1+(1-p)m_0,
+\qquad
+E(DY)=pm_1.
+$$
+
+The second equality holds because $DY=0$ when $D=0$ and $DY=Y$ when $D=1$.
+
+## Solution 10 · Derive the covariance and slope
+
+Start from the definition of covariance and substitute the three moments:
+
+$$
+\begin{aligned}
+\operatorname{Cov}(D,Y)
+&=E(DY)-E(D)E(Y)\\
+&=pm_1-p\big[pm_1+(1-p)m_0\big]\\
+&=pm_1-p^2m_1-p(1-p)m_0\\
+&=p(1-p)m_1-p(1-p)m_0\\
+&=p(1-p)(m_1-m_0).
+\end{aligned}
+$$
+
+Therefore the short-regression slope is
+
+$$
+b_{\mathrm{short}}
+=\frac{\operatorname{Cov}(D,Y)}{\operatorname{Var}(D)}
+=\frac{p(1-p)(m_1-m_0)}{p(1-p)}
+=m_1-m_0=-5.
+$$
+
+So the first component of the answer is $-5$.
+
+## Solution 10 · Recover the causal effect
+
+Zero conditional mean also implies zero mean error within each treatment group:
+
+$$
+E(\varepsilon\mid D)
+=E[E(\varepsilon\mid D,Z)\mid D]=0.
+$$
+
+Taking the conditional mean of the causal model for $D=d$ gives
+
+$$E(Y\mid D=d)=\alpha+\beta d+4E(Z\mid D=d).$$
+
+Subtract the $d=0$ equation from the $d=1$ equation:
+
+$$
+\underbrace{-5}_{\text{observed gap}}
+=\beta+4\underbrace{(-2)}_{\text{composition gap}}.
+$$
+
+Hence
+
+$$\beta=-5-4(-2)=-5+8=3.$$
+
+The observed gap $-5$ combines a causal effect $+3$ with a composition effect $-8$.
+
+::: {.notes}
+If students request the binary-slope derivation, let p=Pr(D=1), md=E(Y|D=d).
+Then Cov(D,Y)=p(1-p)(m1-m0) and Var(D)=p(1-p), so the ratio is m1-m0.
+B adds rather than subtracts the omitted component; C identifies association
+with causation; D swaps coefficients; E weights an already conditional
+difference; F reverses the contrast; G reverses the recovered causal sign.
+:::
+
+## Q11 · Complete the omitted-variable formula
+
+Suppose $Y=\alpha+\beta X+\delta Z+\varepsilon$, with
+$E(\varepsilon\mid X,Z)=0$, positive variances of $X,Z$, and all required moments finite.
+
+Let $b_{\mathrm{short}}$ be the population slope from regressing $Y$ on $X$ **with an intercept**, omitting $Z$.
+
+**Which expression equals $b_{\mathrm{short}}-\beta$?**
+
+::: columns
+::: {.column width="48%"}
+
+A. $\delta\operatorname{Corr}(X,Z)$
+
+B. $\delta\operatorname{Corr}(X,Z)\dfrac{\sigma_X}{\sigma_Z}$
+
+C. $\delta\dfrac{\operatorname{Cov}(X,Z)}{\sigma_X}$
+
+D. $\delta\operatorname{Cov}(X,Z)$
+
+:::
+::: {.column width="48%"}
+
+E. $\delta\operatorname{Corr}(X,Z)^2\dfrac{\sigma_Z}{\sigma_X}$
+
+F. $\delta\operatorname{Corr}(X,Z)\dfrac{\sigma_Z}{\sigma_X}$
+
+G. $\beta+\delta\operatorname{Corr}(X,Z)\dfrac{\sigma_Z}{\sigma_X}$
+
+:::
+:::
+
+::: {.notes}
+Source: Lecture 1, covariance and correlation; Lecture 2, “Derive the
+omitted-variable distortion”. Assume the required moments of Y and epsilon
+exist. Ask students to check units and the sign of the distortion.
+:::
+
+## Solution 11 · Correct answer: F
+
+::: {.answer}
+$b_{\mathrm{short}}-\beta=\delta\operatorname{Corr}(X,Z)\sigma_Z/\sigma_X$.
+:::
+
+First show why the causal error does not contribute to the short slope. Iterated expectations gives
+
+$$
+E(\varepsilon\mid X)
+=E[E(\varepsilon\mid X,Z)\mid X]=0.
+$$
+
+Therefore $E(\varepsilon)=0$ and
+
+$$
+\operatorname{Cov}(X,\varepsilon)
+=E\{[X-E(X)]\varepsilon\}
+=E\{[X-E(X)]E(\varepsilon\mid X)\}=0.
+$$
+
+Now expand the covariance in the population slope:
+
+$$
+b_{\mathrm{short}}
+=\frac{\operatorname{Cov}(X,Y)}{\operatorname{Var}(X)}
+=\frac{\beta\operatorname{Var}(X)
++\delta\operatorname{Cov}(X,Z)}{\operatorname{Var}(X)}.
+$$
+
+## Solution 11 · Express the distortion using correlation
+
+Subtract $\beta$ and use
+
+$$
+\operatorname{Cov}(X,Z)=\operatorname{Corr}(X,Z)\sigma_X\sigma_Z,
+\qquad \operatorname{Var}(X)=\sigma_X^2.
+$$
+
+Then
+
+$$
+b_{\mathrm{short}}-\beta
+=\delta\frac{\operatorname{Corr}(X,Z)\sigma_X\sigma_Z}{\sigma_X^2}
+=\delta\operatorname{Corr}(X,Z)\frac{\sigma_Z}{\sigma_X}.
+$$
+
+The ratio $\sigma_Z/\sigma_X$ converts unit-free correlation into the slope from projecting $Z$ on $X$. The signs of $\delta$ and the correlation determine whether the distortion is upward or downward.
+
+::: {.notes}
+Iterated expectations implies Cov(X,epsilon)=0. A omits the scale ratio;
+B reverses it; C divides by an SD rather than a variance; D omits the
+denominator; E destroys the sign; G gives the short slope rather than its
+difference from beta. This is a population identity and a probability-limit
+distortion under suitable sampling, not a general exact finite-sample bias formula.
+:::
+
+## Q12 · From the CLT to a probability
+
+For OLS with i.i.d. pairs, zero conditional mean, and sufficient finite moments, suppose
+
+$$q=\operatorname{Var}(X)=4,\qquad
+\omega^2=\operatorname{Var}[(X-E(X))u]=36.$$
+
+For $n=144$, **which pair gives the large-sample sampling SD of $\hat\beta_1$ and $\Pr(|\hat\beta_1-\beta_1|<1/4)$?**
+
+Use $\Phi(1)=0.84134$, $\Phi(2)=0.97725$.
+
+| Option | Sampling SD | Probability |
+|---|---:|---:|
+| A | $1/8$ | $0.97725$ |
+| B | $1/4$ | $0.68268$ |
+| C | $1/8$ | $0.95450$ |
+| D | $1/64$ | $0.95450$ |
+| E | $1/2$ | $0.38292$ |
+| F | $1/8$ | $0.04550$ |
+| G | $3/2$ | $0.95450$ |
+
+::: {.notes}
+Source: Lecture 2, “The LLN stabilizes the denominator” through “Combine
+the LLN and CLT for the slope”. An intercept and a nondegenerate fitted
+design are assumed. Use the population variance formula taught there;
+no estimated coefficient SE, coefficient test, or confidence interval from
+Lecture 3 is needed. All sampling statements requested are approximations.
+:::
+
+## Solution 12 · Correct answer: C
+
+::: {.answer}
+The approximate sampling SD is $1/8$ and the probability is $0.95450$.
+:::
+
+The LLN and CLT give
+
+$$
+\sqrt n(\hat\beta_1-\beta_1)\xrightarrow{d}
+N\left(0,\frac{\omega^2}{q^2}\right).
+$$
+
+Substitute $\omega^2=36$ and $q=4$:
+
+$$\frac{\omega^2}{q^2}=\frac{36}{4^2}=\frac94.$$
+
+This is the variance of the limiting distribution for the **scaled** estimation error.
+
+## Solution 12 · Convert back to the slope's sampling SD
+
+Thus
+
+$$
+\sqrt n(\hat\beta_1-\beta_1)
+\overset{a}{\sim}N\left(0,\frac94\right).
+$$
+
+Undoing the $\sqrt n$ scaling divides the variance by $n=144$:
+
+$$
+\operatorname{Var}(\hat\beta_1)\approx
+\frac{9/4}{144}=\frac1{64},
+\qquad
+\operatorname{SD}(\hat\beta_1)\approx\frac18.
+$$
+
+## Solution 12 · Standardize the requested interval
+
+The interval has half-width $1/4$. In sampling-SD units,
+
+$$\frac{1/4}{1/8}=2.$$
+
+Therefore, for $Z\sim N(0,1)$,
+
+$$
+\Pr(|\hat\beta_1-\beta_1|<1/4)
+\approx\Pr(|Z|<2).
+$$
+
+Use symmetry of the standard normal distribution:
+
+$$
+\begin{aligned}
+\Pr(|Z|<2)
+&=\Phi(2)-\Phi(-2)\\
+&=2\Phi(2)-1\\
+&=2(0.97725)-1=0.95450.
+\end{aligned}
+$$
+
+::: {.notes}
+A uses a one-sided cumulative probability; B divides a variance by q rather
+than q squared; D reports the variance as an SD; E ignores the denominator;
+F reports probability outside the interval; G reports the limiting SD of
+sqrt n times the estimation error rather than the unscaled estimator's SD.
+The centering correction from replacing E(X) with Xbar is asymptotically
+negligible under the stated conditions. No homoskedasticity is required.
+:::
+
+## Q13 · Density and conditional probability
+
+The continuous random variable $Y$ has density
+
+$$
+f_Y(y)=
+\begin{cases}ky,&0\le y\le1/2,\\0,&\text{otherwise.}\end{cases}
+$$
+
+**Which triple correctly gives $k$, $\Pr(Y>1/4\mid Y>1/8)$, and $\Pr(Y=1/4)$?**
+
+| Option | $k$ | Conditional probability | Point probability |
+|---|---:|---:|---:|
+| A | 4 | $4/5$ | $0$ |
+| B | 8 | $3/4$ | $0$ |
+| C | 8 | $5/4$ | $0$ |
+| D | 8 | $4/5$ | $2$ |
+| E | 2 | $4/5$ | $0$ |
+| F | 8 | $1/5$ | $0$ |
+| G | 8 | $4/5$ | $0$ |
+
+::: {.notes}
+Source: Lecture 1, “Continuous probability distributions”, “PDF and CDF”,
+and conditional probabilities. Elementary polynomial integrals suffice;
+this is not a distribution family students must memorize.
+:::
+
+## Solution 13 · Correct answer: G
+
+::: {.answer}
+$k=8$, the conditional probability is $4/5$, and the point probability is zero.
+:::
+
+**Step 1: normalize the density.** A density must integrate to one:
+
+$$
+1=\int_0^{1/2}ky\,dy
+=k\left[\frac{y^2}{2}\right]_0^{1/2}
+=\frac{k}{8}.
+$$
+
+Hence $k=8$.
+
+**Step 2: obtain the CDF on the support.** For $0\le y\le1/2$,
+
+$$F_Y(y)=\int_0^y8t\,dt=4y^2.$$
+
+Thus
+
+$$F_Y(1/4)=\frac14,
+\qquad F_Y(1/8)=\frac1{16}.$$
+
+## Solution 13 · Compute the conditional probability
+
+Let $A=\{Y>1/4\}$ and $B=\{Y>1/8\}$. Since $A\subset B$, we have $A\cap B=A$. Therefore
+
+$$
+\Pr(A\mid B)=\frac{\Pr(A\cap B)}{\Pr(B)}
+=\frac{\Pr(A)}{\Pr(B)}.
+$$
+
+Using the CDF,
+
+$$
+\Pr(Y>1/4\mid Y>1/8)
+=\frac{1-F_Y(1/4)}{1-F_Y(1/8)}
+=\frac{3/4}{15/16}=\frac45.
+$$
+
+Finally, a continuous variable assigns zero probability to a single point:
+
+$$\Pr(Y=1/4)=\int_{1/4}^{1/4}f_Y(y)\,dy=0.$$
+
+The density height $f_Y(1/4)=2$ is not a point probability.
+
+::: {.notes}
+A loses a factor of two in integration; B skips conditional renormalization;
+C reverses the probability ratio; D mistakes density height for probability;
+E normalizes a constant rather than a linear density; F takes the complement.
+The whole CDF is zero below 0 and one above 1/2.
+:::
+
+## Q14 · Reverse a regression and change units
+
+In one sample, $s_X=2$, $s_Y=6$, and $r_{XY}=-1/2$. Define $Y^*=10-2Y$ and $X^*=X/4$. All regressions include an intercept.
+
+Let $b^*$ be the slope of $Y^*$ on $X^*$, and $b_{X\mid Y}$ the slope of the **original $X$ on the original $Y$**.
+
+**Which triple gives $b^*$, $b_{X\mid Y}$, and the $R^2$ of $Y^*$ on $X^*$?**
+
+| Option | $b^*$ | $b_{X\mid Y}$ | $R^2$ |
+|---|---:|---:|---:|
+| A | $12$ | $-2/3$ | $1/4$ |
+| B | $-12$ | $-1/6$ | $1/4$ |
+| C | $3/4$ | $-1/6$ | $1/4$ |
+| D | $12$ | $-1/6$ | $1/2$ |
+| E | $12$ | $-1/6$ | $1/4$ |
+| F | $12$ | $-1/6$ | $1$ |
+| G | $3$ | $-1/6$ | $1/4$ |
+
+::: {.notes}
+Source: Lecture 1, rescaling moments; Lecture 2, “A slope is covariance
+divided by variance” and the fit decomposition. Hint: calculate the original
+Y-on-X slope first, then transform it. Reverse regression is a different
+least-squares problem, not inversion of a fitted coefficient.
+:::
+
+## Solution 14 · Correct answer: E
+
+::: {.answer}
+$b^*=12$, $b_{X\mid Y}=-1/6$, and $R^2=1/4$.
+:::
+
+For the original regression of $Y$ on $X$,
+
+$$
+\begin{aligned}
+b_{Y\mid X}
+&=\frac{s_{XY}}{s_X^2}
+=r_{XY}\frac{s_Y}{s_X}\\
+&=-\frac12\frac62=-\frac32.
+\end{aligned}
+$$
+
+Reversing the regression is a different calculation:
+
+$$
+\begin{aligned}
+b_{X\mid Y}
+&=\frac{s_{XY}}{s_Y^2}
+=r_{XY}\frac{s_X}{s_Y}\\
+&=-\frac12\frac26=-\frac16.
+\end{aligned}
+$$
+
+It is not generally the reciprocal of $b_{Y\mid X}$.
+
+## Solution 14 · Transform the variables and recover $R^2$
+
+If $Y^*=a+cY$ and $X^*=d+eX$, the new slope is $(c/e)b_{Y\mid X}$. Here $c=-2$ and $e=1/4$, so
+
+$$
+b^*=\frac{-2}{1/4}\left(-\frac32\right)
+=(-8)\left(-\frac32\right)=12.
+$$
+
+Adding constants changes neither covariance nor variance. Multiplying either variable by a nonzero constant may change the sign of correlation, but not its squared value. In simple regression with an intercept,
+
+$$
+R^2=\frac{\hat\beta_1^2S_{XX}}{S_{YY}}
+=\frac{S_{XY}^2}{S_{XX}S_{YY}}=r^2=\frac14.
+$$
+
+Therefore the triple is
+
+$$\boxed{(b^*,b_{X\mid Y},R^2)=(12,-1/6,1/4)}.$$
+
+::: {.notes}
+A inverts the original slope; B misses the negative outcome scale; C
+multiplies rather than divides by the regressor scale; D reports absolute
+correlation; F treats a unit change as a perfect-fit improvement; G ignores
+regressor rescaling. The reverse and reciprocal slopes coincide only under
+perfect correlation when the reciprocal is defined.
+:::
