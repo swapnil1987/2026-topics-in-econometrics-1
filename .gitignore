@@ -46,3 +46,18 @@ quiz/quiz[0-9]*/**
 # Never commit raw live-student scans by default.
 quiz/**/raw_scans/
 quiz/**/scans/
+
+# Keep midterm sources, scans, and grading audits private; release only authorized PDFs.
+/quiz/midterm/**
+!/quiz/midterm/revision1/
+/quiz/midterm/revision1/**
+!/quiz/midterm/revision1/midterm_five_forms.pdf
+!/quiz/midterm/revision1/midterm_instructor_key.pdf
+
+# Unreleased makeup quiz forms and instructor keys are private/local.
+/quiz/makeup/
+
+# Main Quiz 3 and Quiz 4 papers and solutions authorized for release.
+!quiz/quiz3/quiz3_five_forms.pdf
+!quiz/quiz4/quiz4_five_forms.pdf
+!quiz/quiz4/quiz4_instructor_key.pdf
