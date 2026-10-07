@@ -2,6 +2,8 @@
 
 ## News
 
+**7 October 2026 — Student IDs needed for four Quiz 1 records.** The four students identified by initials **LVL, AMR, TS, and YML** in the Quiz 1 worksheet of the [grades workbook](quiz/grades.xlsx) have not yet provided their student IDs to me. If these are your initials, please email your **three-digit student ID** to me at [ssingh@lb.lt](mailto:ssingh@lb.lt) so I can match your record and update your grades.
+
 **7 October 2026 — Midterm solutions, makeup grades, and weighted totals are available.** [Read the midterm answer key and worked solutions](quiz/midterm/revision1/midterm_instructor_key.pdf) and [download the updated grades workbook](quiz/grades.xlsx), including the Midterm and Overall Grade worksheets.
 
 **25 September 2026 — Practice Set 4 is uploaded!** [Open the 15 practice questions and worked solutions](https://swapnil1987.github.io/2026-topics-in-econometrics-1/practice-04.html), progressing from easy to hard and covering the omitted-variable-bias formula, the law of large numbers, and the central limit theorem.
