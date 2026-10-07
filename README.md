@@ -2,7 +2,7 @@
 
 ## News
 
-**7 October 2026 — Quiz 3, Quiz 4, and midterm papers and solutions are available.** Find the main assessment questions and their worked solutions in the Quizzes and Midterm examination sections below.
+**7 October 2026 — Midterm solutions, makeup grades, and weighted totals are available.** [Read the midterm answer key and worked solutions](quiz/midterm/revision1/midterm_instructor_key.pdf) and [download the updated grades workbook](quiz/grades.xlsx), including the Midterm and Overall Grade worksheets.
 
 **25 September 2026 — Practice Set 4 is uploaded!** [Open the 15 practice questions and worked solutions](https://swapnil1987.github.io/2026-topics-in-econometrics-1/practice-04.html), progressing from easy to hard and covering the omitted-variable-bias formula, the law of large numbers, and the central limit theorem.
 
@@ -33,7 +33,7 @@ This course introduces econometrics: the statistical study of economic data. We 
 | Midterm exam | 20% |
 | Final exam | 50% |
 
-Each quiz is scored out of 3 and the midterm out of 20, then converted to a grade out of 10. For each student ID and quiz, the highest original or makeup score is retained. Swapnil’s contribution to the final course grade is `0.075 × (Quiz 1 + Quiz 2 + Quiz 3 + Quiz 4) + 0.20 × Midterm`, using the assessment grades out of 10. **Full marks in this teaching block contribute 5 of the course’s 10 points.** The remaining 50% is assessed by the other instructor. The final course grade adds the other instructor’s remaining 50% contribution.
+Each quiz is scored out of 3 and the midterm out of 20, then converted to a grade out of 10. For each student ID and quiz, the highest original or makeup score is retained. Swapnil’s contribution to the final course grade is `0.075 × (Quiz 1 + Quiz 2 + Quiz 3 + Quiz 4) + 0.20 × Midterm`, using the assessment grades out of 10. **Full marks in this teaching block contribute 5 of the course’s 10 points.** The remaining 50% is assessed by the other instructor. The workbook also shows performance within Swapnil’s half normalized to 10; the final course grade remains blank until the other instructor’s grade is entered.
 
 Problem sets are not graded, but students are expected to complete them. Quiz questions will be based on the problem sets and material already covered in class. Consult the current syllabus and Moodle announcements for confirmed assessment dates, rooms, and any schedule changes.
 
@@ -122,7 +122,7 @@ counterexamples, and causal interpretation.
 
 Quizzes are short, in-class assessments based only on material already taught and exercises already made available. The working format is three multiple-choice questions, seven answer choices per question, and five equivalent coded forms. Each correct answer earns one point. Incorrect and blank answers receive zero points; there is no negative marking unless announced otherwise.
 
-[Download the published quiz grades (Excel)](quiz/grades.xlsx) — one worksheet per published quiz.
+[Download all assessment grades (Excel)](quiz/grades.xlsx) — one worksheet per quiz, plus Midterm and Overall Grade. The grading scheme is explained at the bottom of Overall Grade.
 
 > **Student ID is essential.** Fill in all three digits of your student ID correctly and clearly. An incorrect, incomplete, or unreadable ID cannot be corrected after submission. If the quiz cannot be assigned using the bubbled ID, the score is zero.
 
