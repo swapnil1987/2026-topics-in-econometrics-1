@@ -2,6 +2,8 @@
 
 ## News
 
+**28 October 2026 — Quiz 2 makeup grade updated.** [Download the updated grades workbook](quiz/grades.xlsx), including the revised weighted totals in the Overall Grade worksheet.
+
 **7 October 2026 — Student IDs needed for four Quiz 1 records.** The four students identified by initials **LVL, AMR, TS, and YML** in the Quiz 1 worksheet of the [grades workbook](quiz/grades.xlsx) have not yet provided their student IDs to me. If these are your initials, please email your **three-digit student ID** to me at [ssingh@lb.lt](mailto:ssingh@lb.lt) so I can match your record and update your grades.
 
 **7 October 2026 — Midterm solutions, makeup grades, and weighted totals are available.** [Read the midterm answer key and worked solutions](quiz/midterm/revision1/midterm_instructor_key.pdf) and [download the updated grades workbook](quiz/grades.xlsx), including the Midterm and Overall Grade worksheets.
